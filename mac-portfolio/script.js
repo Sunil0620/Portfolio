@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initAuroraCanvas();
 
     /* ---- Typewriter for "Portfolio OS" ---- */
-    const labelText = 'Portfolio  OS';
+    const labelText = 'Portfolio OS';
     let labelIdx = 0;
     const labelInterval = setInterval(() => {
         if (labelIdx <= labelText.length) {
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(labelInterval);
             setArcProgress(100);
             /* Complete log */
-            if (bootLabel) bootLabel.textContent = 'Portfolio  OS  ◆';
+            if (bootLabel) bootLabel.textContent = 'Portfolio OS ◆';
             /* Play chime then transition */
             playBootChime();
             setTimeout(() => {
@@ -238,6 +238,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallax();
 });
 
+/* ==================== KONAMI CODE EASTER EGG ==================== */
+(function initKonami() {
+    const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    let idx = 0;
+    document.addEventListener('keydown', e => {
+        if (e.key === seq[idx]) { idx++; } else { idx = e.key === seq[0] ? 1 : 0; }
+        if (idx === seq.length) {
+            idx = 0;
+            openWindow('window-skills');
+            setTimeout(() => {
+                const ti = document.getElementById('terminal-input');
+                if (ti) { ti.value = 'fortune'; ti.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); }
+            }, 400);
+        }
+    });
+})();
+
 /* ==================== AURORA CANVAS (Boot) ==================== */
 function initAuroraCanvas() {
     const canvas = document.getElementById('boot-canvas');
@@ -298,7 +315,7 @@ function playBootChime() {
         const ctx  = new (window.AudioContext || window.webkitAudioContext)();
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.06);
+        gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.06);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.4);
         gain.connect(ctx.destination);
 
@@ -519,7 +536,10 @@ function toggleControlCenter() {
     updateCCState();
 }
 function hideControlCenter() {
-    document.getElementById('control-center')?.classList.add('hidden');
+    const el = document.getElementById('control-center');
+    if (!el || el.classList.contains('hidden')) return;
+    el.style.animation = 'ccOut 0.15s ease-in forwards';
+    setTimeout(() => { el.classList.add('hidden'); el.style.animation = ''; }, 150);
 }
 function updateCCState() {
     const darkTile = document.getElementById('cc-dark-tile');
@@ -561,7 +581,10 @@ function toggleNotifCenter() {
     nc.classList.toggle('hidden');
 }
 function hideNotifCenter() {
-    document.getElementById('notif-center')?.classList.add('hidden');
+    const el = document.getElementById('notif-center');
+    if (!el || el.classList.contains('hidden')) return;
+    el.style.animation = 'ccOut 0.15s ease-in forwards';
+    setTimeout(() => { el.classList.add('hidden'); el.style.animation = ''; }, 150);
 }
 
 /* ==================== NOTIFICATION TOAST ==================== */
@@ -614,7 +637,10 @@ function toggleSpotlight() {
     }
 }
 function hideSpotlight() {
-    document.getElementById('spotlight')?.classList.add('hidden');
+    const el = document.getElementById('spotlight');
+    if (!el || el.classList.contains('hidden')) return;
+    el.style.animation = 'ccOut 0.15s ease-in forwards';
+    setTimeout(() => { el.classList.add('hidden'); el.style.animation = ''; }, 150);
 }
 
 function renderSpotlightResults(q) {
@@ -716,12 +742,25 @@ function openWindow(win) {
     }
     if (win.id === 'window-music') initMusicVisualizer();
     if (win.id === 'window-vscode') buildVSCode();
+    if (win.id === 'window-about-mac') {
+        const ramEl = win.querySelector('.about-mac-ram');
+        if (ramEl && !ramEl.dataset.animating) {
+            ramEl.dataset.animating = '1';
+            let gb = 127.9;
+            const t = setInterval(() => { gb = Math.min(gb + 0.1, 142); ramEl.textContent = gb.toFixed(1) + ' GB'; if (gb >= 142) clearInterval(t); }, 300);
+        }
+    }
 }
 
 function closeWindow(id) {
     const win = document.getElementById(id);
     if (!win) return;
-    win.style.display = 'none';
+    if (win.id === 'window-readme' && win.dataset.readmeContent) {
+        win.querySelector('.header-title').textContent = win.dataset.readmeTitle;
+        win.querySelector('.textedit-content').innerHTML = win.dataset.readmeContent;
+    }
+    win.classList.add('closing');
+    setTimeout(() => { win.classList.remove('closing'); win.style.display = 'none'; }, 180);
     win.classList.remove('minimized');
     const dot = document.getElementById('dot-' + id);
     if (dot) dot.classList.remove('visible');
@@ -796,7 +835,7 @@ function triggerMissionControl() {
             win._mc = { l: win.style.left, t: win.style.top, w: win.style.width, h: win.style.height, z: win.style.zIndex };
             const scale = 0.46;
             const tw = cellW * scale, th = cellH * scale;
-            win.style.transition = 'all 0.4s cubic-bezier(0.4,0,0.2,1)';
+            win.style.transition = 'width 0.4s, height 0.4s, left 0.4s, top 0.4s, opacity 0.4s cubic-bezier(0.4,0,0.2,1)';
             win.style.left   = (padX + col * cellW + (cellW - tw)/2) + 'px';
             win.style.top    = (padY + 28 + row * cellH + (cellH - th)/2) + 'px';
             win.style.width  = tw + 'px';
@@ -813,7 +852,7 @@ function triggerMissionControl() {
     } else {
         document.querySelectorAll('.window').forEach(win => {
             if (!win._mc) return;
-            win.style.transition = 'all 0.4s cubic-bezier(0.4,0,0.2,1)';
+            win.style.transition = 'width 0.4s, height 0.4s, left 0.4s, top 0.4s, opacity 0.4s cubic-bezier(0.4,0,0.2,1)';
             win.style.left   = win._mc.l;
             win.style.top    = win._mc.t;
             win.style.width  = win._mc.w;
@@ -915,6 +954,10 @@ function initDock() {
     items.forEach(item => {
         item.addEventListener('click', () => {
             const app = item.getAttribute('data-app');
+            if (app === 'trash') {
+                showNotification('Trash is empty — unlike your node_modules');
+                return;
+            }
             if (app) toggleWindow(app);
         });
     });
@@ -1029,6 +1072,10 @@ function openGitignoreWindow() {
     /* Reuse readme window content but with .gitignore content */
     const win = document.getElementById('window-readme');
     if (!win) return;
+    if (!win.dataset.readmeTitle) {
+        win.dataset.readmeTitle = win.querySelector('.header-title').textContent;
+        win.dataset.readmeContent = win.querySelector('.textedit-content').innerHTML;
+    }
     win.querySelector('.header-title').textContent = '.gitignore — TextEdit';
     win.querySelector('.textedit-content').innerHTML = `
         <h1 class="te-h1">⚙️ .gitignore</h1><br>
@@ -1080,6 +1127,7 @@ function handleContactForm(e) {
     e.preventDefault();
     const form = e.target;
     const btn  = form.querySelector('.form-submit');
+    btn.textContent = 'Send Message ✉️';
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
@@ -1126,6 +1174,17 @@ if (termInput) {
         if (e.key === 'ArrowDown') { e.preventDefault(); termHistIdx = Math.max(termHistIdx-1, -1); termInput.value = termHistIdx === -1 ? '' : termHistory[termHistIdx]; }
         if (e.key === 'Tab')       { e.preventDefault(); handleTabComplete(termInput.value); }
         if (matrixActive && e.key) { stopMatrix(); }
+        if (e.ctrlKey && e.key === 'l') { e.preventDefault(); clearTerminal(); termInput.value = ''; }
+        if (e.ctrlKey && e.key === 'c') {
+            e.preventDefault();
+            const out = document.getElementById('terminal-output');
+            const body = document.getElementById('terminal-body');
+            termInput.value = '';
+            const d = document.createElement('div');
+            d.innerHTML = '<span style="opacity:0.5">^C</span>';
+            out?.appendChild(d);
+            scrollTerm(body);
+        }
     });
 }
 
@@ -1234,6 +1293,20 @@ remote: I can't believe you actually push to main
 remote: No CI/CD will save you now
 To github.com:Sunil0620/Portfolio.git
    833765f..now  main -> main`,
+    fortune: () => {
+        const quotes = [
+            '"Any fool can write code that a computer can understand. Good programmers write code that humans can understand." — Martin Fowler',
+            '"First, solve the problem. Then, write the code." — John Johnson',
+            '"It works on my machine." — Every developer, ever',
+            '"The best error message is the one that never shows up." — Thomas Fuchs',
+            '"Code is like humor. When you have to explain it, it\'s bad." — Cory House',
+            '"Debugging is twice as hard as writing the code in the first place." — Brian Kernighan',
+            '"In order to be irreplaceable, one must always be different." — Coco Chanel',
+            '"The most disruptive thing you can do is ship." — Unknown',
+        ];
+        const q = quotes[Math.floor(Math.random() * quotes.length)];
+        return `<span style="color:var(--maximize);font-style:italic">${q.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+    },
 };
 
 function execTerminal(cmd) {
@@ -1296,7 +1369,16 @@ function escHtml(s) {
 function handleTabComplete(val) {
     if (!val) return;
     const matches = Object.keys(TERM_COMMANDS).filter(k => k.startsWith(val));
-    if (matches.length === 1 && termInput) termInput.value = matches[0];
+    if (matches.length === 1 && termInput) {
+        termInput.value = matches[0];
+    } else if (matches.length > 1) {
+        const out  = document.getElementById('terminal-output');
+        const body = document.getElementById('terminal-body');
+        const d = document.createElement('div');
+        d.innerHTML = '<span style="opacity:0.6">' + matches.join('  ') + '</span>';
+        out?.appendChild(d);
+        scrollTerm(body);
+    }
 }
 
 /* ==================== MATRIX EFFECT ==================== */
@@ -1664,7 +1746,7 @@ function startMusic() {
     musicStartTime = audioCtx.currentTime - musicElapsed;
     playAmbient();
     clearInterval(musicTimer);
-    musicTimer = setInterval(updateMusicProgress, 500);
+    musicTimer = setInterval(updateMusicProgress, 250);
 }
 
 function pauseMusic() {
@@ -1732,7 +1814,6 @@ function updateMusicProgressUI(pct) {
     const fill  = document.getElementById('music-fill');
     const thumb = document.getElementById('music-thumb');
     if (fill)  fill.style.width  = (pct * 100) + '%';
-    if (thumb) thumb.style.right = 'unset'; // let width handle it
 }
 
 function seekMusic(e) {

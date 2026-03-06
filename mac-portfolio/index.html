@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio — macOS Sonoma</title>
     <meta name="description" content="An interactive macOS Sonoma-style developer portfolio built with vanilla HTML, CSS and JavaScript.">
+    <meta property="og:title" content="Sunil Saini — macOS Portfolio">
+    <meta property="og:description" content="Full-stack developer portfolio — macOS Sonoma in the browser.">
+    <meta property="og:url" content="https://sunil0620.github.io/Portfolio/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sunil Saini — macOS Portfolio">
+    <meta name="theme-color" content="#0f0c29">
     <!-- Inline SVG favicon — the <S/> hex badge -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236e56cf'/%3E%3Cstop offset='1' stop-color='%2300d2ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,4 93,27 93,73 50,96 7,73 7,27' fill='%230d0d1a' stroke='url(%23g)' stroke-width='3'/%3E%3Ctext x='50' y='56' text-anchor='middle' font-family='monospace' font-size='28' font-weight='700' fill='url(%23g)'%3ES%3C/text%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='monospace' font-size='11' fill='rgba(255,255,255,0.4)'%3E%3C/%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
@@ -127,7 +134,7 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M10 17l5-5-5-5v10z"/></svg>
             </button>
         </div>
-        <p class="login-hint" id="login-hint-text">Touch ID or Enter Password</p>
+        <p class="login-hint" id="login-hint-text">Enter any password to continue</p>
     </div>
 </div>
 
@@ -248,7 +255,7 @@
 
     <!-- ===== NOTIFICATION CENTER ===== -->
     <div id="notif-center" class="notif-center hidden">
-        <div class="nc-header">Notification Centre</div>
+        <div class="nc-header">Notification Center</div>
         <div class="nc-date-section">
             <div class="nc-big-date" id="nc-big-date">Friday</div>
             <div class="nc-big-day" id="nc-big-day">March 6</div>
@@ -358,7 +365,7 @@
                 </div>
             </div>
             <div class="window-body about-mac-body">
-                <svg viewBox="0 0 384 512" width="55" height="55" fill="#333">
+                <svg viewBox="0 0 384 512" width="55" height="55" fill="currentColor" style="color:var(--text-secondary)">
                     <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
                 </svg>
                 <h3>macOS Portfolio</h3>
@@ -367,11 +374,11 @@
                     <p><strong>MacBook Pro "Reality Distortion Field"</strong></p>
                     <p>Chip: <strong>Apple M3 Ultra Max Pro Plus</strong></p>
                     <p>Cores: <strong>∞</strong> (runs on caffeine & deadlines)</p>
-                    <p>Memory: <strong>128 GB</strong> (still not enough for Chrome)</p>
+                    <p>Memory: <strong><span class="about-mac-ram">128.0 GB</span></strong> (still not enough for Chrome)</p>
                     <p>Storage: <strong>99% full</strong> (all node_modules)</p>
                     <p>Graphics: <strong>CSS-Powered™</strong></p>
                     <p>Serial: <strong>SUDO-MAKE-ME-A-SANDWICH</strong></p>
-                    <p style="margin-top:8px;font-style:italic;color:#999">"It works on my machine" ¯\_(ツ)_/¯</p>
+                    <p style="margin-top:8px;font-style:italic;color:var(--text-tertiary)">"It works on my machine" ¯\_(ツ)_/¯</p>
                 </div>
             </div>
         </div>
@@ -775,6 +782,7 @@
                     </div>
                     <div class="vscode-code" id="vscode-code"></div>
                 </div>
+                <div class="vscode-statusbar"><span class="vsc-sb-left">⎇ main &nbsp;|&nbsp; 0 errors &nbsp;|&nbsp; 0 warnings</span><span class="vsc-sb-right">Ln 1, Col 1 &nbsp;|&nbsp; JavaScript &nbsp;|&nbsp; UTF-8</span></div>
             </div>
             <div class="resize-handle" data-win="window-vscode"></div>
             <div class="resize-handle-left" data-win="window-vscode"></div>
@@ -814,7 +822,7 @@
                     <p class="te-p">• VS Code clone showing its own source code</p>
                     <p class="te-p">• Spotlight search (⌘Space)</p>
                     <p class="te-p">• Mission Control (F3)</p>
-                    <p class="te-p">• Control Center &amp; Notification Centre</p>
+                    <p class="te-p">• Control Center &amp; Notification Center</p>
                     <p class="te-p">• Screen saver after 90s inactivity</p>
                     <br>
                     <h2 class="te-h2">🚀 Author</h2>
@@ -959,7 +967,7 @@
                 <div class="dock-dot" id="dot-window-settings"></div>
             </div>
             <div class="dock-sep"></div>
-            <div class="dock-item" data-tip="Trash">
+            <div class="dock-item" data-app="trash" data-tip="Trash">
                 <div class="dock-icon-art trash-art">
                     <svg viewBox="0 0 448 512" width="22" height="22" fill="rgba(255,255,255,0.7)">
                         <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/>
