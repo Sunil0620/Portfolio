@@ -924,14 +924,32 @@ function switchNote(note, row) {
 /* ==================== CONTACT FORM ==================== */
 function handleContactForm(e) {
     e.preventDefault();
-    const btn = e.target.querySelector('.form-submit');
+    const form = e.target;
+    const btn  = form.querySelector('.form-submit');
     btn.textContent = 'Sending…';
     btn.disabled = true;
-    setTimeout(() => {
-        btn.textContent = 'Message Sent! ✅';
-        showNotification('Message sent! Sunil will reply soon 🚀');
-        setTimeout(() => { btn.textContent = 'Send Message ✉️'; btn.disabled = false; e.target.reset(); }, 3000);
-    }, 1200);
+
+    fetch('https://formspree.io/f/mdawoakn', {
+        method:  'POST',
+        headers: { 'Accept': 'application/json' },
+        body:    new FormData(form),
+    })
+    .then(res => {
+        if (res.ok) {
+            btn.textContent = 'Message Sent! ✅';
+            showNotification('Message sent! Sunil will reply soon 🚀');
+            form.reset();
+            setTimeout(() => { btn.textContent = 'Send Message ✉️'; btn.disabled = false; }, 3000);
+        } else {
+            return res.json().then(data => { throw new Error(data?.errors?.[0]?.message || 'Send failed'); });
+        }
+    })
+    .catch(err => {
+        btn.textContent = 'Failed — try email directly';
+        btn.disabled = false;
+        showNotification('Could not send — email sunilsaini5652@gmail.com directly');
+        console.error('Formspree error:', err);
+    });
 }
 
 /* ==================== INTERACTIVE TERMINAL ==================== */
