@@ -1,609 +1,916 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio — macOS Sonoma</title>
-    <meta name="description"
-        content="An interactive macOS Sonoma-style developer portfolio built with vanilla HTML, CSS and JavaScript.">
+    <meta name="description" content="An interactive macOS Sonoma-style developer portfolio built with vanilla HTML, CSS and JavaScript.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-    <!-- ===================== BOOT SCREEN ===================== -->
-    <div id="boot-screen">
-        <div class="boot-logo-wrap">
-            <div class="boot-glow"></div>
-            <svg class="boot-logo" viewBox="0 0 384 512" width="56" height="56" fill="#fff">
-                <path
-                    d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z" />
+<!-- ===================== MOBILE FALLBACK ===================== -->
+<div id="mobile-fallback">
+    <div class="mobile-dialog">
+        <svg viewBox="0 0 384 512" width="48" height="48" fill="rgba(255,255,255,0.9)">
+            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
+        </svg>
+        <h2>Desktop Required</h2>
+        <p>This portfolio is a full macOS desktop environment.<br>Like all good developer tools, it requires a real screen.</p>
+        <p class="mobile-sub">Please open on a desktop or laptop browser.</p>
+        <div class="mobile-hint">
+            <span>💻</span>
+            <span>Minimum width: 1024px</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== SCREEN SAVER ===================== -->
+<div id="screen-saver" class="hidden">
+    <canvas id="saver-canvas"></canvas>
+    <div class="saver-hint">Click or press any key to wake</div>
+</div>
+
+<!-- ===================== BOOT SCREEN ===================== -->
+<div id="boot-screen">
+    <div class="boot-logo-wrap">
+        <div class="boot-glow"></div>
+        <svg class="boot-logo" viewBox="0 0 384 512" width="56" height="56" fill="#fff">
+            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
+        </svg>
+    </div>
+    <div class="boot-log" id="boot-log"></div>
+    <div class="boot-bar">
+        <div class="boot-fill" id="boot-fill"></div>
+    </div>
+</div>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div id="login-screen" class="hidden">
+    <canvas id="particle-canvas"></canvas>
+    <div class="login-top-container">
+        <div class="login-date" id="login-date">Thursday, March 5</div>
+        <div class="login-time" id="login-time">12:00</div>
+    </div>
+    <div class="login-container">
+        <div class="avatar" id="user-avatar">
+            <img src="User/avatar.jpg" alt="User"
+                onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='block';};this.src='User/avatar.png';">
+            <svg viewBox="0 0 24 24" width="54" height="54" fill="rgba(255,255,255,0.85)" style="display:none;">
+                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1c0 .6.4 1 1 1h18c.6 0 1-.4 1-1v-1c0-3.3-6.7-5-10-5z"/>
             </svg>
         </div>
-        <div class="boot-bar">
-            <div class="boot-fill" id="boot-fill"></div>
+        <h2 class="login-username">SUN 🌗 :ツ</h2>
+        <div class="password-field">
+            <input type="password" id="password-input" placeholder="Enter Password">
+            <button id="login-btn" aria-label="Login">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M10 17l5-5-5-5v10z"/></svg>
+            </button>
+        </div>
+        <p class="login-hint">Touch ID or Enter Password</p>
+    </div>
+</div>
+
+<!-- ===================== DESKTOP ===================== -->
+<div id="desktop" class="hidden">
+
+    <!-- Custom cursor dot -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- ===== TOP MENU BAR ===== -->
+    <nav id="menu-bar">
+        <div class="menu-left">
+            <div class="menu-dropdown" id="apple-menu">
+                <button class="menu-btn apple-btn" aria-label="Apple Menu">
+                    <svg viewBox="0 0 384 512" width="13" height="13">
+                        <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
+                    </svg>
+                </button>
+                <div class="dropdown-panel">
+                    <button class="dd-item" onclick="openAboutMac()">About This Mac</button>
+                    <button class="dd-item" onclick="toggleWindow('window-settings')">System Settings…</button>
+                    <div class="dd-divider"></div>
+                    <button class="dd-item" onclick="lockScreen()">Lock Screen <span class="dd-shortcut">⌃⌘Q</span></button>
+                    <button class="dd-item" onclick="location.reload()">Restart…</button>
+                </div>
+            </div>
+            <span class="menu-app-name" id="menu-app-name">Finder</span>
+            <div class="menu-dropdown">
+                <button class="menu-btn">File</button>
+                <div class="dropdown-panel">
+                    <button class="dd-item" onclick="toggleWindow('window-about')">Open About Me <span class="dd-shortcut">1</span></button>
+                    <button class="dd-item" onclick="toggleWindow('window-projects')">Open Projects <span class="dd-shortcut">2</span></button>
+                    <button class="dd-item" onclick="toggleWindow('window-skills')">Open Terminal <span class="dd-shortcut">3</span></button>
+                    <button class="dd-item" onclick="toggleWindow('window-contact')">Open Contact <span class="dd-shortcut">4</span></button>
+                    <div class="dd-divider"></div>
+                    <button class="dd-item" onclick="toggleWindow('window-music')">Open Music <span class="dd-shortcut">5</span></button>
+                    <button class="dd-item" onclick="toggleWindow('window-vscode')">Open VS Code <span class="dd-shortcut">6</span></button>
+                </div>
+            </div>
+            <div class="menu-dropdown">
+                <button class="menu-btn">View</button>
+                <div class="dropdown-panel">
+                    <button class="dd-item" onclick="triggerMissionControl()">Mission Control <span class="dd-shortcut">F3</span></button>
+                    <div class="dd-divider"></div>
+                    <button class="dd-item" onclick="closeAllWindows()">Hide All Windows</button>
+                    <button class="dd-item" onclick="showAllWindows()">Show All Windows</button>
+                </div>
+            </div>
+        </div>
+        <div class="menu-right">
+            <button class="bar-icon spotlight-btn" title="Spotlight Search" onclick="event.stopPropagation(); toggleSpotlight();">
+                <svg viewBox="0 0 512 512" width="14" height="14" style="pointer-events:none;">
+                    <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+                </svg>
+            </button>
+            <!-- Control Center trigger -->
+            <button class="bar-icon cc-trigger" id="cc-trigger" title="Control Center" onclick="event.stopPropagation(); toggleControlCenter();">
+                <svg viewBox="0 0 640 512" width="15" height="15" style="pointer-events:none;">
+                    <path d="M54.2 202.9C123.2 136.7 216.8 96 320 96s196.8 40.7 265.8 106.9c12.8 12.2 33 11.8 45.2-1s11.8-33-1-45.2C549.7 79.5 440.4 32 320 32S90.3 79.5 10.3 156.7c-12.8 12.2-13.2 32.3-1 45.2s32.3 13.2 45.2 1zM320 256c57.5 0 110.3 20.6 151.2 54.8 13.2 11.1 32.9 9.4 44-3.9s9.4-32.9-3.9-44C470.8 229.4 398.3 192 320 192s-150.8 37.4-191.3 70.9c-13.2 11.1-14.9 30.8-3.9 44s30.8 14.9 44 3.9C209.7 276.6 262.5 256 320 256zm0 128c-23.4 0-44.7 9.4-60.2 24.6-13 12.8-13.1 33.8-.3 46.8s33.8 13.1 46.8.3c3.5-3.4 8.5-5.7 13.7-5.7s10.2 2.2 13.7 5.7c12.9 12.8 33.8 12.6 46.8-.3s12.6-33.8-.3-46.8C364.7 393.4 343.4 384 320 384z"/>
+                </svg>
+            </button>
+            <span class="bar-icon" title="Battery">
+                <svg viewBox="0 0 576 512" width="17" height="17">
+                    <path d="M464 160c8.8 0 16 7.2 16 16v160c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16H464zM80 96C35.8 96 0 131.8 0 176V336c0 44.2 35.8 80 80 80H464c44.2 0 80-35.8 80-80v-16c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32V176c0-44.2-35.8-80-80-80H80zm320 96H96V320H400V192z"/>
+                </svg>
+            </span>
+            <span id="menu-clock" class="menu-clock" onclick="event.stopPropagation(); toggleNotifCenter();" style="cursor:pointer;">Thu Mar 5 12:00 (UTC)</span>
+        </div>
+    </nav>
+
+    <!-- ===== CONTROL CENTER ===== -->
+    <div id="control-center" class="control-center hidden">
+        <div class="cc-section">
+            <div class="cc-tile cc-wide" id="cc-wifi-tile">
+                <div class="cc-tile-icon">
+                    <svg viewBox="0 0 640 512" width="18" height="18" fill="currentColor">
+                        <path d="M54.2 202.9C123.2 136.7 216.8 96 320 96s196.8 40.7 265.8 106.9c12.8 12.2 33 11.8 45.2-1s11.8-33-1-45.2C549.7 79.5 440.4 32 320 32S90.3 79.5 10.3 156.7c-12.8 12.2-13.2 32.3-1 45.2s32.3 13.2 45.2 1zM320 256c57.5 0 110.3 20.6 151.2 54.8 13.2 11.1 32.9 9.4 44-3.9s9.4-32.9-3.9-44C470.8 229.4 398.3 192 320 192s-150.8 37.4-191.3 70.9c-13.2 11.1-14.9 30.8-3.9 44s30.8 14.9 44 3.9C209.7 276.6 262.5 256 320 256zm0 128c-23.4 0-44.7 9.4-60.2 24.6-13 12.8-13.1 33.8-.3 46.8s33.8 13.1 46.8.3c3.5-3.4 8.5-5.7 13.7-5.7s10.2 2.2 13.7 5.7c12.9 12.8 33.8 12.6 46.8-.3s12.6-33.8-.3-46.8C364.7 393.4 343.4 384 320 384z"/>
+                    </svg>
+                </div>
+                <div class="cc-tile-info">
+                    <span class="cc-tile-label">Wi-Fi</span>
+                    <span class="cc-tile-sub">Connected</span>
+                </div>
+            </div>
+            <div class="cc-tile" id="cc-dark-tile" onclick="ccToggleDark()">
+                <div class="cc-tile-icon">🌙</div>
+                <span class="cc-tile-label">Dark Mode</span>
+            </div>
+        </div>
+        <div class="cc-section">
+            <div class="cc-slider-row">
+                <span class="cc-slider-icon">☀️</span>
+                <input type="range" min="20" max="100" value="100" class="cc-slider" id="cc-brightness" oninput="ccBrightness(this.value)">
+            </div>
+            <div class="cc-slider-row">
+                <span class="cc-slider-icon">🔊</span>
+                <input type="range" min="0" max="100" value="70" class="cc-slider" id="cc-volume" oninput="ccVolume(this.value)">
+            </div>
+        </div>
+        <div class="cc-section cc-bottom-row">
+            <div class="cc-tile" onclick="lockScreen()">
+                <div class="cc-tile-icon">🔒</div>
+                <span class="cc-tile-label">Lock</span>
+            </div>
+            <div class="cc-tile" onclick="toggleWindow('window-music'); hideControlCenter()">
+                <div class="cc-tile-icon">🎵</div>
+                <span class="cc-tile-label">Music</span>
+            </div>
+            <div class="cc-tile" id="cc-focus-tile" onclick="ccToggleFocus()">
+                <div class="cc-tile-icon">🎯</div>
+                <span class="cc-tile-label">Focus</span>
+            </div>
         </div>
     </div>
 
-    <!-- ===================== LOGIN SCREEN ===================== -->
-    <div id="login-screen" class="hidden">
-        <canvas id="particle-canvas"></canvas>
-        <div class="login-top-container">
-            <div class="login-date" id="login-date">Thursday, March 5</div>
-            <div class="login-time" id="login-time">12:00</div>
+    <!-- ===== NOTIFICATION CENTER ===== -->
+    <div id="notif-center" class="notif-center hidden">
+        <div class="nc-header">Notification Centre</div>
+        <div class="nc-date-section">
+            <div class="nc-big-date" id="nc-big-date">Friday</div>
+            <div class="nc-big-day" id="nc-big-day">March 6</div>
         </div>
-        <div class="login-container">
-            <div class="avatar" id="user-avatar">
-                <img src="User/avatar.jpg" alt="User"
-                    onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='block';};this.src='User/avatar.png';">
-                <svg viewBox="0 0 24 24" width="54" height="54" fill="rgba(255,255,255,0.85)" style="display:none;">
-                    <path
-                        d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1c0 .6.4 1 1 1h18c.6 0 1-.4 1-1v-1c0-3.3-6.7-5-10-5z" />
-                </svg>
+        <div class="nc-section-label">Recent</div>
+        <div class="nc-card">
+            <div class="nc-card-header">
+                <span class="nc-app-icon">💼</span>
+                <span class="nc-app-name">Portfolio</span>
+                <span class="nc-time">now</span>
             </div>
-            <h2 class="login-username">SUN 🌗 :ツ</h2>
-            <div class="password-field">
-                <input type="password" id="password-input" placeholder="Enter Password">
-                <button id="login-btn" aria-label="Login">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="white">
-                        <path d="M10 17l5-5-5-5v10z" />
-                    </svg>
-                </button>
+            <div class="nc-card-body">Open to freelance & internships — let's build something amazing!</div>
+        </div>
+        <div class="nc-card">
+            <div class="nc-card-header">
+                <span class="nc-app-icon">🐙</span>
+                <span class="nc-app-name">GitHub</span>
+                <span class="nc-time">2m ago</span>
             </div>
-            <p class="login-hint">Touch ID or Enter Password</p>
+            <div class="nc-card-body">New commit pushed to Portfolio/main ✓</div>
+        </div>
+        <div class="nc-card">
+            <div class="nc-card-header">
+                <span class="nc-app-icon">💻</span>
+                <span class="nc-app-name">Terminal</span>
+                <span class="nc-time">5m ago</span>
+            </div>
+            <div class="nc-card-body">Build succeeded — 0 errors, 0 warnings</div>
+        </div>
+        <div class="nc-card">
+            <div class="nc-card-header">
+                <span class="nc-app-icon">🎵</span>
+                <span class="nc-app-name">Music</span>
+                <span class="nc-time">10m ago</span>
+            </div>
+            <div class="nc-card-body">Now playing: Lo-fi Coding Session</div>
         </div>
     </div>
 
-    <!-- ===================== DESKTOP ===================== -->
-    <div id="desktop" class="hidden">
+    <!-- ===== SPOTLIGHT SEARCH ===== -->
+    <div id="spotlight" class="spotlight hidden">
+        <div class="spotlight-box">
+            <svg viewBox="0 0 512 512" width="18" height="18" fill="#999">
+                <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+            </svg>
+            <input type="text" id="spotlight-input" placeholder="Spotlight Search" autocomplete="off">
+        </div>
+        <div class="spotlight-results" id="spotlight-results"></div>
+    </div>
 
-        <!-- ===== TOP MENU BAR ===== -->
-        <nav id="menu-bar">
-            <div class="menu-left">
-                <div class="menu-dropdown" id="apple-menu">
-                    <button class="menu-btn apple-btn" aria-label="Apple Menu">
-                        <svg viewBox="0 0 384 512" width="13" height="13">
-                            <path
-                                d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z" />
-                        </svg>
-                    </button>
-                    <div class="dropdown-panel">
-                        <button class="dd-item" onclick="openAboutMac()">About This Mac</button>
-                        <button class="dd-item" onclick="toggleWindow('window-settings')">System Settings…</button>
-                        <div class="dd-divider"></div>
-                        <button class="dd-item" onclick="lockScreen()">Lock Screen <span
-                                class="dd-shortcut">⌃⌘Q</span></button>
-                        <button class="dd-item" onclick="location.reload()">Restart…</button>
-                    </div>
-                </div>
-                <span class="menu-app-name" id="menu-app-name">Finder</span>
-                <div class="menu-dropdown">
-                    <button class="menu-btn">File</button>
-                    <div class="dropdown-panel">
-                        <button class="dd-item" onclick="toggleWindow('window-about')">Open About Me <span
-                                class="dd-shortcut">1</span></button>
-                        <button class="dd-item" onclick="toggleWindow('window-projects')">Open Projects <span
-                                class="dd-shortcut">2</span></button>
-                        <button class="dd-item" onclick="toggleWindow('window-skills')">Open Terminal <span
-                                class="dd-shortcut">3</span></button>
-                        <button class="dd-item" onclick="toggleWindow('window-contact')">Open Contact <span
-                                class="dd-shortcut">4</span></button>
-                    </div>
-                </div>
-                <div class="menu-dropdown">
-                    <button class="menu-btn">View</button>
-                    <div class="dropdown-panel">
-                        <button class="dd-item" onclick="triggerMissionControl()">Mission Control <span
-                                class="dd-shortcut">F3</span></button>
-                        <div class="dd-divider"></div>
-                        <button class="dd-item" onclick="closeAllWindows()">Hide All Windows</button>
-                        <button class="dd-item" onclick="showAllWindows()">Show All Windows</button>
-                    </div>
+    <!-- ===== RIGHT-CLICK CONTEXT MENU ===== -->
+    <div id="context-menu" class="context-menu hidden">
+        <button class="ctx-item disabled">New Folder</button>
+        <div class="ctx-divider"></div>
+        <button class="ctx-item disabled">Get Info</button>
+        <button class="ctx-item" onclick="toggleWindow('window-settings'); hideContextMenu()">Change Wallpaper…</button>
+        <div class="ctx-divider"></div>
+        <button class="ctx-item disabled">Sort By <span class="dd-shortcut">▸</span></button>
+        <button class="ctx-item disabled">Clean Up</button>
+        <div class="ctx-divider"></div>
+        <button class="ctx-item" onclick="showAllWindows(); hideContextMenu()">Show All Windows</button>
+        <button class="ctx-item" onclick="closeAllWindows(); hideContextMenu()">Hide All Windows</button>
+    </div>
+
+    <!-- ===== DESKTOP ICONS ===== -->
+    <div id="desktop-icons">
+        <div class="desktop-icon" ondblclick="openDesktopFile('readme')">
+            <div class="dsk-ico readme-dsk">📄</div>
+            <span>README.md</span>
+        </div>
+        <div class="desktop-icon" ondblclick="openDesktopFile('gitignore')">
+            <div class="dsk-ico git-dsk">⚙️</div>
+            <span>.gitignore</span>
+        </div>
+        <div class="desktop-icon" ondblclick="openDesktopFile('nodemodules')">
+            <div class="dsk-ico folder-dsk">📁</div>
+            <span>node_modules</span>
+        </div>
+        <div class="desktop-icon" ondblclick="openDesktopFile('todo')">
+            <div class="dsk-ico coffee-dsk">☕</div>
+            <span>todo.txt</span>
+        </div>
+    </div>
+
+    <!-- ===== NOTIFICATION TOAST ===== -->
+    <div id="notification" class="notification hidden">
+        <div class="notif-header">
+            <span class="notif-app">Portfolio</span>
+            <span class="notif-time">now</span>
+        </div>
+        <div class="notif-body">
+            <strong>Welcome!</strong>
+            <p>Explore my work — open the dock apps or use Spotlight (⌘Space)</p>
+        </div>
+    </div>
+
+    <!-- ===== WINDOWS ===== -->
+    <div id="windows-container">
+
+        <!-- About This Mac -->
+        <div class="window" id="window-about-mac" style="width:360px;height:420px;top:80px;left:250px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-about-mac')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-about-mac')"></div>
+                    <div class="ctrl maximize disabled"></div>
                 </div>
             </div>
-            <div class="menu-right">
-                <button class="bar-icon spotlight-btn" title="Spotlight Search"
-                    onclick="event.stopPropagation(); toggleSpotlight();">
-                    <svg viewBox="0 0 512 512" width="14" height="14" style="pointer-events: none;">
-                        <path
-                            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
-                    </svg>
-                </button>
-                <span class="bar-icon" title="WiFi">
-                    <svg viewBox="0 0 640 512" width="15" height="15">
-                        <path
-                            d="M54.2 202.9C123.2 136.7 216.8 96 320 96s196.8 40.7 265.8 106.9c12.8 12.2 33 11.8 45.2-1s11.8-33-1-45.2C549.7 79.5 440.4 32 320 32S90.3 79.5 10.3 156.7c-12.8 12.2-13.2 32.3-1 45.2s32.3 13.2 45.2 1zM320 256c57.5 0 110.3 20.6 151.2 54.8 13.2 11.1 32.9 9.4 44-3.9s9.4-32.9-3.9-44C470.8 229.4 398.3 192 320 192s-150.8 37.4-191.3 70.9c-13.2 11.1-14.9 30.8-3.9 44s30.8 14.9 44 3.9C209.7 276.6 262.5 256 320 256zm0 128c-23.4 0-44.7 9.4-60.2 24.6-13 12.8-13.1 33.8-.3 46.8s33.8 13.1 46.8.3c3.5-3.4 8.5-5.7 13.7-5.7s10.2 2.2 13.7 5.7c12.9 12.8 33.8 12.6 46.8-.3s12.6-33.8-.3-46.8C364.7 393.4 343.4 384 320 384z" />
-                    </svg>
-                </span>
-                <span class="bar-icon" title="Battery">
-                    <svg viewBox="0 0 576 512" width="17" height="17">
-                        <path
-                            d="M464 160c8.8 0 16 7.2 16 16v160c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16H464zM80 96C35.8 96 0 131.8 0 176V336c0 44.2 35.8 80 80 80H464c44.2 0 80-35.8 80-80v-16c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32V176c0-44.2-35.8-80-80-80H80zm320 96H96V320H400V192z" />
-                    </svg>
-                </span>
-                <span id="menu-clock" class="menu-clock">Thu Mar 5 12:00 (UTC)</span>
-            </div>
-        </nav>
-
-        <!-- ===== SPOTLIGHT SEARCH ===== -->
-        <div id="spotlight" class="spotlight hidden">
-            <div class="spotlight-box">
-                <svg viewBox="0 0 512 512" width="18" height="18" fill="#999">
-                    <path
-                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+            <div class="window-body about-mac-body">
+                <svg viewBox="0 0 384 512" width="55" height="55" fill="#333">
+                    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
                 </svg>
-                <input type="text" id="spotlight-input" placeholder="Spotlight Search" autocomplete="off">
-            </div>
-            <div class="spotlight-results" id="spotlight-results"></div>
-        </div>
-
-        <!-- ===== RIGHT-CLICK CONTEXT MENU ===== -->
-        <div id="context-menu" class="context-menu hidden">
-            <button class="ctx-item disabled">New Folder</button>
-            <div class="ctx-divider"></div>
-            <button class="ctx-item disabled">Get Info</button>
-            <button class="ctx-item" onclick="toggleWindow('window-settings'); hideContextMenu()">Change
-                Wallpaper…</button>
-            <div class="ctx-divider"></div>
-            <button class="ctx-item disabled">Sort By
-                <span class="dd-shortcut">▸</span></button>
-            <button class="ctx-item disabled">Clean Up</button>
-            <div class="ctx-divider"></div>
-            <button class="ctx-item" onclick="showAllWindows(); hideContextMenu()">Show All Windows</button>
-            <button class="ctx-item" onclick="closeAllWindows(); hideContextMenu()">Hide All Windows</button>
-        </div>
-
-        <!-- ===== DESKTOP ICONS ===== -->
-        <div id="desktop-icons">
-            <div class="desktop-icon">
-                <div class="dsk-ico readme-dsk">📄</div>
-                <span>README.md</span>
-            </div>
-            <div class="desktop-icon">
-                <div class="dsk-ico git-dsk">⚙️</div>
-                <span>.gitignore</span>
-            </div>
-            <div class="desktop-icon">
-                <div class="dsk-ico folder-dsk">📁</div>
-                <span>node_modules</span>
-            </div>
-            <div class="desktop-icon">
-                <div class="dsk-ico coffee-dsk">☕</div>
-                <span>todo.txt</span>
-            </div>
-        </div>
-
-        <!-- ===== NOTIFICATION ===== -->
-        <div id="notification" class="notification hidden">
-            <div class="notif-header">
-                <span class="notif-app">Portfolio</span>
-                <span class="notif-time">now</span>
-            </div>
-            <div class="notif-body">
-                <strong>Welcome!</strong>
-                <p>Explore my work — open the dock apps or use Spotlight (⌘Space)</p>
-            </div>
-        </div>
-
-        <!-- ===== WINDOWS ===== -->
-        <div id="windows-container">
-
-            <!-- About This Mac -->
-            <div class="window" id="window-about-mac"
-                style="width:360px;height:420px;top:80px;left:250px;display:none;">
-                <div class="window-header">
-                    <div class="window-controls">
-                        <div class="ctrl close" onclick="closeWindow('window-about-mac')"></div>
-                        <div class="ctrl minimize" onclick="minimizeWindow('window-about-mac')"></div>
-                        <div class="ctrl maximize disabled"></div>
-                    </div>
+                <h3>macOS Portfolio</h3>
+                <p class="version">Version 14.0 (Sonoma Developer Beta 🧑‍💻)</p>
+                <div class="specs">
+                    <p><strong>MacBook Pro "Reality Distortion Field"</strong></p>
+                    <p>Chip: <strong>Apple M3 Ultra Max Pro Plus</strong></p>
+                    <p>Cores: <strong>∞</strong> (runs on caffeine & deadlines)</p>
+                    <p>Memory: <strong>128 GB</strong> (still not enough for Chrome)</p>
+                    <p>Storage: <strong>99% full</strong> (all node_modules)</p>
+                    <p>Graphics: <strong>CSS-Powered™</strong></p>
+                    <p>Serial: <strong>SUDO-MAKE-ME-A-SANDWICH</strong></p>
+                    <p style="margin-top:8px;font-style:italic;color:#999">"It works on my machine" ¯\_(ツ)_/¯</p>
                 </div>
-                <div class="window-body about-mac-body">
-                    <svg viewBox="0 0 384 512" width="55" height="55" fill="#333">
-                        <path
-                            d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z" />
+            </div>
+        </div>
+
+        <!-- System Settings -->
+        <div class="window" id="window-settings" style="width:520px;height:400px;top:70px;left:220px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-settings')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-settings')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-settings')"></div>
+                </div>
+                <span class="header-title">System Settings</span>
+            </div>
+            <div class="window-body settings-body">
+                <aside class="settings-sidebar">
+                    <div class="settings-item active" data-pane="wallpaper" onclick="switchSettingsPane('wallpaper')"><span class="si-icon">🖼️</span> Wallpaper</div>
+                    <div class="settings-item" data-pane="appearance" onclick="switchSettingsPane('appearance')"><span class="si-icon">🎨</span> Appearance</div>
+                    <div class="settings-item" data-pane="general" onclick="switchSettingsPane('general')"><span class="si-icon">⚙️</span> General</div>
+                </aside>
+                <main class="settings-main">
+                    <div class="settings-pane" id="pane-wallpaper">
+                        <h3>Wallpaper</h3>
+                        <p class="settings-desc">Choose a wallpaper for your desktop</p>
+                        <div class="wallpaper-grid" id="wallpaper-grid">
+                            <div class="wallpaper-opt active" data-wall="img1" onclick="setWallpaper('img1')"><div class="wp-preview" style="background:url('img/1.jpg') center/cover no-repeat"></div><span>Mountain</span></div>
+                            <div class="wallpaper-opt" data-wall="img2" onclick="setWallpaper('img2')"><div class="wp-preview" style="background:url('img/2.jpg') center/cover no-repeat"></div><span>Abstract</span></div>
+                            <div class="wallpaper-opt" data-wall="img3" onclick="setWallpaper('img3')"><div class="wp-preview" style="background:url('img/3.jpg') center/cover no-repeat"></div><span>Ocean</span></div>
+                            <div class="wallpaper-opt" data-wall="img4" onclick="setWallpaper('img4')"><div class="wp-preview" style="background:url('img/4.jpg') center/cover no-repeat"></div><span>Valley</span></div>
+                            <div class="wallpaper-opt" data-wall="img5" onclick="setWallpaper('img5')"><div class="wp-preview" style="background:url('img/5.jpg') center/cover no-repeat"></div><span>Desert</span></div>
+                            <div class="wallpaper-opt" data-wall="img6" onclick="setWallpaper('img6')"><div class="wp-preview" style="background:url('img/6.jpg') center/cover no-repeat"></div><span>Lines</span></div>
+                        </div>
+                    </div>
+                    <div class="settings-pane hidden" id="pane-appearance">
+                        <h3>Appearance</h3>
+                        <p class="settings-desc">Customize the look and feel</p>
+                        <div class="setting-row">
+                            <label>Mode</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" onclick="setAppearanceMode('dark',this)">Dark</button>
+                                <button class="toggle-btn" onclick="setAppearanceMode('light',this)">Light</button>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <label>Accent Color</label>
+                            <div class="accent-colors">
+                                <div class="accent-dot active" style="background:#007aff" onclick="setAccentColor('#007aff',this)"></div>
+                                <div class="accent-dot" style="background:#ff375f" onclick="setAccentColor('#ff375f',this)"></div>
+                                <div class="accent-dot" style="background:#ff9f0a" onclick="setAccentColor('#ff9f0a',this)"></div>
+                                <div class="accent-dot" style="background:#30d158" onclick="setAccentColor('#30d158',this)"></div>
+                                <div class="accent-dot" style="background:#bf5af2" onclick="setAccentColor('#bf5af2',this)"></div>
+                                <div class="accent-dot" style="background:#64d2ff" onclick="setAccentColor('#64d2ff',this)"></div>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <label>Dock Size</label>
+                            <input type="range" min="36" max="72" value="48" class="settings-range" oninput="setDockSize(this.value)">
+                        </div>
+                    </div>
+                    <div class="settings-pane hidden" id="pane-general">
+                        <h3>General</h3>
+                        <p class="settings-desc">Portfolio information</p>
+                        <div class="setting-row">
+                            <label>Developer Name</label>
+                            <input type="text" class="settings-input" id="dev-name-input" value="SUN 🌗 :ツ" oninput="updateDevName(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+                        </div>
+                        <div class="setting-row">
+                            <label>Role</label>
+                            <input type="text" class="settings-input" value="Developer & ML Enthusiast" readonly>
+                        </div>
+                        <div class="setting-row">
+                            <label>Version</label>
+                            <span class="setting-value">macOS Portfolio v14.0</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Built With</label>
+                            <span class="setting-value">HTML, CSS, JS — Zero Dependencies</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Source</label>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="setting-value" style="color:var(--accent);text-decoration:none;">github.com/Sunil0620</a>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div class="resize-handle" data-win="window-settings"></div>
+            <div class="resize-handle-left" data-win="window-settings"></div>
+        </div>
+
+        <!-- Finder — About Me -->
+        <div class="window" id="window-about" style="width:720px;height:460px;top:50px;left:80px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-about')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-about')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-about')"></div>
+                </div>
+                <span class="header-title">About Me — Finder</span>
+            </div>
+            <div class="window-body finder-body">
+                <aside class="finder-sidebar">
+                    <p class="sidebar-label">Favourites</p>
+                    <div class="sidebar-item active"><span class="si-icon">🏠</span> Home</div>
+                    <div class="sidebar-item"><span class="si-icon">📄</span> Documents</div>
+                    <div class="sidebar-item"><span class="si-icon">📥</span> Downloads</div>
+                    <div class="sidebar-item"><span class="si-icon">🖼️</span> Pictures</div>
+                    <p class="sidebar-label" style="margin-top:14px;">Tags</p>
+                    <div class="sidebar-item"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff375f;margin-right:6px;"></span> Work</div>
+                    <div class="sidebar-item"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#30d158;margin-right:6px;"></span> Open Source</div>
+                </aside>
+                <main class="finder-main">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#30d158;box-shadow:0 0 8px rgba(48,209,88,0.5);animation:statusPulse 2s ease-in-out infinite;"></span>
+                        <span style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;letter-spacing:0.5px;">AVAILABLE FOR WORK</span>
+                        <style>@keyframes statusPulse{0%,100%{opacity:1}50%{opacity:0.4}}</style>
+                    </div>
+                    <h2>Hello, I'm Sunil 👋</h2>
+                    <p>I'm a passionate <strong>full-stack developer & ML enthusiast</strong> who loves building beautiful, performant web experiences that push the boundaries of what the browser can do.</p>
+                    <p>Focused on <strong>Django</strong> and <strong>React</strong>. I turn coffee into code and ideas into reality — one commit at a time.</p>
+                    <p>This entire desktop environment is built <strong>from scratch</strong> — no frameworks, no libraries, zero dependencies. Just pure HTML, CSS &amp; JS.</p>
+                    <p>Try: <strong>⌘Space</strong> for Spotlight &nbsp;·&nbsp; <strong>right-click</strong> the desktop &nbsp;·&nbsp; <strong>F3</strong> for Mission Control</p>
+                    <div class="about-tags">
+                        <span class="tag">Full-Stack</span>
+                        <span class="tag">Django</span>
+                        <span class="tag">React</span>
+                        <span class="tag">ML / AI</span>
+                        <span class="tag">UI/UX</span>
+                        <span class="tag">Open Source</span>
+                        <span class="tag">Clean Code</span>
+                    </div>
+                </main>
+            </div>
+            <div class="resize-handle" data-win="window-about"></div>
+            <div class="resize-handle-left" data-win="window-about"></div>
+        </div>
+
+        <!-- Safari — Projects -->
+        <div class="window" id="window-projects" style="width:860px;height:560px;top:90px;left:200px;display:none;">
+            <div class="window-header safari-bar">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-projects')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-projects')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-projects')"></div>
+                </div>
+                <div class="url-bar">
+                    <svg viewBox="0 0 448 512" width="11" height="11" fill="#30d158">
+                        <path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
                     </svg>
-                    <h3>macOS Portfolio</h3>
-                    <p class="version">Version 14.0 (Sonoma Developer Beta 🧑‍💻)</p>
-                    <div class="specs">
-                        <p><strong>MacBook Pro "Reality Distortion Field"</strong></p>
-                        <p>Chip: <strong>Apple M3 Ultra Max Pro Plus</strong></p>
-                        <p>Cores: <strong>∞</strong> (runs on caffeine & deadlines)</p>
-                        <p>Memory: <strong>128 GB</strong> (still not enough for Chrome)</p>
-                        <p>Storage: <strong>99% full</strong> (all node_modules)</p>
-                        <p>Graphics: <strong>CSS-Powered™</strong></p>
-                        <p>Serial: <strong>SUDO-MAKE-ME-A-SANDWICH</strong></p>
-                        <p style="margin-top:8px;font-style:italic;color:#999">"It works on my machine" ¯\_(ツ)_/¯</p>
+                    <span>github.com/Sunil0620 — Projects</span>
+                </div>
+            </div>
+            <div class="window-body safari-body">
+                <div class="project-grid">
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')" style="cursor:pointer">
+                        <div class="card-img grad-1"><span class="card-emoji">🤖</span></div>
+                        <div class="card-info">
+                            <h3>AI Code Agent</h3>
+                            <p>An autonomous AI agent that debugs and fixes code issues in real time using LLMs and GPT-4.</p>
+                            <div class="card-tags"><span>Python</span><span>LLM</span><span>GPT-4</span></div>
+                        </div>
+                    </div>
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')" style="cursor:pointer">
+                        <div class="card-img grad-2"><span class="card-emoji">🛒</span></div>
+                        <div class="card-info">
+                            <h3>E-Commerce Platform</h3>
+                            <p>Full-stack Next.js storefront with Stripe payments, CMS, and real-time inventory management.</p>
+                            <div class="card-tags"><span>Next.js</span><span>Stripe</span><span>Prisma</span></div>
+                        </div>
+                    </div>
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620/Portfolio', '_blank')" style="cursor:pointer">
+                        <div class="card-img grad-3"><span class="card-emoji">🖥️</span></div>
+                        <div class="card-info">
+                            <h3>This Portfolio</h3>
+                            <p>A hyper-realistic macOS desktop with boot sequence, Music Player, VS Code, Spotlight & more.</p>
+                            <div class="card-tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
+                        </div>
+                    </div>
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')" style="cursor:pointer">
+                        <div class="card-img grad-4"><span class="card-emoji">📊</span></div>
+                        <div class="card-info">
+                            <h3>Analytics Dashboard</h3>
+                            <p>Real-time data visualization with WebSocket streaming, D3.js charts, and live metrics.</p>
+                            <div class="card-tags"><span>React</span><span>D3.js</span><span>WS</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="resize-handle" data-win="window-projects"></div>
+            <div class="resize-handle-left" data-win="window-projects"></div>
+        </div>
 
-            <!-- Settings / Wallpaper -->
-            <div class="window" id="window-settings" style="width:520px;height:400px;top:70px;left:220px;display:none;">
-                <div class="window-header">
-                    <div class="window-controls">
-                        <div class="ctrl close" onclick="closeWindow('window-settings')"></div>
-                        <div class="ctrl minimize" onclick="minimizeWindow('window-settings')"></div>
-                        <div class="ctrl maximize" onclick="maximizeWindow('window-settings')"></div>
-                    </div>
-                    <span class="header-title">System Settings</span>
+        <!-- Terminal — Skills (Interactive) -->
+        <div class="window terminal" id="window-skills" style="width:660px;height:440px;top:120px;left:300px;display:none;">
+            <div class="window-header terminal-bar">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-skills')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-skills')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-skills')"></div>
                 </div>
-                <div class="window-body settings-body">
-                    <aside class="settings-sidebar">
-                        <div class="settings-item active" data-pane="wallpaper"
-                            onclick="switchSettingsPane('wallpaper')"><span class="si-icon">🖼️</span> Wallpaper</div>
-                        <div class="settings-item" data-pane="appearance" onclick="switchSettingsPane('appearance')">
-                            <span class="si-icon">🎨</span> Appearance
-                        </div>
-                        <div class="settings-item" data-pane="general" onclick="switchSettingsPane('general')"><span
-                                class="si-icon">⚙️</span> General</div>
-                    </aside>
-                    <main class="settings-main">
-                        <!-- Wallpaper Pane -->
-                        <div class="settings-pane" id="pane-wallpaper">
-                            <h3>Wallpaper</h3>
-                            <p class="settings-desc">Choose a wallpaper for your desktop</p>
-                            <div class="wallpaper-grid" id="wallpaper-grid">
-                                <div class="wallpaper-opt active" data-wall="img1" onclick="setWallpaper('img1')">
-                                    <div class="wp-preview" style="background:url('img/1.jpg') center/cover no-repeat">
-                                    </div><span>Mountain</span>
-                                </div>
-                                <div class="wallpaper-opt" data-wall="img2" onclick="setWallpaper('img2')">
-                                    <div class="wp-preview" style="background:url('img/2.jpg') center/cover no-repeat">
-                                    </div><span>Abstract</span>
-                                </div>
-                                <div class="wallpaper-opt" data-wall="img3" onclick="setWallpaper('img3')">
-                                    <div class="wp-preview" style="background:url('img/3.jpg') center/cover no-repeat">
-                                    </div><span>Ocean</span>
-                                </div>
-                                <div class="wallpaper-opt" data-wall="img4" onclick="setWallpaper('img4')">
-                                    <div class="wp-preview" style="background:url('img/4.jpg') center/cover no-repeat">
-                                    </div><span>Valley</span>
-                                </div>
-                                <div class="wallpaper-opt" data-wall="img5" onclick="setWallpaper('img5')">
-                                    <div class="wp-preview" style="background:url('img/5.jpg') center/cover no-repeat">
-                                    </div><span>Desert</span>
-                                </div>
-                                <div class="wallpaper-opt" data-wall="img6" onclick="setWallpaper('img6')">
-                                    <div class="wp-preview" style="background:url('img/6.jpg') center/cover no-repeat">
-                                    </div><span>Lines</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Appearance Pane -->
-                        <div class="settings-pane hidden" id="pane-appearance">
-                            <h3>Appearance</h3>
-                            <p class="settings-desc">Customize the look and feel</p>
-                            <div class="setting-row">
-                                <label>Mode</label>
-                                <div class="toggle-group">
-                                    <button class="toggle-btn active"
-                                        onclick="setAppearanceMode('dark',this)">Dark</button>
-                                    <button class="toggle-btn" onclick="setAppearanceMode('light',this)">Light</button>
-                                </div>
-                            </div>
-                            <div class="setting-row">
-                                <label>Accent Color</label>
-                                <div class="accent-colors">
-                                    <div class="accent-dot active" style="background:#007aff"
-                                        onclick="setAccentColor('#007aff',this)"></div>
-                                    <div class="accent-dot" style="background:#ff375f"
-                                        onclick="setAccentColor('#ff375f',this)"></div>
-                                    <div class="accent-dot" style="background:#ff9f0a"
-                                        onclick="setAccentColor('#ff9f0a',this)"></div>
-                                    <div class="accent-dot" style="background:#30d158"
-                                        onclick="setAccentColor('#30d158',this)"></div>
-                                    <div class="accent-dot" style="background:#bf5af2"
-                                        onclick="setAccentColor('#bf5af2',this)"></div>
-                                    <div class="accent-dot" style="background:#64d2ff"
-                                        onclick="setAccentColor('#64d2ff',this)"></div>
-                                </div>
-                            </div>
-                            <div class="setting-row">
-                                <label>Dock Size</label>
-                                <input type="range" min="36" max="72" value="48" class="settings-range"
-                                    oninput="setDockSize(this.value)">
-                            </div>
-                        </div>
-
-                        <!-- General Pane -->
-                        <div class="settings-pane hidden" id="pane-general">
-                            <h3>General</h3>
-                            <p class="settings-desc">Portfolio information</p>
-                            <div class="setting-row">
-                                <label>Developer Name</label>
-                                <input type="text" class="settings-input" id="dev-name-input" value="SUN 🌗 :ツ"
-                                    oninput="updateDevName(this.value)"
-                                    onkeydown="if(event.key==='Enter') {event.preventDefault(); this.blur();}">
-                            </div>
-                            <div class="setting-row">
-                                <label>Role</label>
-                                <input type="text" class="settings-input" value="Developer & ML Enthusiast" readonly>
-                            </div>
-                            <div class="setting-row">
-                                <label>Version</label>
-                                <span class="setting-value">macOS Portfolio v14.0</span>
-                            </div>
-                            <div class="setting-row">
-                                <label>Built With</label>
-                                <span class="setting-value">HTML, CSS, JS — Zero Dependencies</span>
-                            </div>
-                            <div class="setting-row">
-                                <label>Source</label>
-                                <a href="https://github.com/Sunil0620" target="_blank" class="setting-value"
-                                    style="color:var(--accent);text-decoration:none;">github.com/Sunil0620</a>
-                            </div>
-                        </div>
-                    </main>
-                </div>
-                <div class="resize-handle" data-win="window-settings"></div>
-                <div class="resize-handle-left" data-win="window-settings"></div>
+                <span class="header-title terminal-title">guest@portfolio — zsh</span>
             </div>
-
-            <!-- Finder — About Me -->
-            <div class="window" id="window-about" style="width:680px;height:440px;top:50px;left:80px;display:none;">
-                <div class="window-header">
-                    <div class="window-controls">
-                        <div class="ctrl close" onclick="closeWindow('window-about')"></div>
-                        <div class="ctrl minimize" onclick="minimizeWindow('window-about')"></div>
-                        <div class="ctrl maximize" onclick="maximizeWindow('window-about')"></div>
-                    </div>
-                    <span class="header-title">About Me — Finder</span>
-                </div>
-                <div class="window-body finder-body">
-                    <aside class="finder-sidebar">
-                        <p class="sidebar-label">Favourites</p>
-                        <div class="sidebar-item active"><span class="si-icon">🏠</span> Home</div>
-                        <div class="sidebar-item"><span class="si-icon">📄</span> Documents</div>
-                        <div class="sidebar-item"><span class="si-icon">📥</span> Downloads</div>
-                        <div class="sidebar-item"><span class="si-icon">🖼️</span> Pictures</div>
-                    </aside>
-                    <main class="finder-main">
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                            <span
-                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#30d158;box-shadow:0 0 8px rgba(48,209,88,0.5);animation:statusPulse 2s ease-in-out infinite;"></span>
-                            <span
-                                style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;letter-spacing:0.5px;">AVAILABLE
-                                FOR WORK</span>
-                            <style>
-                                @keyframes statusPulse {
-
-                                    0%,
-                                    100% {
-                                        opacity: 1
-                                    }
-
-                                    50% {
-                                        opacity: 0.4
-                                    }
-                                }
-                            </style>
-                        </div>
-                        <h2>Hello, I'm a Developer 👋</h2>
-                        <p>Welcome to my interactive macOS-style portfolio. I'm a passionate <strong>full-stack
-                                developer</strong> who loves building beautiful, performant web applications that push
-                            the boundaries of what the browser can do.</p>
-                        <p>This entire desktop environment is built <strong>from scratch</strong> using only HTML, CSS,
-                            and JavaScript — no frameworks, no libraries, zero dependencies.</p>
-                        <p>Try these: <strong>⌘Space</strong> for Spotlight, <strong>right-click</strong> the
-                            desktop, or hover the dock!</p>
-                        <div class="about-tags">
-                            <span class="tag">Full-Stack</span>
-                            <span class="tag">UI/UX</span>
-                            <span class="tag">Open Source</span>
-                            <span class="tag">Performance</span>
-                            <span class="tag">Clean Code</span>
-                        </div>
-                    </main>
-                </div>
-                <div class="resize-handle" data-win="window-about"></div>
-                <div class="resize-handle-left" data-win="window-about"></div>
-            </div>
-
-            <!-- Safari — Projects -->
-            <div class="window" id="window-projects" style="width:840px;height:540px;top:90px;left:200px;display:none;">
-                <div class="window-header safari-bar">
-                    <div class="window-controls">
-                        <div class="ctrl close" onclick="closeWindow('window-projects')"></div>
-                        <div class="ctrl minimize" onclick="minimizeWindow('window-projects')"></div>
-                        <div class="ctrl maximize" onclick="maximizeWindow('window-projects')"></div>
-                    </div>
-                    <div class="url-bar">
-                        <svg viewBox="0 0 448 512" width="11" height="11" fill="#999">
-                            <path
-                                d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z" />
-                        </svg>
-                        <span>github.com/my-projects</span>
-                    </div>
-                </div>
-                <div class="window-body safari-body">
-                    <div class="project-grid">
-                        <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')"
-                            style="cursor:pointer">
-                            <div class="card-img grad-1"><span class="card-emoji">🤖</span></div>
-                            <div class="card-info">
-                                <h3>AI Code Agent</h3>
-                                <p>An autonomous AI agent that can debug and fix code issues in real time using LLMs.
-                                </p>
-                                <div class="card-tags"><span>Python</span><span>LLM</span><span>GPT-4</span></div>
-                            </div>
-                        </div>
-                        <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')"
-                            style="cursor:pointer">
-                            <div class="card-img grad-2"><span class="card-emoji">🛒</span></div>
-                            <div class="card-info">
-                                <h3>E-Commerce Platform</h3>
-                                <p>A full-stack Next.js storefront with Stripe payments, CMS, and inventory management.
-                                </p>
-                                <div class="card-tags"><span>Next.js</span><span>Stripe</span><span>Prisma</span></div>
-                            </div>
-                        </div>
-                        <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')"
-                            style="cursor:pointer">
-                            <div class="card-img grad-3"><span class="card-emoji">🖥️</span></div>
-                            <div class="card-info">
-                                <h3>This Portfolio</h3>
-                                <p>A hyper-realistic macOS desktop with boot sequence, Spotlight, and Mission Control.
-                                </p>
-                                <div class="card-tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
-                            </div>
-                        </div>
-                        <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')"
-                            style="cursor:pointer">
-                            <div class="card-img grad-4"><span class="card-emoji">📊</span></div>
-                            <div class="card-info">
-                                <h3>Analytics Dashboard</h3>
-                                <p>Real-time data visualization dashboard with WebSocket streaming and D3.js charts.</p>
-                                <div class="card-tags"><span>React</span><span>D3.js</span><span>WS</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="resize-handle" data-win="window-projects"></div>
-                <div class="resize-handle-left" data-win="window-projects"></div>
-            </div>
-
-            <!-- Terminal — Skills (Interactive) -->
-            <div class="window terminal" id="window-skills"
-                style="width:640px;height:420px;top:120px;left:300px;display:none;">
-                <div class="window-header terminal-bar">
-                    <div class="window-controls">
-                        <div class="ctrl close" onclick="closeWindow('window-skills')"></div>
-                        <div class="ctrl minimize" onclick="minimizeWindow('window-skills')"></div>
-                        <div class="ctrl maximize" onclick="maximizeWindow('window-skills')"></div>
-                    </div>
-                    <span class="header-title terminal-title">guest@portfolio — zsh</span>
-                </div>
-                <div class="window-body terminal-body" id="terminal-body">
-                    <div id="terminal-output">
-                        <p>Last login: <span id="term-time"></span> on ttys000</p>
-                        <p><span class="g">guest@portfolio</span> <span class="b">~</span> % cat skills.json</p>
-                        <pre>{
-  "languages": ["JavaScript", "TypeScript", "Python", "Go", "HTML/CSS"],
-  "frameworks": ["React", "Next.js", "Vue.js", "Node.js", "Express"],
+            <div class="window-body terminal-body" id="terminal-body">
+                <canvas id="matrix-canvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;"></canvas>
+                <div id="terminal-output">
+                    <p>Last login: <span id="term-time"></span> on ttys000</p>
+                    <p><span class="g">guest@portfolio</span> <span class="b">~</span> % cat skills.json</p>
+                    <pre>{
+  "name":       "Sunil Saini",
+  "role":       "Full-Stack Developer &amp; ML Enthusiast",
+  "languages":  ["JavaScript", "TypeScript", "Python", "HTML/CSS"],
+  "frameworks": ["React", "Next.js", "Django", "Node.js", "Express"],
   "tools":      ["Git", "Docker", "Figma", "Webpack", "Vite"],
   "databases":  ["PostgreSQL", "MongoDB", "Redis"],
   "cloud":      ["AWS", "Vercel", "Cloudflare"],
   "superpower": "Building aesthetic, buttery-smooth UIs ✨"
 }</pre>
-                    </div>
-                    <div class="terminal-input-line">
-                        <span class="g">guest@portfolio</span> <span class="b">~</span> % <input type="text"
-                            id="terminal-input" class="term-input" spellcheck="false" autocomplete="off">
-                    </div>
+                    <p><span class="term-dim">Type <span class="term-cmd">help</span> for available commands. Try <span class="term-cmd">matrix</span> or <span class="term-cmd">hack</span> 👀</span></p>
                 </div>
-                <div class="resize-handle" data-win="window-skills"></div>
-                <div class="resize-handle-left" data-win="window-skills"></div>
+                <div class="terminal-input-line">
+                    <span class="g">guest@portfolio</span> <span class="b">~</span> % <input type="text" id="terminal-input" class="term-input" spellcheck="false" autocomplete="off">
+                </div>
             </div>
+            <div class="resize-handle" data-win="window-skills"></div>
+            <div class="resize-handle-left" data-win="window-skills"></div>
+        </div>
 
-            <!-- Notes — Contact -->
-            <div class="window" id="window-contact" style="width:580px;height:400px;top:160px;left:420px;display:none;">
-                <div class="window-header notes-bar">
-                    <div class="window-controls">
-                        <div class="ctrl close" onclick="closeWindow('window-contact')"></div>
-                        <div class="ctrl minimize" onclick="minimizeWindow('window-contact')"></div>
-                        <div class="ctrl maximize" onclick="maximizeWindow('window-contact')"></div>
-                    </div>
-                    <span class="header-title">Notes — Contact</span>
+        <!-- Notes — Contact -->
+        <div class="window" id="window-contact" style="width:600px;height:440px;top:160px;left:420px;display:none;">
+            <div class="window-header notes-bar">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-contact')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-contact')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-contact')"></div>
                 </div>
-                <div class="window-body notes-body">
-                    <aside class="notes-sidebar">
-                        <div class="note-row active">
-                            <strong>Get in Touch</strong>
-                            <small>Email & Work</small>
-                        </div>
-                        <div class="note-row">
-                            <strong>Socials</strong>
-                            <small>GitHub Profile</small>
-                        </div>
-                        <div class="note-row">
-                            <strong>Focus</strong>
-                            <small>Django & React</small>
-                        </div>
-                    </aside>
-                    <main class="notes-main">
+                <span class="header-title">Notes — Contact</span>
+            </div>
+            <div class="window-body notes-body">
+                <aside class="notes-sidebar">
+                    <div class="note-row active" onclick="switchNote('contact', this)">
+                        <strong>Get in Touch</strong>
+                        <small>Email &amp; Work</small>
+                    </div>
+                    <div class="note-row" onclick="switchNote('socials', this)">
+                        <strong>Socials</strong>
+                        <small>GitHub &amp; Links</small>
+                    </div>
+                    <div class="note-row" onclick="switchNote('focus', this)">
+                        <strong>Focus</strong>
+                        <small>Django &amp; React</small>
+                    </div>
+                </aside>
+                <main class="notes-main">
+                    <!-- Contact pane -->
+                    <div id="note-contact" class="note-pane active-pane">
                         <p class="notes-date">March 2026</p>
                         <h2>Let's build something amazing 🚀</h2>
                         <p>I'm currently open to freelance projects, internships, and open-source collaboration.</p>
                         <br>
-                        <p>� <strong>Email:</strong> <a
-                                href="mailto:sunilsaini5652@gmail.com">sunilsaini5652@gmail.com</a></p>
-                        <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/Sunil0620"
-                                target="_blank">github.com/Sunil0620</a></p>
+                        <p>📧 <strong>Email:</strong> <a href="mailto:sunilsaini5652@gmail.com">sunilsaini5652@gmail.com</a></p>
+                        <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/Sunil0620" target="_blank">github.com/Sunil0620</a></p>
                         <br>
-                        <p>Try typing <code>help</code> in the Terminal for more!</p>
-                    </main>
-                </div>
-                <div class="resize-handle" data-win="window-contact"></div>
-                <div class="resize-handle-left" data-win="window-contact"></div>
-            </div>
-        </div>
-
-        <!-- ===== DOCK ===== -->
-        <div id="dock-wrapper">
-            <div id="dock">
-                <div class="dock-item" data-app="window-about" data-tip="About Me">
-                    <div class="dock-icon-art finder-art">
-                        <div class="finder-top"></div>
-                        <div class="finder-bot"></div>
-                        <div class="finder-face">
-                            <div class="f-eye l"></div>
-                            <div class="f-eye r"></div>
-                            <div class="f-nose"></div>
-                            <div class="f-mouth"></div>
+                        <div class="contact-form">
+                            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">Or drop me a message directly:</p>
+                            <form id="contact-form" action="https://formspree.io/f/sunilsaini5652" method="POST" onsubmit="handleContactForm(event)">
+                                <input type="text" name="name" class="form-input" placeholder="Your name" required>
+                                <input type="email" name="email" class="form-input" placeholder="Your email" required>
+                                <textarea name="message" class="form-textarea" placeholder="Your message..." required></textarea>
+                                <button type="submit" class="form-submit">Send Message ✉️</button>
+                            </form>
                         </div>
                     </div>
-                    <div class="dock-dot" id="dot-window-about"></div>
-                </div>
-                <div class="dock-item" data-app="window-skills" data-tip="Terminal">
-                    <div class="dock-icon-art terminal-art">>_</div>
-                    <div class="dock-dot" id="dot-window-skills"></div>
-                </div>
-                <div class="dock-item" data-app="window-projects" data-tip="Projects">
-                    <div class="dock-icon-art safari-art">
-                        <div class="compass">
-                            <div class="needle"></div>
+                    <!-- Socials pane -->
+                    <div id="note-socials" class="note-pane hidden">
+                        <p class="notes-date">Socials</p>
+                        <h2>Find me online 🌐</h2>
+                        <br>
+                        <div class="social-links">
+                            <a href="https://github.com/Sunil0620" target="_blank" class="social-link">
+                                <span class="social-icon">🐙</span>
+                                <div><strong>GitHub</strong><small>github.com/Sunil0620</small></div>
+                            </a>
+                            <a href="mailto:sunilsaini5652@gmail.com" class="social-link">
+                                <span class="social-icon">📧</span>
+                                <div><strong>Email</strong><small>sunilsaini5652@gmail.com</small></div>
+                            </a>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="social-link">
+                                <span class="social-icon">💼</span>
+                                <div><strong>LinkedIn</strong><small>Connect with me</small></div>
+                            </a>
                         </div>
                     </div>
-                    <div class="dock-dot" id="dot-window-projects"></div>
-                </div>
-                <div class="dock-item" data-app="window-contact" data-tip="Contact">
-                    <div class="dock-icon-art notes-art">
-                        <div class="notes-top-bar"></div>
-                        <div class="notes-line"></div>
-                        <div class="notes-line"></div>
-                        <div class="notes-line"></div>
+                    <!-- Focus pane -->
+                    <div id="note-focus" class="note-pane hidden">
+                        <p class="notes-date">Focus Areas</p>
+                        <h2>What I'm working on 🎯</h2>
+                        <br>
+                        <p><strong>Primary Stack:</strong> Django + React</p>
+                        <p><strong>Learning:</strong> Machine Learning, LLM fine-tuning</p>
+                        <p><strong>Building:</strong> AI-powered developer tools</p>
+                        <p><strong>Reading:</strong> Clean Code, SICP, deep learning papers</p>
+                        <br>
+                        <p style="font-style:italic;color:var(--text-secondary);">"The best code is no code. The second best is clean code."</p>
                     </div>
-                    <div class="dock-dot" id="dot-window-contact"></div>
+                </main>
+            </div>
+            <div class="resize-handle" data-win="window-contact"></div>
+            <div class="resize-handle-left" data-win="window-contact"></div>
+        </div>
+
+        <!-- Music Player -->
+        <div class="window" id="window-music" style="width:380px;height:520px;top:60px;left:500px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-music'); stopMusic()"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-music')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-music')"></div>
                 </div>
-                <div class="dock-item" data-app="window-settings" data-tip="Settings">
-                    <div class="dock-icon-art settings-art">
-                        <svg viewBox="0 0 512 512" width="24" height="24" fill="rgba(255,255,255,0.85)">
-                            <path
-                                d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
-                        </svg>
+                <span class="header-title">Music</span>
+            </div>
+            <div class="window-body music-body">
+                <div class="music-art" id="music-art">
+                    <div class="music-art-inner" id="music-art-inner">
+                        <span id="music-art-emoji">🎵</span>
                     </div>
-                    <div class="dock-dot" id="dot-window-settings"></div>
                 </div>
-                <div class="dock-sep"></div>
-                <div class="dock-item" data-tip="Trash">
-                    <div class="dock-icon-art trash-art">
-                        <svg viewBox="0 0 448 512" width="22" height="22" fill="rgba(255,255,255,0.7)">
-                            <path
-                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" />
-                        </svg>
+                <div class="music-info">
+                    <div class="music-track" id="music-track">Lo-fi Coding Session</div>
+                    <div class="music-artist" id="music-artist">Sunil's Playlist</div>
+                </div>
+                <canvas id="music-visualizer" class="music-visualizer" width="340" height="80"></canvas>
+                <div class="music-progress-wrap">
+                    <span class="music-time" id="music-elapsed">0:00</span>
+                    <div class="music-progress" id="music-progress-bar" onclick="seekMusic(event)">
+                        <div class="music-fill" id="music-fill"></div>
+                        <div class="music-thumb" id="music-thumb"></div>
+                    </div>
+                    <span class="music-time" id="music-duration">3:00</span>
+                </div>
+                <div class="music-controls">
+                    <button class="music-btn" onclick="prevTrack()" title="Previous">⏮</button>
+                    <button class="music-btn music-play" id="music-play-btn" onclick="toggleMusic()">▶</button>
+                    <button class="music-btn" onclick="nextTrack()" title="Next">⏭</button>
+                </div>
+                <div class="music-playlist">
+                    <div class="playlist-item active" id="pl-0" onclick="playTrack(0)">
+                        <span class="pl-num">1</span>
+                        <div class="pl-info"><span>Lo-fi Coding Session</span><small>3:00</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-1" onclick="playTrack(1)">
+                        <span class="pl-num">2</span>
+                        <div class="pl-info"><span>Midnight Debug</span><small>2:30</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-2" onclick="playTrack(2)">
+                        <span class="pl-num">3</span>
+                        <div class="pl-info"><span>Deploy Day</span><small>2:00</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-3" onclick="playTrack(3)">
+                        <span class="pl-num">4</span>
+                        <div class="pl-info"><span>It Works™</span><small>1:45</small></div>
                     </div>
                 </div>
             </div>
+            <div class="resize-handle" data-win="window-music"></div>
+            <div class="resize-handle-left" data-win="window-music"></div>
         </div>
 
-    </div><!-- /desktop -->
+        <!-- VS Code Clone -->
+        <div class="window" id="window-vscode" style="width:820px;height:560px;top:80px;left:140px;display:none;">
+            <div class="window-header vscode-bar">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-vscode')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-vscode')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-vscode')"></div>
+                </div>
+                <span class="header-title vscode-title">script.js — Portfolio — Visual Studio Code</span>
+            </div>
+            <div class="window-body vscode-body">
+                <div class="vscode-sidebar">
+                    <div class="vscode-sidebar-icon active" title="Explorer">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .12.11.56.18 1H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .12-.11.56-.18 1h-3.64C12.11 5.56 12 5.12 12 5c0-1.1.9-2 2-2z"/></svg>
+                    </div>
+                    <div class="vscode-sidebar-icon" title="Search">
+                        <svg viewBox="0 0 512 512" width="20" height="20" fill="currentColor"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+                    </div>
+                    <div class="vscode-sidebar-icon" title="Source Control">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17 12c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2zM9 8c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2zm8 10h-2v-2H9V8H7v2H5v2h2v2H5v2h2v-2h2v2h8v-2z"/></svg>
+                    </div>
+                </div>
+                <div class="vscode-explorer">
+                    <div class="vscode-exp-header">EXPLORER</div>
+                    <div class="vscode-exp-item open"><span>📂</span> mac-portfolio</div>
+                    <div class="vscode-exp-file active"><span>📄</span> script.js</div>
+                    <div class="vscode-exp-file"><span>🎨</span> style.css</div>
+                    <div class="vscode-exp-file"><span>🌐</span> index.html</div>
+                    <div class="vscode-exp-item"><span>📁</span> img</div>
+                    <div class="vscode-exp-item"><span>📁</span> User</div>
+                </div>
+                <div class="vscode-editor">
+                    <div class="vscode-tabs">
+                        <div class="vscode-tab active"><span>script.js</span><span class="vscode-tab-close">×</span></div>
+                    </div>
+                    <div class="vscode-code" id="vscode-code"></div>
+                </div>
+            </div>
+            <div class="resize-handle" data-win="window-vscode"></div>
+            <div class="resize-handle-left" data-win="window-vscode"></div>
+        </div>
 
-    <script src="script.js"></script>
+        <!-- TextEdit — README.md -->
+        <div class="window" id="window-readme" style="width:560px;height:420px;top:100px;left:180px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-readme')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-readme')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-readme')"></div>
+                </div>
+                <span class="header-title">README.md — TextEdit</span>
+            </div>
+            <div class="window-body textedit-body">
+                <div class="textedit-toolbar">
+                    <select class="te-font-select"><option>Inter</option><option>Menlo</option></select>
+                    <select class="te-size-select"><option>14</option><option>16</option><option>18</option></select>
+                    <div class="te-divider"></div>
+                    <button class="te-btn"><strong>B</strong></button>
+                    <button class="te-btn"><em>I</em></button>
+                    <button class="te-btn" style="text-decoration:underline">U</button>
+                </div>
+                <div class="textedit-content">
+                    <h1 class="te-h1">📄 Portfolio — macOS Sonoma</h1>
+                    <br>
+                    <p class="te-p">A hyper-realistic macOS desktop environment running entirely in your browser.</p>
+                    <p class="te-p">Built with <strong>zero dependencies</strong> — pure HTML, CSS, and JavaScript.</p>
+                    <br>
+                    <h2 class="te-h2">✨ Features</h2>
+                    <p class="te-p">• Boot sequence with kernel messages</p>
+                    <p class="te-p">• Login screen with particle physics</p>
+                    <p class="te-p">• Draggable, resizable windows</p>
+                    <p class="te-p">• Interactive Terminal with easter eggs</p>
+                    <p class="te-p">• Music Player with Web Audio visualizer</p>
+                    <p class="te-p">• VS Code clone showing its own source code</p>
+                    <p class="te-p">• Spotlight search (⌘Space)</p>
+                    <p class="te-p">• Mission Control (F3)</p>
+                    <p class="te-p">• Control Center &amp; Notification Centre</p>
+                    <p class="te-p">• Screen saver after 90s inactivity</p>
+                    <br>
+                    <h2 class="te-h2">🚀 Author</h2>
+                    <p class="te-p"><strong>Sunil Saini</strong> — sunilsaini5652@gmail.com</p>
+                    <p class="te-p"><a href="https://github.com/Sunil0620" target="_blank">github.com/Sunil0620</a></p>
+                    <br>
+                    <p class="te-p" style="color:#999;font-style:italic;">"How did you make this?" — Everyone who sees it</p>
+                </div>
+            </div>
+            <div class="resize-handle" data-win="window-readme"></div>
+            <div class="resize-handle-left" data-win="window-readme"></div>
+        </div>
+
+        <!-- Finder — node_modules joke -->
+        <div class="window" id="window-nodemodules" style="width:620px;height:400px;top:110px;left:220px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-nodemodules')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-nodemodules')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-nodemodules')"></div>
+                </div>
+                <span class="header-title">node_modules — Finder</span>
+            </div>
+            <div class="window-body finder-body" style="flex-direction:column;padding:20px;">
+                <div class="nm-header">
+                    <span class="nm-icon">📁</span>
+                    <div>
+                        <h3>node_modules</h3>
+                        <p style="color:var(--text-secondary);font-size:13px;">2,847,293 items — 47.3 GB on disk</p>
+                    </div>
+                </div>
+                <div class="nm-warning">
+                    ⚠️ <strong>Warning:</strong> Opening this folder may collapse a nearby star. Proceed with caution.
+                </div>
+                <div class="nm-grid">
+                    <div class="nm-item">📦 react@18.2.0</div>
+                    <div class="nm-item">📦 webpack@5.91.0</div>
+                    <div class="nm-item">📦 babel-core@7.x</div>
+                    <div class="nm-item">📦 lodash@4.17.21</div>
+                    <div class="nm-item">📦 express@4.18.3</div>
+                    <div class="nm-item">📦 left-pad@1.3.0</div>
+                    <div class="nm-item">📦 is-odd@3.0.1</div>
+                    <div class="nm-item">📦 is-even@1.0.0</div>
+                    <div class="nm-item">📦 is-string@1.0.7</div>
+                    <div class="nm-item">📦 is-boolean@1.0.1</div>
+                    <div class="nm-item">📦 assert-never@1.2.1</div>
+                    <div class="nm-item nm-item-more">+ 2,847,282 more…</div>
+                </div>
+                <p style="font-size:11px;color:var(--text-tertiary);margin-top:auto;text-align:center;">
+                    Fun fact: This entire portfolio has zero node_modules. The irony is not lost on us.
+                </p>
+            </div>
+            <div class="resize-handle" data-win="window-nodemodules"></div>
+            <div class="resize-handle-left" data-win="window-nodemodules"></div>
+        </div>
+
+        <!-- Notes — todo.txt -->
+        <div class="window" id="window-todo" style="width:480px;height:380px;top:130px;left:260px;display:none;">
+            <div class="window-header notes-bar">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-todo')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-todo')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-todo')"></div>
+                </div>
+                <span class="header-title">todo.txt — Notes</span>
+            </div>
+            <div class="window-body" style="padding:24px;overflow-y:auto;background:var(--win-bg);">
+                <p class="notes-date">Developer TODO</p>
+                <h2 style="font-size:16px;margin-bottom:12px;">Things to do (realistically)</h2>
+                <div class="todo-items">
+                    <label class="todo-item"><input type="checkbox" checked> Fix that one bug that only appears in production</label>
+                    <label class="todo-item"><input type="checkbox"> Review 847 unread GitHub notifications</label>
+                    <label class="todo-item"><input type="checkbox"> Write documentation (lol)</label>
+                    <label class="todo-item"><input type="checkbox"> Delete node_modules and reinstall (the classic fix)</label>
+                    <label class="todo-item"><input type="checkbox" checked> Add more coffee to the algorithm</label>
+                    <label class="todo-item"><input type="checkbox"> Actually use Git branches instead of "final_final_v3"</label>
+                    <label class="todo-item"><input type="checkbox"> Reply to that issue opened in 2023</label>
+                    <label class="todo-item"><input type="checkbox"> Rename variables from 'x', 'xx', 'xxx'</label>
+                    <label class="todo-item"><input type="checkbox"> Stop copy-pasting from Stack Overflow (understand it first)</label>
+                    <label class="todo-item"><input type="checkbox"> Sleep (pending…)</label>
+                </div>
+            </div>
+            <div class="resize-handle" data-win="window-todo"></div>
+            <div class="resize-handle-left" data-win="window-todo"></div>
+        </div>
+
+    </div><!-- /windows-container -->
+
+    <!-- ===== DOCK ===== -->
+    <div id="dock-wrapper">
+        <div id="dock">
+            <div class="dock-item" data-app="window-about" data-tip="About Me">
+                <div class="dock-icon-art finder-art">
+                    <div class="finder-top"></div>
+                    <div class="finder-bot"></div>
+                    <div class="finder-face">
+                        <div class="f-eye l"></div>
+                        <div class="f-eye r"></div>
+                        <div class="f-nose"></div>
+                        <div class="f-mouth"></div>
+                    </div>
+                </div>
+                <div class="dock-dot" id="dot-window-about"></div>
+            </div>
+            <div class="dock-item" data-app="window-skills" data-tip="Terminal">
+                <div class="dock-icon-art terminal-art">>_</div>
+                <div class="dock-dot" id="dot-window-skills"></div>
+            </div>
+            <div class="dock-item" data-app="window-projects" data-tip="Projects">
+                <div class="dock-icon-art safari-art">
+                    <div class="compass"><div class="needle"></div></div>
+                </div>
+                <div class="dock-dot" id="dot-window-projects"></div>
+            </div>
+            <div class="dock-item" data-app="window-contact" data-tip="Contact">
+                <div class="dock-icon-art notes-art">
+                    <div class="notes-top-bar"></div>
+                    <div class="notes-line"></div>
+                    <div class="notes-line"></div>
+                    <div class="notes-line"></div>
+                </div>
+                <div class="dock-dot" id="dot-window-contact"></div>
+            </div>
+            <div class="dock-item" data-app="window-music" data-tip="Music">
+                <div class="dock-icon-art music-art">🎵</div>
+                <div class="dock-dot" id="dot-window-music"></div>
+            </div>
+            <div class="dock-item" data-app="window-vscode" data-tip="VS Code">
+                <div class="dock-icon-art vscode-art">
+                    <svg viewBox="0 0 100 100" width="28" height="28">
+                        <path fill="#007ACC" d="M74.5 7.5L50 32 25.5 10 7.5 19l24.5 31L7.5 81l18 9L50 68l24.5 22 18-9-24.5-31 24.5-31z"/>
+                    </svg>
+                </div>
+                <div class="dock-dot" id="dot-window-vscode"></div>
+            </div>
+            <div class="dock-item" data-app="window-settings" data-tip="Settings">
+                <div class="dock-icon-art settings-art">
+                    <svg viewBox="0 0 512 512" width="24" height="24" fill="rgba(255,255,255,0.85)">
+                        <path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/>
+                    </svg>
+                </div>
+                <div class="dock-dot" id="dot-window-settings"></div>
+            </div>
+            <div class="dock-sep"></div>
+            <div class="dock-item" data-tip="Trash">
+                <div class="dock-icon-art trash-art">
+                    <svg viewBox="0 0 448 512" width="22" height="22" fill="rgba(255,255,255,0.7)">
+                        <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /desktop -->
+
+<script src="script.js"></script>
 </body>
-
 </html>
