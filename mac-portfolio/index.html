@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio — macOS Sonoma</title>
     <meta name="description" content="An interactive macOS Sonoma-style developer portfolio built with vanilla HTML, CSS and JavaScript.">
+    <!-- Inline SVG favicon — the <S/> hex badge -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236e56cf'/%3E%3Cstop offset='1' stop-color='%2300d2ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,4 93,27 93,73 50,96 7,73 7,27' fill='%230d0d1a' stroke='url(%23g)' stroke-width='3'/%3E%3Ctext x='50' y='56' text-anchor='middle' font-family='monospace' font-size='28' font-weight='700' fill='url(%23g)'%3ES%3C/text%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='monospace' font-size='11' fill='rgba(255,255,255,0.4)'%3E%3C/%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -35,15 +37,67 @@
 
 <!-- ===================== BOOT SCREEN ===================== -->
 <div id="boot-screen">
-    <div class="boot-logo-wrap">
-        <div class="boot-glow"></div>
-        <svg class="boot-logo" viewBox="0 0 384 512" width="56" height="56" fill="#fff">
-            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
-        </svg>
-    </div>
-    <div class="boot-log" id="boot-log"></div>
-    <div class="boot-bar">
-        <div class="boot-fill" id="boot-fill"></div>
+    <canvas id="boot-canvas"></canvas>
+    <div class="boot-center">
+        <!-- Custom <S/> logo — draws itself via stroke-dasharray animation -->
+        <div class="boot-logo-wrap">
+            <svg class="boot-logo-svg" viewBox="0 0 120 120" width="120" height="120">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%"   stop-color="#6e56cf"/>
+                        <stop offset="50%"  stop-color="#00d2ff"/>
+                        <stop offset="100%" stop-color="#30d158"/>
+                    </linearGradient>
+                    <filter id="logoGlow">
+                        <feGaussianBlur stdDeviation="3" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+                <!-- Hexagon frame -->
+                <polygon class="boot-hex"
+                    points="60,6 108,33 108,87 60,114 12,87 12,33"
+                    fill="rgba(110,86,207,0.08)"
+                    stroke="url(#logoGrad)"
+                    stroke-width="2.5"
+                    filter="url(#logoGlow)"/>
+                <!-- S letter path -->
+                <text class="boot-s-text" x="60" y="68"
+                    text-anchor="middle"
+                    font-family="'Inter', system-ui, sans-serif"
+                    font-size="52" font-weight="700"
+                    fill="none"
+                    stroke="url(#logoGrad)"
+                    stroke-width="2"
+                    filter="url(#logoGlow)">S</text>
+                <!-- Code tag hint -->
+                <text class="boot-code-text" x="60" y="88"
+                    text-anchor="middle"
+                    font-family="'Menlo','Monaco',monospace"
+                    font-size="11" font-weight="400"
+                    fill="rgba(255,255,255,0.3)">&lt;/&gt;</text>
+            </svg>
+            <!-- Arc progress ring (overlaid on logo) -->
+            <div class="boot-arc-wrap">
+                <svg class="boot-arc-svg" viewBox="0 0 120 120" width="120" height="120">
+                    <defs>
+                        <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%"   stop-color="#6e56cf"/>
+                            <stop offset="100%" stop-color="#00d2ff"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="boot-arc-track" cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+                    <circle class="boot-arc-fill" id="boot-arc-fill" cx="60" cy="60" r="54"
+                        fill="none" stroke="url(#arcGrad)" stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-dasharray="339.3" stroke-dashoffset="339.3"
+                        transform="rotate(-90 60 60)"/>
+                </svg>
+            </div>
+        </div>
+        <!-- Portfolio OS label -->
+        <div class="boot-label" id="boot-label"></div>
+        <!-- Boot log -->
+        <div class="boot-log" id="boot-log"></div>
     </div>
 </div>
 
@@ -55,21 +109,25 @@
         <div class="login-time" id="login-time">12:00</div>
     </div>
     <div class="login-container">
-        <div class="avatar" id="user-avatar">
-            <img src="User/avatar.jpg" alt="User"
-                onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='block';};this.src='User/avatar.png';">
-            <svg viewBox="0 0 24 24" width="54" height="54" fill="rgba(255,255,255,0.85)" style="display:none;">
-                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1c0 .6.4 1 1 1h18c.6 0 1-.4 1-1v-1c0-3.3-6.7-5-10-5z"/>
-            </svg>
+        <!-- Spinning gradient ring around avatar -->
+        <div class="avatar-ring-wrap">
+            <div class="avatar-ring"></div>
+            <div class="avatar" id="user-avatar">
+                <img src="User/avatar.jpg" alt="User"
+                    onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='block';};this.src='User/avatar.png';">
+                <svg viewBox="0 0 24 24" width="54" height="54" fill="rgba(255,255,255,0.85)" style="display:none;">
+                    <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1c0 .6.4 1 1 1h18c.6 0 1-.4 1-1v-1c0-3.3-6.7-5-10-5z"/>
+                </svg>
+            </div>
         </div>
         <h2 class="login-username">SUN 🌗 :ツ</h2>
-        <div class="password-field">
+        <div class="password-field" id="password-field-wrap">
             <input type="password" id="password-input" placeholder="Enter Password">
             <button id="login-btn" aria-label="Login">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M10 17l5-5-5-5v10z"/></svg>
             </button>
         </div>
-        <p class="login-hint">Touch ID or Enter Password</p>
+        <p class="login-hint" id="login-hint-text">Touch ID or Enter Password</p>
     </div>
 </div>
 
@@ -79,6 +137,8 @@
     <!-- Custom cursor dot -->
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
+    <!-- Desktop backdrop overlay (darkens when windows open) -->
+    <div id="desktop-overlay"></div>
 
     <!-- ===== TOP MENU BAR ===== -->
     <nav id="menu-bar">

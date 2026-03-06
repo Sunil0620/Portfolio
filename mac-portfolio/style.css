@@ -129,45 +129,97 @@ body {
 #boot-screen {
     position: fixed; inset: 0; z-index: 8000;
     background: #000;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 32px;
-    transition: opacity 0.5s ease;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    overflow: hidden;
 }
-#boot-screen.hidden { opacity: 0; pointer-events: none; animation: fadeOutBoot 0.5s ease forwards; }
-@keyframes fadeOutBoot { to { opacity: 0; transform: scale(1.02); } }
+#boot-screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.06); }
 
+/* Full-screen aurora canvas sits behind everything */
+#boot-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 0;
+}
+
+/* Central column */
+.boot-center {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+
+/* Logo + arc share the same space (stacked absolutely) */
 .boot-logo-wrap {
-    position: relative; display: flex; align-items: center; justify-content: center;
+    position: relative; width: 120px; height: 120px;
+    display: flex; align-items: center; justify-content: center;
 }
-.boot-glow {
-    position: absolute; width: 120px; height: 120px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(120,80,255,0.35) 0%, rgba(0,200,255,0.1) 50%, transparent 70%);
-    animation: bootPulse 2.5s ease-in-out infinite;
-}
-@keyframes bootPulse { 0%,100% { transform:scale(1); opacity:0.6 } 50% { transform:scale(1.3); opacity:1 } }
-.boot-logo { position: relative; z-index: 1; filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
 
+/* The logo SVG — animates in via opacity + scale */
+.boot-logo-svg {
+    position: relative; z-index: 2;
+    animation: logoReveal 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.3s both;
+    filter: drop-shadow(0 0 24px rgba(110,86,207,0.6));
+}
+@keyframes logoReveal {
+    from { opacity:0; transform:scale(0.6) rotate(-15deg); }
+    to   { opacity:1; transform:scale(1) rotate(0deg); }
+}
+
+/* Hexagon draws itself */
+.boot-hex {
+    stroke-dasharray: 360;
+    stroke-dashoffset: 360;
+    animation: drawHex 1.2s ease 0.5s forwards;
+}
+@keyframes drawHex { to { stroke-dashoffset: 0; } }
+
+/* S letter draws itself */
+.boot-s-text {
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    animation: drawS 1s ease 0.9s forwards;
+    font-style: normal;
+}
+@keyframes drawS { to { stroke-dashoffset: 0; } }
+
+/* </> hint fades in after S is drawn */
+.boot-code-text {
+    opacity: 0;
+    animation: fadeInCode 0.5s ease 1.7s forwards;
+}
+@keyframes fadeInCode { to { opacity: 1; } }
+
+/* Arc progress ring — sits on top of logo perfectly */
+.boot-arc-wrap {
+    position: absolute; inset: 0; z-index: 3; pointer-events: none;
+}
+.boot-arc-svg { display: block; }
+.boot-arc-fill {
+    transition: stroke-dashoffset 0.15s linear;
+    filter: drop-shadow(0 0 6px rgba(0,210,255,0.7));
+}
+
+/* "Portfolio OS" typewriter label */
+.boot-label {
+    font-family: var(--mono); font-size: 13px; font-weight: 400;
+    color: rgba(255,255,255,0.5); letter-spacing: 2px;
+    text-transform: uppercase; height: 20px;
+    animation: fadeInLabel 0.5s ease 1s both;
+}
+@keyframes fadeInLabel { from { opacity:0 } to { opacity:1 } }
+
+/* Boot kernel log */
 .boot-log {
-    width: 340px; height: 80px; overflow: hidden;
-    font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.35);
-    line-height: 1.6;
+    width: 380px; max-height: 72px; overflow: hidden;
+    font-family: var(--mono); font-size: 10.5px;
+    line-height: 1.7;
     display: flex; flex-direction: column; justify-content: flex-end;
+    animation: fadeInLabel 0.5s ease 1s both;
 }
-.boot-log p { animation: fadeInLog 0.3s ease; }
-@keyframes fadeInLog { from { opacity:0; transform:translateY(4px) } to { opacity:1; transform:none } }
-
-.boot-bar {
-    width: 200px; height: 4px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px; overflow: hidden;
-}
-.boot-fill {
-    height: 100%; width: 0%;
-    background: linear-gradient(90deg, #6e56cf, #00d2ff);
-    border-radius: 2px;
-    transition: width 0.12s ease;
-    box-shadow: 0 0 8px rgba(110,86,207,0.8);
-}
+.boot-log p { animation: fadeInLog 0.25s ease; }
+.boot-log .log-ts { color: #6e56cf; margin-right: 6px; }
+.boot-log .log-ok  { color: #30d158; }
+.boot-log .log-txt { color: rgba(255,255,255,0.32); }
+@keyframes fadeInLog { from { opacity:0; transform:translateY(3px) } to { opacity:1; transform:none } }
 
 /* =============== LOGIN SCREEN =============== */
 #login-screen {
@@ -225,6 +277,43 @@ body {
 }
 #login-btn:hover { background: rgba(255,255,255,0.35); }
 .login-hint { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+/* ---- Avatar spinning gradient ring ---- */
+.avatar-ring-wrap {
+    position: relative; width: 100px; height: 100px;
+    display: flex; align-items: center; justify-content: center;
+}
+.avatar-ring {
+    position: absolute; inset: -4px; border-radius: 50%;
+    background: conic-gradient(from 0deg, #6e56cf, #00d2ff, #30d158, #ff375f, #6e56cf);
+    animation: ringRotate 3s linear infinite;
+    padding: 3px;
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+}
+@keyframes ringRotate { to { transform: rotate(360deg); } }
+
+/* Make the avatar itself sit on top */
+.avatar-ring-wrap .avatar {
+    position: relative; z-index: 1;
+}
+
+/* ---- Password field shake on wrong entry ---- */
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    15%      { transform: translateX(-8px); }
+    30%      { transform: translateX(8px); }
+    45%      { transform: translateX(-6px); }
+    60%      { transform: translateX(6px); }
+    75%      { transform: translateX(-3px); }
+    90%      { transform: translateX(3px); }
+}
+.password-field.shake {
+    animation: shake 0.5s ease;
+    border-color: rgba(255,95,87,0.8) !important;
+    background: rgba(255,95,87,0.08) !important;
+}
+.login-hint.wrong { color: rgba(255,95,87,0.8) !important; }
 
 /* =============== DESKTOP =============== */
 #desktop {
@@ -1156,3 +1245,40 @@ body {
     100% { transform: translateY(-8px) scale(1.15); }
 }
 .dock-icon-art.bouncing { animation: dockBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* =============== DOCK REFLECTION =============== */
+#dock-wrapper::after {
+    content: '';
+    position: absolute; left: 8px; right: 8px;
+    top: calc(100% + 2px); height: 28px;
+    background: inherit;
+    transform: scaleY(-1) translateY(0);
+    opacity: 0.18;
+    mask-image: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+    border-radius: 0 0 16px 16px;
+    pointer-events: none;
+    filter: blur(1px);
+}
+#dock-wrapper { overflow: visible; }
+
+/* =============== DESKTOP WALLPAPER PARALLAX =============== */
+body::before {
+    content: '';
+    position: fixed; inset: -20px;
+    background: inherit;
+    background-attachment: fixed;
+    z-index: -1;
+    transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px));
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+}
+
+/* =============== WINDOW BACKDROP OVERLAY =============== */
+#desktop-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    pointer-events: none;
+    background: rgba(0,0,0,0);
+    transition: background 0.3s ease;
+}
+#desktop-overlay.active { background: rgba(0,0,0,0.12); backdrop-filter: blur(1px); }

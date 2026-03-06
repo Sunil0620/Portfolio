@@ -57,34 +57,58 @@ let focusModeOn = false;
 
 /* ==================== BOOT SEQUENCE ==================== */
 document.addEventListener('DOMContentLoaded', () => {
-    const bootFill   = document.getElementById('boot-fill');
-    const bootScreen = document.getElementById('boot-screen');
+    const bootScreen  = document.getElementById('boot-screen');
     const loginScreen = document.getElementById('login-screen');
-    const bootLog    = document.getElementById('boot-log');
+    const bootLog     = document.getElementById('boot-log');
+    const bootLabel   = document.getElementById('boot-label');
+    const arcFill     = document.getElementById('boot-arc-fill');
     let progress = 0;
 
-    /* Kernel boot messages */
+    /* ---- Aurora canvas ---- */
+    initAuroraCanvas();
+
+    /* ---- Typewriter for "Portfolio OS" ---- */
+    const labelText = 'Portfolio  OS';
+    let labelIdx = 0;
+    const labelInterval = setInterval(() => {
+        if (labelIdx <= labelText.length) {
+            if (bootLabel) bootLabel.textContent = labelText.slice(0, labelIdx);
+            labelIdx++;
+        } else {
+            clearInterval(labelInterval);
+        }
+    }, 80);
+
+    /* ---- Kernel boot messages ---- */
     const bootMessages = [
-        'IOKit: Starting IOPlatformExpertDevice…',
-        'Kernel extensions loaded…',
-        'Initializing network stack…',
-        'Loading audio subsystem…',
-        'Mounting filesystems…',
-        'Starting WindowServer…',
-        'Launching Dock.app…',
-        'portfolio: ready ✓',
+        { ts: '0.001', msg: 'IOKit: Starting IOPlatformExpertDevice…' },
+        { ts: '0.042', msg: 'Kernel extensions loaded' },
+        { ts: '0.118', msg: 'Initializing network stack…' },
+        { ts: '0.203', msg: 'Loading audio subsystem…' },
+        { ts: '0.341', msg: 'Mounting filesystems…' },
+        { ts: '0.489', msg: 'Starting WindowServer…' },
+        { ts: '0.612', msg: 'Launching Dock.app…' },
+        { ts: '0.798', msg: 'portfolio: ready  ✓' },
     ];
     let msgIdx = 0;
 
     function addBootMsg() {
         if (msgIdx >= bootMessages.length || !bootLog) return;
+        const { ts, msg } = bootMessages[msgIdx++];
         const p = document.createElement('p');
-        p.textContent = bootMessages[msgIdx++];
+        const isLast = msg.includes('✓');
+        p.innerHTML = `<span class="log-ts">[${ts}]</span><span class="${isLast ? 'log-ok' : 'log-txt'}"> ${msg}</span>`;
         bootLog.appendChild(p);
         if (bootLog.children.length > 4) bootLog.removeChild(bootLog.firstChild);
     }
-
     const msgInterval = setInterval(addBootMsg, 280);
+
+    /* ---- Arc progress ---- */
+    const ARC_CIRCUMFERENCE = 339.3; // 2π × 54
+    function setArcProgress(pct) {
+        if (!arcFill) return;
+        arcFill.style.strokeDashoffset = ARC_CIRCUMFERENCE * (1 - pct / 100);
+    }
 
     const bootInterval = setInterval(() => {
         progress += Math.random() * 7 + 2;
@@ -92,17 +116,23 @@ document.addEventListener('DOMContentLoaded', () => {
             progress = 100;
             clearInterval(bootInterval);
             clearInterval(msgInterval);
+            clearInterval(labelInterval);
+            setArcProgress(100);
+            /* Complete log */
+            if (bootLabel) bootLabel.textContent = 'Portfolio  OS  ◆';
+            /* Play chime then transition */
+            playBootChime();
             setTimeout(() => {
                 bootScreen.classList.add('hidden');
                 loginScreen.classList.remove('hidden');
                 const pi = document.getElementById('password-input');
                 if (pi) pi.focus();
-            }, 500);
+            }, 700);
         }
-        bootFill.style.width = progress + '%';
+        setArcProgress(progress);
     }, 130);
 
-    /* Clocks */
+    /* ---- Clocks ---- */
     updateLoginClock();
     setInterval(updateLoginClock, 1000);
     updateMenuClock();
@@ -113,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tt) tt.textContent = new Date().toUTCString();
 
     /* Login handlers */
-    const loginBtn = document.getElementById('login-btn');
+    const loginBtn      = document.getElementById('login-btn');
     const passwordInput = document.getElementById('password-input');
     if (loginBtn)      loginBtn.addEventListener('click', doLogin);
     if (passwordInput) passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -139,11 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
         showContextMenu(e.clientX, e.clientY);
     });
     document.addEventListener('click', e => {
-        if (!e.target.closest('#context-menu')) hideContextMenu();
+        if (!e.target.closest('#context-menu'))                         hideContextMenu();
         if (!e.target.closest('#spotlight') && !e.target.closest('.spotlight-btn')) hideSpotlight();
         if (!e.target.closest('#control-center') && !e.target.closest('.cc-trigger')) hideControlCenter();
-        if (!e.target.closest('#notif-center') && !e.target.closest('.menu-clock')) hideNotifCenter();
-        if (!e.target.closest('.menu-dropdown')) closeAllDropdowns();
+        if (!e.target.closest('#notif-center') && !e.target.closest('.menu-clock'))   hideNotifCenter();
+        if (!e.target.closest('.menu-dropdown'))                        closeAllDropdowns();
     });
 
     /* Keyboard shortcuts */
@@ -177,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* Menu dropdowns */
     document.querySelectorAll('.menu-dropdown').forEach(dd => {
-        const btn = dd.querySelector('.menu-btn');
+        const btn   = dd.querySelector('.menu-btn');
         const panel = dd.querySelector('.dropdown-panel');
         if (!btn || !panel) return;
         btn.addEventListener('click', e => {
@@ -196,9 +226,116 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* Notification Centre date */
     updateNCDate();
+
+    /* Tab visibility easter egg */
+    document.addEventListener('visibilitychange', () => {
+        document.title = document.hidden
+            ? '👀 Come back...'
+            : 'Portfolio — macOS Sonoma';
+    });
+
+    /* Desktop mouse parallax */
+    initParallax();
 });
 
-/* ==================== DYNAMIC WALLPAPER ==================== */
+/* ==================== AURORA CANVAS (Boot) ==================== */
+function initAuroraCanvas() {
+    const canvas = document.getElementById('boot-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width  = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+
+    const bands = [
+        { hue: 260, x: 0.2,  y: 0.3, r: 0.55, speed: 0.0003, amp: 0.08 },
+        { hue: 190, x: 0.7,  y: 0.4, r: 0.50, speed: 0.0004, amp: 0.07 },
+        { hue: 150, x: 0.45, y: 0.6, r: 0.45, speed: 0.0002, amp: 0.06 },
+        { hue: 300, x: 0.85, y: 0.25,r: 0.40, speed: 0.0005, amp: 0.05 },
+    ];
+
+    let t = 0, auroraId;
+    function draw() {
+        t++;
+        ctx.clearRect(0, 0, W, H);
+
+        bands.forEach(b => {
+            const cx = (b.x + Math.sin(t * b.speed * 0.7) * b.amp) * W;
+            const cy = (b.y + Math.cos(t * b.speed)      * b.amp) * H;
+            const r  = b.r * Math.min(W, H);
+            const hue = (b.hue + t * 0.02) % 360;
+
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+            grad.addColorStop(0,   `hsla(${hue},70%,55%,0.18)`);
+            grad.addColorStop(0.4, `hsla(${hue},60%,45%,0.09)`);
+            grad.addColorStop(1,   `hsla(${hue},50%,30%,0)`);
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+        });
+
+        auroraId = requestAnimationFrame(draw);
+    }
+    draw();
+
+    /* Stop aurora when boot screen hides */
+    const bs = document.getElementById('boot-screen');
+    if (bs) {
+        new MutationObserver(() => {
+            if (bs.classList.contains('hidden')) cancelAnimationFrame(auroraId);
+        }).observe(bs, { attributes: true, attributeFilter: ['class'] });
+    }
+    window.addEventListener('resize', () => {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    });
+}
+
+/* ==================== BOOT CHIME (Web Audio) ==================== */
+function playBootChime() {
+    try {
+        const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.4);
+        gain.connect(ctx.destination);
+
+        const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 — major chord
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+            osc.connect(gain);
+            osc.start(ctx.currentTime + i * 0.08);
+            osc.stop(ctx.currentTime + 1.6);
+        });
+    } catch (e) { /* silently skip if audio not available */ }
+}
+
+/* ==================== PARALLAX WALLPAPER ==================== */
+function initParallax() {
+    document.addEventListener('mousemove', e => {
+        if (locked) return;
+        const xPct = (e.clientX / window.innerWidth  - 0.5) * 2; // -1 to 1
+        const yPct = (e.clientY / window.innerHeight - 0.5) * 2;
+        const depth = 8;
+        document.body.style.setProperty('--parallax-x', `${xPct * depth}px`);
+        document.body.style.setProperty('--parallax-y', `${yPct * depth}px`);
+    });
+}
+
+/* ==================== DESKTOP OVERLAY ==================== */
+let openWindowCount = 0;
+function showDesktopOverlay() {
+    openWindowCount++;
+    document.getElementById('desktop-overlay')?.classList.add('active');
+}
+function hideDesktopOverlay() {
+    openWindowCount = Math.max(0, openWindowCount - 1);
+    if (openWindowCount === 0) document.getElementById('desktop-overlay')?.classList.remove('active');
+}
 function applyDynamicWallpaper() {
     const saved = localStorage.getItem('mac-wall');
     if (saved) { setWallpaper(saved, false); return; }
@@ -323,7 +460,27 @@ function updateNCDate() {
 
 /* ==================== UNLOCK ==================== */
 function doLogin() {
-    const ls = document.getElementById('login-screen');
+    const pi   = document.getElementById('password-input');
+    const wrap = document.getElementById('password-field-wrap');
+    const hint = document.getElementById('login-hint-text');
+
+    /* Require at least something typed — otherwise shake */
+    if (pi && pi.value.trim() === '') {
+        if (wrap) {
+            wrap.classList.remove('shake');
+            void wrap.offsetWidth; /* force reflow to restart animation */
+            wrap.classList.add('shake');
+            setTimeout(() => wrap.classList.remove('shake'), 600);
+        }
+        if (hint) {
+            hint.textContent = 'Password required';
+            hint.classList.add('wrong');
+            setTimeout(() => { hint.textContent = 'Touch ID or Enter Password'; hint.classList.remove('wrong'); }, 1800);
+        }
+        return;
+    }
+
+    const ls      = document.getElementById('login-screen');
     const desktop = document.getElementById('desktop');
     ls.classList.add('unlocking');
     setTimeout(() => {
@@ -548,19 +705,15 @@ function openWindow(win) {
         win.style.top  = Math.max(40, (window.innerHeight - h) / 4 + (Math.random()-0.5)*40) + 'px';
     }
     bringFront(win);
+    showDesktopOverlay();
     /* Bounce dock icon */
-    const dotId  = 'dot-' + win.id;
-    const dot    = document.getElementById(dotId);
+    const dot = document.getElementById('dot-' + win.id);
     if (dot) dot.classList.add('visible');
     const dockItem = document.querySelector(`.dock-item[data-app="${win.id}"]`);
     if (dockItem) {
         const art = dockItem.querySelector('.dock-icon-art');
-        if (art) {
-            art.classList.add('bouncing');
-            setTimeout(() => art.classList.remove('bouncing'), 700);
-        }
+        if (art) { art.classList.add('bouncing'); setTimeout(() => art.classList.remove('bouncing'), 700); }
     }
-    /* Special init for certain windows */
     if (win.id === 'window-music') initMusicVisualizer();
     if (win.id === 'window-vscode') buildVSCode();
 }
@@ -572,6 +725,7 @@ function closeWindow(id) {
     win.classList.remove('minimized');
     const dot = document.getElementById('dot-' + id);
     if (dot) dot.classList.remove('visible');
+    hideDesktopOverlay();
 }
 
 function minimizeWindow(id) {
