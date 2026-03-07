@@ -16,23 +16,130 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236e56cf'/%3E%3Cstop offset='1' stop-color='%2300d2ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,4 93,27 93,73 50,96 7,73 7,27' fill='%230d0d1a' stroke='url(%23g)' stroke-width='3'/%3E%3Ctext x='50' y='56' text-anchor='middle' font-family='monospace' font-size='28' font-weight='700' fill='url(%23g)'%3ES%3C/text%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='monospace' font-size='11' fill='rgba(255,255,255,0.4)'%3E%3C/%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- ===================== MOBILE FALLBACK ===================== -->
-<div id="mobile-fallback">
-    <div class="mobile-dialog">
-        <svg viewBox="0 0 384 512" width="48" height="48" fill="rgba(255,255,255,0.9)">
-            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
-        </svg>
-        <h2>Desktop Required</h2>
-        <p>This portfolio is a full macOS desktop environment.<br>Like all good developer tools, it requires a real screen.</p>
-        <p class="mobile-sub">Please open on a desktop or laptop browser.</p>
-        <div class="mobile-hint">
-            <span>💻</span>
-            <span>Minimum width: 1024px</span>
-        </div>
+<!-- ===================== MOBILE COMPANION ===================== -->
+<div id="mobile-companion">
+    <div class="mob-status-bar">
+        <span class="mob-time" id="mob-time">12:00</span>
+        <span class="mob-notch"></span>
+        <span class="mob-icons">
+            <svg viewBox="0 0 640 512" width="14" height="14" fill="currentColor"><path d="M54.2 202.9C123.2 136.7 216.8 96 320 96s196.8 40.7 265.8 106.9c12.8 12.2 33 11.8 45.2-1s11.8-33-1-45.2C549.7 79.5 440.4 32 320 32S90.3 79.5 10.3 156.7c-12.8 12.2-13.2 32.3-1 45.2s32.3 13.2 45.2 1z"/></svg>
+            <svg viewBox="0 0 576 512" width="16" height="16" fill="currentColor"><path d="M464 160c8.8 0 16 7.2 16 16v160c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16H464zM80 96C35.8 96 0 131.8 0 176V336c0 44.2 35.8 80 80 80H464c44.2 0 80-35.8 80-80v-16c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32V176c0-44.2-35.8-80-80-80H80zm320 96H96V320H400V192z"/></svg>
+        </span>
+    </div>
+    <div class="mob-scroll">
+        <!-- Hero -->
+        <section class="mob-hero">
+            <div class="mob-avatar-wrap">
+                <img src="User/avatar.jpg" alt="Sunil Saini" class="mob-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                <div class="mob-avatar-fallback" style="display:none;">S</div>
+            </div>
+            <h1 class="mob-name">Sunil Saini</h1>
+            <p class="mob-role">Full-Stack Developer & ML Enthusiast</p>
+            <div class="mob-status-badge">
+                <span class="mob-status-dot"></span>
+                Available for work
+            </div>
+        </section>
+
+        <!-- About -->
+        <section class="mob-section">
+            <h2 class="mob-section-title">About</h2>
+            <div class="mob-card">
+                <p>Passionate full-stack developer who loves building beautiful, performant web experiences. Focused on <strong>Django</strong> and <strong>React</strong>.</p>
+                <p>This portfolio is a full macOS desktop environment built from scratch with zero dependencies. Open on desktop for the full experience!</p>
+            </div>
+        </section>
+
+        <!-- Skills -->
+        <section class="mob-section">
+            <h2 class="mob-section-title">Skills</h2>
+            <div class="mob-tags">
+                <span class="mob-tag">JavaScript</span>
+                <span class="mob-tag">TypeScript</span>
+                <span class="mob-tag">Python</span>
+                <span class="mob-tag">React</span>
+                <span class="mob-tag">Next.js</span>
+                <span class="mob-tag">Django</span>
+                <span class="mob-tag">Node.js</span>
+                <span class="mob-tag">Docker</span>
+                <span class="mob-tag">PostgreSQL</span>
+                <span class="mob-tag">MongoDB</span>
+                <span class="mob-tag">AWS</span>
+                <span class="mob-tag">Git</span>
+                <span class="mob-tag">ML / AI</span>
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section class="mob-section">
+            <h2 class="mob-section-title">Projects</h2>
+            <a href="https://github.com/Sunil0620" target="_blank" class="mob-project-card">
+                <div class="mob-project-icon" style="background:linear-gradient(135deg,#6e56cf,#00d2ff);">🤖</div>
+                <div class="mob-project-info">
+                    <h3>AI Code Agent</h3>
+                    <p>Autonomous AI that debugs code in real time using LLMs.</p>
+                    <div class="mob-project-tags"><span>Python</span><span>LLM</span><span>GPT-4</span></div>
+                </div>
+            </a>
+            <a href="https://github.com/Sunil0620" target="_blank" class="mob-project-card">
+                <div class="mob-project-icon" style="background:linear-gradient(135deg,#ff375f,#ff9f0a);">🛒</div>
+                <div class="mob-project-info">
+                    <h3>E-Commerce Platform</h3>
+                    <p>Full-stack storefront with Stripe payments & CMS.</p>
+                    <div class="mob-project-tags"><span>Next.js</span><span>Stripe</span><span>Prisma</span></div>
+                </div>
+            </a>
+            <a href="https://github.com/Sunil0620/Portfolio" target="_blank" class="mob-project-card">
+                <div class="mob-project-icon" style="background:linear-gradient(135deg,#007aff,#30d158);">🖥️</div>
+                <div class="mob-project-info">
+                    <h3>macOS Portfolio</h3>
+                    <p>This hyper-realistic desktop environment in your browser.</p>
+                    <div class="mob-project-tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
+                </div>
+            </a>
+            <a href="https://github.com/Sunil0620" target="_blank" class="mob-project-card">
+                <div class="mob-project-icon" style="background:linear-gradient(135deg,#ff9f0a,#ff375f);">📊</div>
+                <div class="mob-project-info">
+                    <h3>Analytics Dashboard</h3>
+                    <p>Real-time data visualization with D3.js & WebSockets.</p>
+                    <div class="mob-project-tags"><span>React</span><span>D3.js</span><span>WS</span></div>
+                </div>
+            </a>
+        </section>
+
+        <!-- Contact -->
+        <section class="mob-section">
+            <h2 class="mob-section-title">Contact</h2>
+            <div class="mob-card">
+                <a href="mailto:sunilsaini5652@gmail.com" class="mob-contact-link">
+                    <span>📧</span>
+                    <div><strong>Email</strong><small>sunilsaini5652@gmail.com</small></div>
+                </a>
+                <a href="https://github.com/Sunil0620" target="_blank" class="mob-contact-link">
+                    <span>🐙</span>
+                    <div><strong>GitHub</strong><small>github.com/Sunil0620</small></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Desktop CTA -->
+        <section class="mob-section mob-cta">
+            <div class="mob-card" style="text-align:center;">
+                <p style="font-size:28px;margin-bottom:8px;">💻</p>
+                <p><strong>Full Desktop Experience</strong></p>
+                <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;">Boot sequence, music player, terminal, VS Code clone, Spotlight search & more. Open on desktop!</p>
+            </div>
+        </section>
+
+        <footer class="mob-footer">
+            <p>Built with zero dependencies</p>
+            <p>HTML + CSS + JS</p>
+        </footer>
     </div>
 </div>
 
@@ -490,25 +597,44 @@
                     <div class="sidebar-item"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#30d158;margin-right:6px;"></span> Open Source</div>
                 </aside>
                 <main class="finder-main">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#30d158;box-shadow:0 0 8px rgba(48,209,88,0.5);animation:statusPulse 2s ease-in-out infinite;"></span>
-                        <span style="font-size:12px;color:var(--text-secondary);font-weight:500;letter-spacing:0.5px;">AVAILABLE FOR WORK</span>
-                        <style>@keyframes statusPulse{0%,100%{opacity:1}50%{opacity:0.4}}</style>
+                    <div class="about-status-indicator">
+                        <span class="about-status-dot"></span>
+                        Available for work
                     </div>
-                    <h2>Hello, I'm Sunil 👋</h2>
+                    <h2 class="gradient-text" style="font-size:24px;margin-bottom:12px;">Hello, I'm Sunil</h2>
                     <p>I'm a passionate <strong>full-stack developer & ML enthusiast</strong> who loves building beautiful, performant web experiences that push the boundaries of what the browser can do.</p>
                     <p>Focused on <strong>Django</strong> and <strong>React</strong>. I turn coffee into code and ideas into reality — one commit at a time.</p>
                     <p>This entire desktop environment is built <strong>from scratch</strong> — no frameworks, no libraries, zero dependencies. Just pure HTML, CSS &amp; JS.</p>
-                    <p>Try: <strong>⌘Space</strong> for Spotlight &nbsp;·&nbsp; <strong>right-click</strong> the desktop &nbsp;·&nbsp; <strong>F3</strong> for Mission Control</p>
+
+                    <h4 class="about-section-title">Proficiency</h4>
+                    <div class="skill-bar-wrap"><div class="skill-bar-label"><span>JavaScript / React</span><span>92%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="92"></div></div></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar-label"><span>Python / Django</span><span>88%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar-label"><span>CSS / UI Design</span><span>95%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="95"></div></div></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar-label"><span>ML / AI</span><span>78%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="78"></div></div></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar-label"><span>DevOps / Cloud</span><span>75%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="75"></div></div></div>
+
+                    <h4 class="about-section-title">Stack</h4>
                     <div class="about-tags">
-                        <span class="tag">Full-Stack</span>
-                        <span class="tag">Django</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">Python</span>
                         <span class="tag">React</span>
+                        <span class="tag">Next.js</span>
+                        <span class="tag">Django</span>
+                        <span class="tag">Node.js</span>
+                        <span class="tag">Docker</span>
+                        <span class="tag">PostgreSQL</span>
+                        <span class="tag">AWS</span>
                         <span class="tag">ML / AI</span>
-                        <span class="tag">UI/UX</span>
-                        <span class="tag">Open Source</span>
-                        <span class="tag">Clean Code</span>
+                        <span class="tag">Git</span>
                     </div>
+
+                    <div style="margin-top:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                        <a href="assets/Sunil-Saini-Resume.pdf" target="_blank" class="resume-btn">📄 Download Resume</a>
+                        <a href="https://github.com/Sunil0620" target="_blank" class="resume-btn" style="background:linear-gradient(135deg,#333,#555);">🐙 GitHub</a>
+                    </div>
+
+                    <p style="margin-top:16px;font-size:12px;color:var(--text-tertiary);">Try: <strong style="color:var(--text-secondary);">⌘Space</strong> for Spotlight · <strong style="color:var(--text-secondary);">right-click</strong> desktop · <strong style="color:var(--text-secondary);">F3</strong> Mission Control</p>
                 </main>
             </div>
             <div class="resize-handle" data-win="window-about"></div>
@@ -532,36 +658,40 @@
             </div>
             <div class="window-body safari-body">
                 <div class="project-grid">
-                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')" style="cursor:pointer">
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620','_blank')" style="cursor:pointer">
                         <div class="card-img grad-1"><span class="card-emoji">🤖</span></div>
                         <div class="card-info">
                             <h3>AI Code Agent</h3>
                             <p>An autonomous AI agent that debugs and fixes code issues in real time using LLMs and GPT-4.</p>
                             <div class="card-tags"><span>Python</span><span>LLM</span><span>GPT-4</span></div>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="card-link" onclick="event.stopPropagation()">View on GitHub</a>
                         </div>
                     </div>
-                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')" style="cursor:pointer">
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620','_blank')" style="cursor:pointer">
                         <div class="card-img grad-2"><span class="card-emoji">🛒</span></div>
                         <div class="card-info">
                             <h3>E-Commerce Platform</h3>
                             <p>Full-stack Next.js storefront with Stripe payments, CMS, and real-time inventory management.</p>
                             <div class="card-tags"><span>Next.js</span><span>Stripe</span><span>Prisma</span></div>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="card-link" onclick="event.stopPropagation()">View on GitHub</a>
                         </div>
                     </div>
-                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620/Portfolio', '_blank')" style="cursor:pointer">
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620/Portfolio','_blank')" style="cursor:pointer">
                         <div class="card-img grad-3"><span class="card-emoji">🖥️</span></div>
                         <div class="card-info">
                             <h3>This Portfolio</h3>
                             <p>A hyper-realistic macOS desktop with boot sequence, Music Player, VS Code, Spotlight & more.</p>
                             <div class="card-tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
+                            <a href="https://github.com/Sunil0620/Portfolio" target="_blank" class="card-link" onclick="event.stopPropagation()">View Source</a>
                         </div>
                     </div>
-                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620', '_blank')" style="cursor:pointer">
+                    <div class="project-card" onclick="window.open('https://github.com/Sunil0620','_blank')" style="cursor:pointer">
                         <div class="card-img grad-4"><span class="card-emoji">📊</span></div>
                         <div class="card-info">
                             <h3>Analytics Dashboard</h3>
                             <p>Real-time data visualization with WebSocket streaming, D3.js charts, and live metrics.</p>
                             <div class="card-tags"><span>React</span><span>D3.js</span><span>WS</span></div>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="card-link" onclick="event.stopPropagation()">View on GitHub</a>
                         </div>
                     </div>
                 </div>
@@ -977,6 +1107,20 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Snap preview overlay -->
+    <div id="snap-preview"></div>
+
+    <!-- Keyboard shortcuts hint (first visit) -->
+    <div class="keyboard-hint" id="keyboard-hint" style="display:none;">
+        <span class="kbd">⌘</span><span class="kbd">Space</span>
+        <span class="kbd-hint-text">Spotlight</span>
+        <span style="width:1px;height:16px;background:rgba(255,255,255,0.15);"></span>
+        <span class="kbd">F3</span>
+        <span class="kbd-hint-text">Mission Control</span>
+        <span style="width:1px;height:16px;background:rgba(255,255,255,0.15);"></span>
+        <span class="kbd-hint-text">Right-click desktop for menu</span>
     </div>
 
 </div><!-- /desktop -->

@@ -1937,3 +1937,60 @@ function buildVSCode() {
 
 /* ==================== RESTORE SETTINGS ==================== */
 // (already called in DOMContentLoaded above)
+
+/* ==================== MOBILE COMPANION ==================== */
+(function initMobileCompanion() {
+    const isMobile = window.innerWidth < 1024;
+    if (!isMobile) return;
+
+    /* Update mobile status bar time */
+    function updateMobTime() {
+        const el = document.getElementById('mob-time');
+        if (el) {
+            const now = new Date();
+            el.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+    }
+    updateMobTime();
+    setInterval(updateMobTime, 30000);
+
+    /* Add smooth entrance animations */
+    const sections = document.querySelectorAll('.mob-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    sections.forEach((section, i) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(24px)';
+        section.style.transition = `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`;
+        observer.observe(section);
+    });
+
+    /* Animate hero on load */
+    const hero = document.querySelector('.mob-hero');
+    if (hero) {
+        hero.style.opacity = '0';
+        hero.style.transform = 'translateY(20px)';
+        hero.style.transition = 'opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s';
+        setTimeout(() => {
+            hero.style.opacity = '1';
+            hero.style.transform = 'translateY(0)';
+        }, 100);
+    }
+})();
+
+/* ==================== IMPROVED WALLPAPER TRANSITION ==================== */
+(function improveWallpaper() {
+    /* Pre-load wallpaper images for smoother transitions */
+    const wallImages = ['img/1.jpg','img/2.jpg','img/3.jpg','img/4.jpg','img/5.jpg','img/6.jpg'];
+    wallImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
+})();
