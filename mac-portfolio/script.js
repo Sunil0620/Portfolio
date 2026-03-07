@@ -12,6 +12,7 @@ let missionControlActive = false;
 let masterVolume = 0.7;
 let brightnessLevel = 1.0;
 let focusModeOn = false;
+let dockBase = parseInt(localStorage.getItem('mac-dock-size') || '48');
 
 /* ==================== CUSTOM CURSOR ==================== */
 (function initCursor() {
@@ -492,7 +493,7 @@ function doLogin() {
         if (hint) {
             hint.textContent = 'Password required';
             hint.classList.add('wrong');
-            setTimeout(() => { hint.textContent = 'Touch ID or Enter Password'; hint.classList.remove('wrong'); }, 1800);
+            setTimeout(() => { hint.textContent = 'Enter any password to continue'; hint.classList.remove('wrong'); }, 1800);
         }
         return;
     }
@@ -930,11 +931,15 @@ function makeResizableLeft(handle) {
 function initDock() {
     const wrapper = document.getElementById('dock-wrapper');
     const items   = document.querySelectorAll('.dock-item');
-    const BASE = parseInt(localStorage.getItem('mac-dock-size') || '48');
-    const MAX  = BASE + 28;
+    const MAX_EXTRA = 28;
     const RANGE = 140;
 
+    /* Apply correct initial sizes */
+    applyDockSize(dockBase);
+
     wrapper.addEventListener('mousemove', e => {
+        const BASE = dockBase;
+        const MAX  = BASE + MAX_EXTRA;
         items.forEach(item => {
             const rect = item.getBoundingClientRect();
             const cx = rect.left + rect.width / 2;
@@ -945,11 +950,15 @@ function initDock() {
                 const ease  = (Math.cos(Math.PI * (1 - ratio)) + 1) / 2;
                 w = BASE + (MAX - BASE) * ease;
             }
-            item.style.width = w + 'px';
+            item.style.width  = w + 'px';
+            item.style.height = w + 'px';
         });
     });
     wrapper.addEventListener('mouseleave', () => {
-        items.forEach(item => { item.style.width = BASE + 'px'; });
+        items.forEach(item => {
+            item.style.width  = dockBase + 'px';
+            item.style.height = dockBase + 'px';
+        });
     });
     items.forEach(item => {
         item.addEventListener('click', () => {
@@ -961,6 +970,22 @@ function initDock() {
             if (app) toggleWindow(app);
         });
     });
+}
+
+/* Apply dock size visually (called on init and slider change) */
+function applyDockSize(size) {
+    size = parseInt(size);
+    const artSize = Math.round(size * 0.875);
+    document.querySelectorAll('.dock-item').forEach(item => {
+        item.style.width  = size + 'px';
+        item.style.height = size + 'px';
+    });
+    document.querySelectorAll('.dock-icon-art').forEach(art => {
+        art.style.width  = artSize + 'px';
+        art.style.height = artSize + 'px';
+    });
+    const dock = document.getElementById('dock');
+    if (dock) dock.style.minHeight = (size + 4) + 'px';
 }
 
 /* ==================== WALLPAPER ==================== */
@@ -991,6 +1016,7 @@ function setAppearanceMode(mode, btn, save = true) {
     if (save) localStorage.setItem('mac-appearance', mode);
     const root = document.documentElement;
     if (mode === 'light') {
+        root.classList.add('light-mode');
         root.style.setProperty('--win-bg',           'rgba(245,245,247,0.92)');
         root.style.setProperty('--win-shadow',       '0 22px 70px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.05)');
         root.style.setProperty('--text-primary',     'rgba(0,0,0,0.85)');
@@ -1002,6 +1028,7 @@ function setAppearanceMode(mode, btn, save = true) {
         root.style.setProperty('--glass-bg',         'rgba(0,0,0,0.04)');
         root.style.setProperty('--glass-border',     'rgba(0,0,0,0.1)');
     } else {
+        root.classList.remove('light-mode');
         root.style.setProperty('--win-bg',           'rgba(28,28,30,0.82)');
         root.style.setProperty('--win-shadow',       '0 32px 100px rgba(0,0,0,0.6), 0 8px 32px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(255,255,255,0.08)');
         root.style.setProperty('--text-primary',     'rgba(255,255,255,0.92)');
@@ -1023,8 +1050,9 @@ function setAccentColor(color, dot, save = true) {
 }
 
 function setDockSize(size, save = true) {
-    document.querySelectorAll('.dock-item').forEach(item => { item.style.width = size + 'px'; });
-    if (save) localStorage.setItem('mac-dock-size', size);
+    dockBase = parseInt(size);
+    applyDockSize(dockBase);
+    if (save) localStorage.setItem('mac-dock-size', dockBase);
 }
 
 function updateDevName(name) {
@@ -1037,7 +1065,7 @@ function restoreSettings() {
     const wall    = localStorage.getItem('mac-wall');
     const mode    = localStorage.getItem('mac-appearance') || 'dark';
     const accent  = localStorage.getItem('mac-accent')     || '#007aff';
-    const dockSz  = localStorage.getItem('mac-dock-size')  || '48';
+    const dockSz  = parseInt(localStorage.getItem('mac-dock-size')  || '48');
     const devName = localStorage.getItem('mac-dev-name')   || 'SUN 🌗 :ツ';
 
     if (wall) setWallpaper(wall, false);
@@ -1045,7 +1073,9 @@ function restoreSettings() {
     document.documentElement.style.setProperty('--accent', accent);
     const accentDot = document.querySelector(`.accent-dot[style*="${accent}"]`);
     if (accentDot) accentDot.classList.add('active');
-    document.querySelectorAll('.dock-item').forEach(item => { item.style.width = dockSz + 'px'; });
+    /* Dock size */
+    dockBase = dockSz;
+    applyDockSize(dockSz);
     const devInput = document.getElementById('dev-name-input');
     if (devInput) devInput.value = devName;
     const lu = document.querySelector('.login-username');

@@ -564,7 +564,7 @@ body {
 
 /* =============== NOTIFICATION TOAST =============== */
 .notification {
-    position: fixed; top: 40px; right: 20px; z-index: 5900;
+    position: fixed; top: 40px; right: 20px; z-index: 6200;
     width: 320px;
     background: rgba(40,40,44,0.92);
     backdrop-filter: var(--glass-blur);
@@ -610,6 +610,7 @@ body {
     background: rgba(255,255,255,0.04);
     border-bottom: 0.5px solid rgba(255,255,255,0.07);
     cursor: grab;
+    position: relative;
 }
 .window-header:active { cursor: grabbing; }
 .header-title { font-size: 13px; color: rgba(255,255,255,0.65); font-weight: 500; position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; white-space: nowrap; }
@@ -634,6 +635,7 @@ body {
 
 .window-body {
     flex: 1; overflow: auto; position: relative;
+    color: var(--text-primary);
 }
 
 /* =============== RESIZE HANDLES =============== */
@@ -1007,11 +1009,15 @@ body {
 .vscode-bar { background: #323233 !important; border-bottom: 0.5px solid #1e1e1e !important; }
 .vscode-title { font-size: 12px; color: rgba(255,255,255,0.5) !important; }
 .vscode-body {
-    display: flex; height: 100%;
+    display: flex; flex-direction: column;
     background: #1e1e1e;
     color: #d4d4d4;
     font-family: var(--mono);
     font-size: 13px;
+    overflow: hidden;
+}
+.vscode-main-area {
+    display: flex; flex: 1; overflow: hidden; min-height: 0;
 }
 .vscode-sidebar {
     width: 46px; background: #333333;
@@ -1155,19 +1161,19 @@ body {
 /* =============== DOCK =============== */
 #dock-wrapper {
     position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
-    z-index: 4000; padding: 4px 8px;
+    z-index: 4000; padding: 3px 4px;
     background: rgba(255,255,255,0.14);
     backdrop-filter: var(--glass-blur) saturate(200%);
     border: 0.5px solid rgba(255,255,255,0.2);
     border-radius: 20px;
     box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(0,0,0,0.2);
 }
-#dock { display: flex; align-items: flex-end; gap: 6px; height: 70px; padding: 0 4px; }
+#dock { display: flex; align-items: flex-end; gap: 4px; min-height: 50px; padding: 0 2px; }
 
 .dock-item {
     width: 48px; height: 48px; display: flex; flex-direction: column;
     align-items: center; justify-content: center; position: relative;
-    cursor: pointer !important; transition: width 0.15s ease; flex-shrink: 0;
+    cursor: pointer !important; transition: width 0.15s ease, height 0.15s ease; flex-shrink: 0;
     border-radius: 14px;
 }
 .dock-item::after {
@@ -1185,7 +1191,7 @@ body {
 .dock-icon-art {
     width: 42px; height: 42px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), width 0.15s ease, height 0.15s ease;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 .dock-item:hover .dock-icon-art { transform: translateY(-8px) scale(1.15); }
@@ -1212,7 +1218,7 @@ body {
 .f-eye.l { left:30%; }
 .f-eye.r { right:30%; }
 .f-nose { width:2px;height:3px;background:#556;position:absolute;top:52%;left:50%;transform:translateX(-50%); }
-.f-mouth { width:12px;height:4px;border-bottom:2px solid #334;border-radius:0 0 8px 8px;position:absolute;bottom:28%;left:50%;transform:translateX(-50%); }
+.f-mouth { width:12px;height:4px;border-bottom:2px solid #334;border-radius:0 0 7px 7px;position:absolute;bottom:28%;left:50%;transform:translateX(-50%); }
 
 .terminal-art {
     background: linear-gradient(135deg, #1a2744, #0d1f3c);
@@ -1301,3 +1307,335 @@ body::before {
     transition: background 0.3s ease;
 }
 #desktop-overlay.active { background: rgba(0,0,0,0.12); backdrop-filter: blur(1px); }
+
+/* =============== LIGHT MODE OVERRIDES =============== */
+
+/* ─── Scrollbar ─── */
+html.light-mode ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); }
+html.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.32); }
+html.light-mode * { scrollbar-color: rgba(0,0,0,0.2) transparent; }
+
+/* ─── Cursor ring (dot uses mix-blend-mode:difference so it auto-inverts) ─── */
+html.light-mode #cursor-ring {
+    border-color: rgba(0,0,0,0.35);
+}
+html.light-mode #cursor-ring.hovering { border-color: rgba(0,0,0,0.55); }
+
+/* ─── Menu Bar ─── */
+html.light-mode #menu-bar {
+    background: rgba(235,235,240,0.88);
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+}
+html.light-mode .menu-btn { color: rgba(0,0,0,0.82); }
+html.light-mode .menu-btn:hover,
+html.light-mode .menu-btn.open { background: rgba(0,0,0,0.09); }
+html.light-mode .menu-app-name,
+html.light-mode .apple-btn { color: rgba(0,0,0,0.82); }
+html.light-mode .bar-icon { color: rgba(0,0,0,0.75); }
+html.light-mode .bar-icon:hover { background: rgba(0,0,0,0.08); }
+html.light-mode .menu-clock { color: rgba(0,0,0,0.75); }
+
+/* ─── Dropdown panels ─── */
+html.light-mode .dropdown-panel {
+    background: rgba(248,248,252,0.97);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.14);
+}
+html.light-mode .dd-item { color: rgba(0,0,0,0.82); }
+html.light-mode .dd-divider { background: rgba(0,0,0,0.08); }
+
+/* ─── Context Menu ─── */
+html.light-mode .context-menu {
+    background: rgba(248,248,252,0.97);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 16px 50px rgba(0,0,0,0.14);
+}
+html.light-mode .ctx-item { color: rgba(0,0,0,0.82); }
+html.light-mode .ctx-divider { background: rgba(0,0,0,0.08); }
+
+/* ─── Control Center ─── */
+html.light-mode .control-center {
+    background: rgba(240,240,245,0.96);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.14);
+}
+html.light-mode .cc-tile {
+    background: rgba(255,255,255,0.75);
+    color: rgba(0,0,0,0.8);
+}
+html.light-mode .cc-tile:hover { background: rgba(255,255,255,0.9); }
+html.light-mode .cc-tile.active { background: var(--accent); color: #fff; }
+html.light-mode .cc-tile-icon { color: rgba(0,0,0,0.75); }
+html.light-mode .cc-tile.active .cc-tile-icon { color: #fff; }
+html.light-mode .cc-tile-label { color: rgba(0,0,0,0.55); }
+html.light-mode .cc-tile.active .cc-tile-label { color: rgba(255,255,255,0.85); }
+html.light-mode .cc-tile-sub { color: rgba(0,0,0,0.38); }
+html.light-mode .cc-wide .cc-tile-label { color: rgba(0,0,0,0.8); }
+html.light-mode .cc-wide.active .cc-tile-label { color: rgba(255,255,255,0.9); }
+html.light-mode .cc-section-label { color: rgba(0,0,0,0.45); }
+html.light-mode .cc-slider-track { background: rgba(0,0,0,0.12); }
+html.light-mode input[type="range"].cc-slider {
+    background: rgba(0,0,0,0.12);
+}
+
+/* ─── Notification Centre panel ─── */
+html.light-mode .notif-center {
+    background: rgba(240,240,245,0.96);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.14);
+}
+html.light-mode .nc-header { color: rgba(0,0,0,0.45); }
+html.light-mode .nc-big-date { color: rgba(0,0,0,0.85); }
+html.light-mode .nc-big-day { color: rgba(0,0,0,0.5); }
+html.light-mode .nc-section-label { color: rgba(0,0,0,0.38); }
+html.light-mode .nc-card {
+    background: rgba(255,255,255,0.75);
+    border-color: rgba(0,0,0,0.07);
+}
+html.light-mode .nc-app-name { color: rgba(0,0,0,0.6); }
+html.light-mode .nc-time { color: rgba(0,0,0,0.35); }
+html.light-mode .nc-card-body { color: rgba(0,0,0,0.75); }
+
+/* ─── Notification Toast ─── */
+html.light-mode .notification {
+    background: rgba(248,248,252,0.97);
+    border-color: rgba(0,0,0,0.08);
+    box-shadow: 0 16px 50px rgba(0,0,0,0.12);
+}
+html.light-mode .notif-app { color: rgba(0,0,0,0.5); }
+html.light-mode .notif-body strong { color: rgba(0,0,0,0.85); }
+html.light-mode .notif-body p { color: rgba(0,0,0,0.55); }
+html.light-mode .notif-time { color: rgba(0,0,0,0.38); }
+
+/* ─── Spotlight ─── */
+html.light-mode .spotlight-box {
+    background: rgba(248,248,252,0.97);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.18);
+}
+html.light-mode #spotlight-input { color: rgba(0,0,0,0.85); }
+html.light-mode #spotlight-input::placeholder { color: rgba(0,0,0,0.3); }
+html.light-mode .spotlight-results {
+    background: rgba(248,248,252,0.97);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.14);
+}
+html.light-mode .sl-item { border-bottom-color: rgba(0,0,0,0.05); }
+html.light-mode .sl-label { color: rgba(0,0,0,0.85); }
+html.light-mode .sl-type { color: rgba(0,0,0,0.4); }
+
+/* ─── Desktop Icons ─── */
+html.light-mode .dsk-ico {
+    background: rgba(0,0,0,0.07);
+    border-color: rgba(0,0,0,0.1);
+}
+html.light-mode .desktop-icon:hover .dsk-ico {
+    background: rgba(0,0,0,0.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+html.light-mode .desktop-icon span {
+    color: rgba(0,0,0,0.82);
+    text-shadow: 0 1px 3px rgba(255,255,255,0.8);
+}
+
+/* ─── Window chrome ─── */
+html.light-mode .window {
+    border-color: rgba(0,0,0,0.1);
+}
+html.light-mode .window:focus-within {
+    box-shadow: 0 40px 120px rgba(0,0,0,0.12), 0 8px 32px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.12);
+}
+html.light-mode .window-header {
+    background: rgba(0,0,0,0.04);
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+html.light-mode .header-title { color: rgba(0,0,0,0.5); }
+
+/* ─── Settings window ─── */
+html.light-mode .settings-sidebar,
+html.light-mode .finder-sidebar {
+    background: rgba(0,0,0,0.03);
+    border-right-color: rgba(0,0,0,0.08);
+}
+html.light-mode .toggle-group { background: rgba(0,0,0,0.07); }
+html.light-mode .settings-range {
+    background: rgba(0,0,0,0.14);
+}
+html.light-mode .settings-input {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.12);
+}
+html.light-mode .settings-input::placeholder { color: rgba(0,0,0,0.3); }
+html.light-mode .accent-dot.active { border-color: rgba(0,0,0,0.5); }
+
+/* ─── Tags & URL bar ─── */
+html.light-mode .tag {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.1);
+}
+html.light-mode .url-bar {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.08);
+    color: rgba(0,0,0,0.55);
+}
+
+/* ─── Project cards ─── */
+html.light-mode .project-card {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.08);
+}
+html.light-mode .project-card:hover {
+    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+}
+html.light-mode .card-tags span {
+    background: rgba(0,0,0,0.06);
+}
+
+/* ─── Dock ─── */
+html.light-mode #dock-wrapper {
+    background: rgba(215,215,222,0.80);
+    border-color: rgba(0,0,0,0.14);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.13), 0 0 0 0.5px rgba(0,0,0,0.07);
+}
+html.light-mode .dock-sep { background: rgba(0,0,0,0.18); }
+html.light-mode .dock-dot { background: rgba(0,0,0,0.45); }
+html.light-mode .dock-item::after {
+    background: rgba(245,245,250,0.97);
+    color: rgba(0,0,0,0.85);
+    border: 0.5px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+/* ─── Music Player ─── */
+html.light-mode .music-body {
+    background: linear-gradient(180deg, rgba(250,247,255,0.99), rgba(236,230,252,1));
+}
+html.light-mode .music-art {
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 0.5px rgba(0,0,0,0.08);
+}
+html.light-mode .music-btn { color: rgba(0,0,0,0.6); }
+html.light-mode .music-btn:hover { color: rgba(0,0,0,0.88); }
+html.light-mode .music-play {
+    background: rgba(0,0,0,0.08) !important;
+    color: rgba(0,0,0,0.8);
+}
+html.light-mode .music-play:hover { background: rgba(0,0,0,0.14) !important; }
+html.light-mode .music-visualizer { background: rgba(0,0,0,0.05); }
+html.light-mode .music-progress { background: rgba(0,0,0,0.12); }
+html.light-mode .music-thumb { background: rgba(0,0,0,0.5); }
+html.light-mode .music-playlist { border-top-color: rgba(0,0,0,0.08); }
+html.light-mode .playlist-item:hover { background: rgba(0,0,0,0.05); }
+html.light-mode .playlist-item.active { background: rgba(0,0,0,0.08); }
+
+/* ─── Notes sidebar ─── */
+html.light-mode .notes-sidebar {
+    background: rgba(0,0,0,0.03);
+    border-right-color: rgba(0,0,0,0.08);
+}
+html.light-mode .note-row { border-bottom-color: rgba(0,0,0,0.05); }
+html.light-mode .note-row:hover { background: rgba(0,0,0,0.04); }
+html.light-mode .note-row.active { background: rgba(255,180,0,0.12); }
+html.light-mode .note-row strong { color: rgba(0,0,0,0.82); }
+html.light-mode .note-row small { color: rgba(0,0,0,0.38); }
+
+/* ─── node_modules warning ─── */
+html.light-mode .nm-warning {
+    background: rgba(255,159,10,0.1);
+    border-color: rgba(200,120,0,0.25);
+    color: rgba(140,80,0,0.9);
+}
+html.light-mode .nm-item {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.07);
+    color: rgba(0,0,0,0.55);
+}
+html.light-mode .nm-item:hover { background: rgba(0,0,0,0.07); }
+html.light-mode .nm-item-more { color: rgba(0,0,0,0.35); }
+
+/* ─── Todo window ─── */
+html.light-mode .todo-item { color: rgba(0,0,0,0.6); }
+
+/* ─── About tags ─── */
+html.light-mode .tag { color: rgba(0,0,0,0.6); }
+html.light-mode .tag:hover { color: #fff; }
+
+/* ─── Social links ─── */
+html.light-mode .social-link {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.08);
+    color: rgba(0,0,0,0.82);
+}
+html.light-mode .social-link:hover { background: rgba(0,0,0,0.08); }
+html.light-mode .social-link small { color: rgba(0,0,0,0.38); }
+
+/* ─── Contact form ─── */
+html.light-mode .form-input,
+html.light-mode .form-textarea {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.12);
+    color: rgba(0,0,0,0.85);
+}
+html.light-mode .form-input::placeholder,
+html.light-mode .form-textarea::placeholder { color: rgba(0,0,0,0.35); }
+html.light-mode .form-input:focus,
+html.light-mode .form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+/* ─── Sidebar items (common) ─── */
+html.light-mode .sidebar-item { color: rgba(0,0,0,0.55); }
+html.light-mode .sidebar-item:hover { color: rgba(0,0,0,0.82); }
+html.light-mode .sidebar-item.active { color: #fff; }
+html.light-mode .sidebar-label { color: rgba(0,0,0,0.32); }
+
+/* ─── Settings sidebar items ─── */
+html.light-mode .settings-item { color: rgba(0,0,0,0.55); }
+html.light-mode .settings-item:hover { color: rgba(0,0,0,0.82); }
+html.light-mode .settings-item.active { color: #fff; }
+
+/* ─── Card info text ─── */
+html.light-mode .card-info h3 { color: rgba(0,0,0,0.85); }
+html.light-mode .card-info p  { color: rgba(0,0,0,0.55); }
+html.light-mode .card-tags span {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.45);
+}
+
+/* ─── Window header title ─── */
+html.light-mode .header-title { color: rgba(0,0,0,0.5); }
+
+/* ─── About Mac specs ─── */
+html.light-mode .specs p { color: rgba(0,0,0,0.55); }
+html.light-mode .specs strong { color: rgba(0,0,0,0.85); }
+
+/* ─── Music track/artist ─── */
+html.light-mode .music-track  { color: rgba(0,0,0,0.85); }
+html.light-mode .music-artist { color: rgba(0,0,0,0.5); }
+html.light-mode .music-time   { color: rgba(0,0,0,0.4); }
+html.light-mode .pl-info span { color: rgba(0,0,0,0.78); }
+html.light-mode .pl-info small { color: rgba(0,0,0,0.4); }
+html.light-mode .pl-num       { color: rgba(0,0,0,0.35); }
+html.light-mode .playlist-item.active .pl-num { color: var(--accent); }
+
+/* ─── Wallpaper option labels ─── */
+html.light-mode .wallpaper-opt span { color: rgba(0,0,0,0.55); }
+html.light-mode .settings-pane h3  { color: rgba(0,0,0,0.85); }
+html.light-mode .settings-desc     { color: rgba(0,0,0,0.45); }
+html.light-mode .setting-row label { color: rgba(0,0,0,0.75); }
+html.light-mode .setting-value     { color: rgba(0,0,0,0.45); }
+html.light-mode .toggle-btn        { color: rgba(0,0,0,0.55); }
+html.light-mode .toggle-btn.active { color: #fff; }
+
+/* ─── Control Center slider row ─── */
+html.light-mode .cc-slider-row {
+    background: rgba(0,0,0,0.05);
+}
+html.light-mode .cc-slider-icon { color: rgba(0,0,0,0.6); }
+
+/* ─── Notes bar (keep yellowish tint in light mode too — matches macOS Notes) ─── */
+html.light-mode .window-header.notes-bar {
+    background: linear-gradient(180deg, rgba(255,196,0,0.18), rgba(200,150,0,0.10));
+    border-bottom-color: rgba(200,150,0,0.15);
+}
+
