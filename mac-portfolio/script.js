@@ -1528,6 +1528,15 @@ let matrixAnimId  = null;
 let termHistory   = [];
 let termHistIdx   = -1;
 
+/* Click anywhere in the terminal body to focus the input */
+const termBodyEl = document.getElementById('terminal-body');
+if (termBodyEl) {
+    termBodyEl.addEventListener('click', () => {
+        const ti = document.getElementById('terminal-input');
+        if (ti) ti.focus();
+    });
+}
+
 const termInput = document.getElementById('terminal-input');
 if (termInput) {
     termInput.addEventListener('keydown', e => {
@@ -2147,6 +2156,7 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
     let mouse = { x: -9999, y: -9999, active: false };
     let prevMouse = { x: -9999, y: -9999 };
     let particles = [];
+    let rings = [];
     let animId = null;
     let frame = 0;
     const COUNT = 120;
@@ -2174,9 +2184,13 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
             this.isBurst = isBurst;
             if (isBurst) {
                 const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 8 + 3;
+                /* mix fast outer sparks with slower inner sparks for depth */
+                const speed = Math.random() < 0.4
+                    ? Math.random() * 4 + 1      /* slow inner corona */
+                    : Math.random() * 11 + 5;    /* fast outer sparks */
                 this.vx = Math.cos(angle) * speed;
                 this.vy = Math.sin(angle) * speed;
+                this.friction = Math.random() * 0.04 + 0.84; /* 0.84–0.88 decel */
             } else {
                 this.vx = (Math.random() - 0.5) * 0.6;
                 this.vy = (Math.random() - 0.5) * 0.6;
@@ -2194,7 +2208,15 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
             this.vx *= 0.97; this.vy *= 0.97;
             this.x += this.vx; this.y += this.vy;
             this.r = this.baseR + Math.sin(frame * this.pulseSpeed + this.pulseOffset) * 0.6;
-            if (this.isBurst) { this.life -= 0.012; this.alpha = Math.max(0, this.life); this.r = this.baseR * this.life; }
+            if (this.isBurst) {
+                /* per-particle decel so sparks feel physical */
+                this.vx *= this.friction; this.vy *= this.friction;
+                this.life -= 0.018;
+                /* ease-out alpha: stays bright then drops off smoothly */
+                this.alpha = Math.max(0, Math.pow(this.life, 0.55));
+                this.r = this.baseR * (0.3 + this.life * 0.7);
+                return; /* skip position-wrapping for burst sparks */
+            }
             if (this.x < -30) this.x = W+20; if (this.x > W+30) this.x = -20;
             if (this.y < -30) this.y = H+20; if (this.y > H+30) this.y = -20;
         }
@@ -2256,6 +2278,19 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
         particles = particles.filter(p => !p.isBurst || p.life > 0);
         particles.forEach(p => { p.update(); p.draw(); });
         drawConnections(); drawMouseGlow();
+
+        /* ── shockwave rings ── */
+        rings = rings.filter(rg => rg.life > 0);
+        rings.forEach(rg => {
+            rg.r   += rg.speed;
+            rg.life -= 0.038;
+            const a = Math.max(0, rg.life * rg.maxAlpha);
+            ctx.beginPath();
+            ctx.arc(rg.x, rg.y, rg.r, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${rg.cr},${rg.cg},${rg.cb},${a})`;
+            ctx.lineWidth   = rg.life * 3.5;
+            ctx.stroke();
+        });
         if (mouse.active) {
             const mdx = mouse.x-prevMouse.x, mdy = mouse.y-prevMouse.y;
             const speed = Math.sqrt(mdx*mdx+mdy*mdy);
@@ -2269,8 +2304,8 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
         animId = requestAnimationFrame(animate);
     }
 
-    function start() { resize(); particles = []; for (let i=0;i<COUNT;i++) particles.push(new Particle()); animate(); }
-    function stop()  { if (animId) { cancelAnimationFrame(animId); animId = null; } }
+    function start() { resize(); particles = []; rings = []; for (let i=0;i<COUNT;i++) particles.push(new Particle()); animate(); }
+    function stop()  { if (animId) { cancelAnimationFrame(animId); animId = null; } rings = []; }
 
     const ls = document.getElementById('login-screen');
     if (ls) {
@@ -2278,9 +2313,24 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
         ls.addEventListener('mouseleave', () => { mouse.x=-9999; mouse.y=-9999; mouse.active=false; });
         ls.addEventListener('click', e => {
             if (e.target.closest('.login-container') && e.target !== ls && e.target !== canvas) return;
-            const r=canvas.getBoundingClientRect(); const cx=e.clientX-r.left, cy=e.clientY-r.top;
-            for (let i=0;i<30;i++) { const bp = new Particle(cx,cy,true); bp.baseR=Math.random()*4+2; bp.r=bp.baseR; particles.push(bp); }
-            if (particles.length > 400) particles.splice(0, particles.length-400);
+            const rect = canvas.getBoundingClientRect();
+            const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+            /* ~55 burst particles: mix of sizes */
+            for (let i = 0; i < 55; i++) {
+                const bp = new Particle(cx, cy, true);
+                bp.baseR = i < 20 ? Math.random() * 2 + 1 : Math.random() * 3.5 + 1.5;
+                bp.r = bp.baseR;
+                particles.push(bp);
+            }
+            if (particles.length > 500) particles.splice(0, particles.length - 500);
+            /* primary shockwave ring */
+            const rc = pickColor();
+            rings.push({ x:cx, y:cy, r:4, speed:7, life:1.0, maxAlpha:0.7, cr:rc.r, cg:rc.g, cb:rc.b });
+            /* secondary softer ring, quarter-frame lag */
+            setTimeout(() => {
+                const rc2 = pickColor();
+                rings.push({ x:cx, y:cy, r:4, speed:5, life:0.85, maxAlpha:0.4, cr:rc2.r, cg:rc2.g, cb:rc2.b });
+            }, 60);
         });
     }
     window.addEventListener('resize', resize);
