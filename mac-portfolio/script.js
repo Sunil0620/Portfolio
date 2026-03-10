@@ -1568,32 +1568,40 @@ if (termInput) {
 const TERM_COMMANDS = {
     help:    () => {
         const isRoot = localStorage.getItem('mac-dev-mode') === '1';
-        return `<span class="g">Available commands:</span>
-  <span class="term-cmd">about</span>       — Who I am
-  <span class="term-cmd">skills</span>      — My tech stack (JSON)
-  <span class="term-cmd">projects</span>    — What I've built
-  <span class="term-cmd">contact</span>     — How to reach me
-  <span class="term-cmd">date</span>        — Current UTC time
-  <span class="term-cmd">matrix</span>      — Enter the Matrix 🟩
-  <span class="term-cmd">hack</span>        — Totally hacking 💻
-  <span class="term-cmd">cowsay [text]</span> — Wise words from a cow
-  <span class="term-cmd">sl</span>          — 🚂 Steam locomotive
-  <span class="term-cmd">weather</span>     — ASCII weather report
-  <span class="term-cmd">stats</span>       — Session statistics
-  <span class="term-cmd">snake</span>       — Launch 🐍 Snake game
-  <span class="term-cmd">linkedin</span>    — Open LinkedIn profile
-  <span class="term-cmd">resume</span>      — Download resume
-  <span class="term-cmd">hire</span>        — Why hire me?
-  <span class="term-cmd">sudo make me a sandwich</span> — Classic
-  <span style="color:#ff453a" class="term-cmd">sudo rm -rf /</span> — ⚠️ Don't.
-  <span class="term-cmd">clear</span>       — Clear the terminal
+        return `<span class="g">Available commands</span>
+
+<span class="term-dim">— portfolio —</span>
+  <span class="term-cmd">about</span>      Who I am
+  <span class="term-cmd">skills</span>     Tech stack
+  <span class="term-cmd">projects</span>   What I've built
+  <span class="term-cmd">contact</span>    Get in touch
+
+<span class="term-dim">— links —</span>
+  <span class="term-cmd">linkedin</span>   Open LinkedIn
+  <span class="term-cmd">resume</span>     Download resume
+  <span class="term-cmd">hire</span>       Why hire me?
+
+<span class="term-dim">— fun —</span>
+  <span class="term-cmd">matrix</span>     Enter the Matrix
+  <span class="term-cmd">hack</span>       Totally hacking
+  <span class="term-cmd">snake</span>      Snake game
+  <span class="term-cmd">sl</span>         Steam locomotive
+  <span class="term-cmd">weather</span>    ASCII weather
+  <span class="term-cmd">cowsay</span>     Wisdom from a cow
+  <span class="term-cmd">stats</span>      Session stats
+
+<span class="term-dim">— misc —</span>
+  <span class="term-cmd">date</span>       Current UTC time
+  <span class="term-cmd">clear</span>      Clear terminal
+  <span style="color:#ff453a" class="term-cmd">sudo rm -rf /</span>  ⚠ Don't.
 ${isRoot
-    ? `<span style="color:#00ff41;font-weight:600">  [ ROOT — UNLOCKED ]</span>
-  <span class="term-cmd" style="color:#00ff41">breach</span>      — 💀 Full hack experience
-  <span class="term-cmd" style="color:#ff6b6b">classified</span>  — Classified project list
-  <span class="term-cmd" style="color:#ff6b6b">devlog</span>      — Raw build diary
-  <span class="term-cmd" style="color:#ff6b6b">secrets</span>     — Things I shouldn't share
-  <span class="term-cmd" style="color:#636366">logout</span>      — Exit developer mode`
+    ? `
+<span style="color:#00ff41;font-weight:600">— root —</span>
+  <span class="term-cmd" style="color:#00ff41">breach</span>     Full hack sequence
+  <span class="term-cmd" style="color:#ff6b6b">classified</span> Secret project list
+  <span class="term-cmd" style="color:#ff6b6b">devlog</span>     Raw build diary
+  <span class="term-cmd" style="color:#ff6b6b">secrets</span>    Things I shouldn't share
+  <span class="term-cmd" style="color:#636366">logout</span>     Exit developer mode`
     : ''}`;
     },
     about:   () => `<span class="g">Sunil Saini</span> — Developer &amp; ML Enthusiast
