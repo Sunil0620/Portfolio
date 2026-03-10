@@ -47,6 +47,8 @@ A developer portfolio disguised as a fully functional OS. It boots, logs in, and
 | **Console** | Live filterable log viewer |
 | **Snake** | Playable canvas Snake game |
 | **Trash** | Developer-themed trash items |
+| **node_modules** | Joke Finder window — 2.8M items, 47 GB |
+| **todo.txt** | Interactive developer to-do list |
 
 ### Terminal Commands
 ```
@@ -63,7 +65,7 @@ A few are hidden in plain sight. One involves a classic cheat code. One involves
 
 ## Tech Stack
 
-| | |
+| Layer | Technology |
 |--|--|
 | Markup | Vanilla HTML5 — single `index.html` |
 | Styles | Vanilla CSS3 — single `style.css` |
@@ -110,7 +112,7 @@ mac-portfolio/
 | Profile photo | `User/avatar.jpg` |
 | Custom wallpaper | `User/2.jpg` (slot 2 in Settings) |
 | Resume | `assets/Sunil-Saini-Resume.pdf` |
-| Projects | `PROJECTS` array in `script.js` |
+| Projects | `#window-projects` section in `index.html` |
 | Music playlist | `TRACKS` array in `script.js` |
 
 ---
