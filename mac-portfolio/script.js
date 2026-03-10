@@ -1564,13 +1564,6 @@ const TERM_COMMANDS = {
   <span class="term-cmd">skills</span>      — My tech stack (JSON)
   <span class="term-cmd">projects</span>    — What I've built
   <span class="term-cmd">contact</span>     — How to reach me
-  <span class="term-cmd">whoami</span>      — Identity
-  <span class="term-cmd">neofetch</span>    — System info (dev mode)
-  <span class="term-cmd">ls</span> / <span class="term-cmd">ls -la</span> — List directory
-  <span class="term-cmd">pwd</span>         — Print working directory
-  <span class="term-cmd">uname -a</span>    — Kernel info
-  <span class="term-cmd">uptime</span>      — System uptime
-  <span class="term-cmd">ps aux</span>      — Running processes
   <span class="term-cmd">date</span>        — Current UTC time
   <span class="term-cmd">matrix</span>      — Enter the Matrix 🟩
   <span class="term-cmd">hack</span>        — Totally hacking 💻
@@ -1583,14 +1576,6 @@ const TERM_COMMANDS = {
   <span class="term-cmd">resume</span>      — Download resume
   <span class="term-cmd">hire</span>        — Why hire me?
   <span class="term-cmd">sudo make me a sandwich</span> — Classic
-  <span class="term-cmd">ping google.com</span> — Network test
-  <span class="term-cmd">history</span>     — Command history
-  <span class="term-cmd">df -h</span>       — Disk usage
-  <span class="term-cmd">free -h</span>     — Memory info
-  <span class="term-cmd">curl ifconfig.me</span> — Your IP
-  <span class="term-cmd">cat /etc/hosts</span> — Hosts file
-  <span class="term-cmd">exit</span>        — Close terminal
-  <span class="term-cmd">sudo reboot</span> — Reboot system
   <span style="color:#ff453a" class="term-cmd">sudo rm -rf /</span> — ⚠️ Don't.
   <span class="term-cmd">clear</span>       — Clear the terminal
 ${isRoot
@@ -1599,8 +1584,7 @@ ${isRoot
   <span class="term-cmd" style="color:#ff6b6b">classified</span>  — Classified project list
   <span class="term-cmd" style="color:#ff6b6b">devlog</span>      — Raw build diary
   <span class="term-cmd" style="color:#ff6b6b">secrets</span>     — Things I shouldn't share
-  <span class="term-cmd" style="color:#636366">logout</span>      — Exit developer mode
-  <span class="term-cmd" style="color:#4ea8ff">cat /etc/os-release</span> — OS identity`
+  <span class="term-cmd" style="color:#636366">logout</span>      — Exit developer mode`
     : ''}`;
     },
     about:   () => `<span class="g">Sunil Saini</span> — Developer &amp; ML Enthusiast
@@ -1825,167 +1809,6 @@ To github.com:Sunil0620/Portfolio.git
         return '';
     },
 
-    /* ── Linux commands ── */
-    neofetch: () => {
-        const isRoot = localStorage.getItem('mac-dev-mode') === '1';
-        const username = isRoot ? 'root@portfolio' : 'guest@portfolio';
-        const nameColor = isRoot ? '#ff6b6b' : '#00ff41';
-        const upSecs = Math.floor(performance.now() / 1000);
-        const upMins = Math.floor(upSecs / 60);
-        const upSec2 = upSecs % 60;
-        const memUsed = Math.floor(Math.random() * 400 + 200);
-        return `<div style="display:flex;gap:20px;align-items:flex-start"><span style="color:#ffd60a;white-space:pre;line-height:1.6;font-family:var(--mono)">   .--.
-  |o_o |
-  |:_/ |
- //   \\ \\
-(|     | )
-/'\\_   _/\`\\
-\\___)=(___)/ </span><div style="line-height:1.7;font-family:var(--mono)"><span style="color:${nameColor};font-weight:700">${username}</span>
-<span class="term-dim">--------------</span>
-<span style="color:#ffd60a">OS</span>:      PortfolioOS GNU/Linux x86_64
-<span style="color:#ffd60a">Kernel</span>:  js-6.1.0-portfolio1-ARCH
-<span style="color:#ffd60a">Uptime</span>:  ${upMins}m ${upSec2}s
-<span style="color:#ffd60a">Shell</span>:   bash 5.2.15
-<span style="color:#ffd60a">CPU</span>:     V8 JIT Engine (multi-core)
-<span style="color:#ffd60a">Memory</span>:  ${memUsed}MiB / 8192MiB
-<span style="color:#ffd60a">Theme</span>:   ${isRoot ? 'Hacker Green [CSS]' : 'macOS Light [CSS]'}
-<span style="color:#ffd60a">Contact</span>: sunilsaini5652@gmail.com</div></div>`;
-    },
-
-    whoami: () => localStorage.getItem('mac-dev-mode') === '1' ? 'root' : 'guest',
-
-    'uname -a': () => `Linux portfolio 6.1.0-portfolio1-ARCH #1 SMP PREEMPT_DYNAMIC ${new Date().toDateString()} x86_64 GNU/Linux`,
-    uname:      () => `Linux`,
-
-    pwd: () => localStorage.getItem('mac-dev-mode') === '1'
-        ? `/root/portfolio`
-        : `/home/guest/portfolio`,
-
-    'ls -la': () => `<pre style="line-height:1.5">total 164
-drwxr-xr-x  5 root root    160 ${new Date().toDateString()} .
-drwxr-xr-x 42 root root   1024 ${new Date().toDateString()} ..
--rw-r--r--  1 root root  <span style="color:#ffd60a">52431</span> ${new Date().toDateString()} <span style="color:#00ff41">index.html</span>
--rw-r--r--  1 root root <span style="color:#ffd60a">198742</span> ${new Date().toDateString()} <span style="color:#00ff41">script.js</span>
--rw-r--r--  1 root root  <span style="color:#ffd60a">87610</span> ${new Date().toDateString()} <span style="color:#00ff41">style.css</span>
-drwxr-xr-x  2 root root     64 ${new Date().toDateString()} <span style="color:#4ea8ff">assets/</span>
--rw-r--r--  1 root root    404 ${new Date().toDateString()} robots.txt</pre>`,
-
-    ls: () => `<span style="color:#4ea8ff">assets/</span>  <span style="color:#00ff41">index.html</span>  robots.txt  <span style="color:#00ff41">script.js</span>  <span style="color:#00ff41">style.css</span>`,
-
-    uptime: () => {
-        const s = Math.floor(performance.now() / 1000);
-        const m = Math.floor(s / 60), sec = s % 60;
-        const load = (Math.random() * 0.6 + 0.1).toFixed(2);
-        return `up ${m} min ${sec} sec,  1 user,  load average: ${load}, ${(+load - 0.05).toFixed(2)}, ${(+load - 0.1).toFixed(2)}`;
-    },
-
-    'ps aux': () => `<pre style="line-height:1.5"><span class="term-dim">USER       PID %CPU %MEM COMMAND</span>
-root         1  0.0  0.1  /sbin/init
-root       420  0.3  1.2  portfolio --serve
-root       421  0.1  0.4  music --stream
-root       422  0.0  0.1  presence --monitor
-root       423  2.1  4.8  V8 --jit --optimize
-root       424  0.0  0.2  console --tail
-root       425  0.1  0.3  screensaver --idle</pre>`,
-
-    'cat /etc/os-release': () => `NAME="PortfolioOS"
-VERSION="2.0 (Hacker Edition)"
-ID=portfolioos
-ID_LIKE=arch
-PRETTY_NAME="PortfolioOS 2.0 (Hacker Edition)"
-HOME_URL="<span style="color:#4ea8ff">https://sunilsaini.dev</span>"
-SUPPORT_URL="<span style="color:#4ea8ff">sunilsaini5652@gmail.com</span>"`,
-
-    'man man': () => `<span class="term-dim">man: read the source code. It's all open.</span>`,
-    man:  () => `<span class="term-dim">What manual page do you want? (Hint: there isn't one. Read the source.)</span>`,
-
-    /* ── More fun commands ── */
-    'ping google.com': () => {
-        const out = document.getElementById('terminal-output');
-        const body = document.getElementById('terminal-body');
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
-                const ms = (Math.random() * 14 + 8).toFixed(3);
-                const p = document.createElement('p');
-                p.innerHTML = `<span style="color:rgba(255,255,255,0.7);font-size:12px">64 bytes from 142.250.80.46 (google.com): icmp_seq=${i+1} ttl=118 time=${ms} ms</span>`;
-                if (out) { out.appendChild(p); if (body) body.scrollTop = body.scrollHeight; }
-                if (i === 4) setTimeout(() => {
-                    const s = document.createElement('div');
-                    s.innerHTML = `<span class="term-dim">--- google.com ping statistics ---\n5 packets transmitted, 5 received, 0% packet loss\nrtt min/avg/max = 8.241/11.874/22.011 ms</span>`;
-                    if (out) { out.appendChild(s); if (body) body.scrollTop = body.scrollHeight; }
-                }, 600);
-            }, i * 900);
-        }
-        return `<span class="term-dim">PING google.com (142.250.80.46) 56(84) bytes of data.</span>`;
-    },
-
-    ping: () => `<span style="color:#ff453a">ping: usage: ping [-c count] host</span>`,
-
-    history: () => `<pre style="line-height:1.6;font-size:12px">    1  git clone https://github.com/Sunil0620/portfolio
-    2  cd portfolio && ls -la
-    3  vim index.html   <span class="term-dim"># 6 hours later → :wq</span>
-    4  git commit -m <span style="color:#ffd60a">"init: works on my machine"</span>
-    5  git commit -m <span style="color:#ffd60a">"fix: still works on my machine"</span>
-    6  git commit -m <span style="color:#ffd60a">"fix: more fixes"</span>
-    7  npm install      <span class="term-dim"># why is node_modules 800MB</span>
-    8  rm -rf node_modules && npm install  <span class="term-dim"># immediate regret</span>
-    9  git commit -m <span style="color:#ffd60a">"feat: portfolio complete"</span>
-   10  git commit -m <span style="color:#ffd60a">"feat: portfolio ACTUALLY complete"</span>
-   11  git commit -m <span style="color:#ffd60a">"feat: kernel panic easter egg (0 regrets)"</span>
-   12  git push --force  <span class="term-dim"># YOLO on main</span>
-   13  sudo rm -rf /     <span class="term-dim"># see what happens</span>
-   14  clear</pre>`,
-
-    exit: () => {
-        setTimeout(() => closeWindow('window-skills'), 400);
-        return `<span class="term-dim">logout</span>`;
-    },
-
-    'df -h': () => `<pre style="line-height:1.6;font-size:12px"><span class="term-dim">Filesystem      Size  Used Avail Use% Mounted on</span>
-/dev/sda1        50G   23G   25G  48% /
-/dev/sda2       100G   61G   33G  65% /home
-tmpfs           3.9G  1.2M  3.9G   1% /run
-portfolio-fs    ∞     ∞     ∞    100% /www</pre>`,
-
-    'free -h': () => {
-        const used = Math.floor(Math.random() * 400 + 200);
-        return `<pre style="line-height:1.6;font-size:12px"><span class="term-dim">               total    used    free  shared  buff/cache  available</span>
-Mem:             8.0G   ${used}M  6.4G    1.2M        240M       7.1G
-Swap:            2.0G     0B   2.0G</pre>`;
-    },
-
-    'curl ifconfig.me': () => `<span style="color:#00ff41">203.0.113.${Math.floor(Math.random()*254+1)}</span>  <span class="term-dim"># (your public IP — not actually)</span>`,
-
-    ':(){ :|:& };:': () => {
-        let n = 0;
-        const iv = setInterval(() => {
-            showNotification(`fork: Resource temporarily unavailable (pid ${1000 + Math.floor(Math.random()*8000)})`);
-            if (++n >= 8) {
-                clearInterval(iv);
-                setTimeout(() => showNotification('🛡️ OOM Killer activated — fork bomb contained'), 500);
-            }
-        }, 180);
-        return `<span style="color:#ff453a;font-weight:700">fork: Resource temporarily unavailable
-fork: Resource temporarily unavailable
-fork: Resource temporarily unavailable</span>
-<span class="term-dim">... (suppressed 48,291 more)</span>
-<span style="color:#00ff41">🛡️ OOM Killer activated — processes terminated</span>`;
-    },
-
-    'cat /etc/hosts': () => `<pre style="line-height:1.6;font-size:12px">127.0.0.1   localhost
-127.0.1.1   portfolio
-::1         localhost ip6-localhost
-
-<span class="term-dim"># custom entries</span>
-0.0.0.0     distractions.com
-0.0.0.0     twitter.com   <span class="term-dim"># productivity hack</span>
-0.0.0.0     reddit.com    <span class="term-dim"># also productivity</span>
-127.0.0.1   hire.me       <span class="term-dim"># hopeful</span></pre>`,
-
-    'sudo reboot': () => {
-        setTimeout(() => { location.reload(); }, 1500);
-        return `<span style="color:#ffd60a">Rebooting system...</span>`;
-    },
     dev: () => {
         if (localStorage.getItem('mac-dev-mode') === '1')
             return `<span class="term-dim">Already in developer mode.</span>`;
