@@ -638,6 +638,10 @@ function updateCCState() {
     if (focusTile) focusTile.classList.toggle('active', focusModeOn);
 }
 function ccToggleDark() {
+    if (localStorage.getItem('mac-dev-mode') === '1') {
+        showNotification('🔒 Appearance is locked in developer mode');
+        return;
+    }
     const mode = localStorage.getItem('mac-appearance') || 'dark';
     const newMode = mode === 'dark' ? 'light' : 'dark';
     setAppearanceMode(newMode, null);
@@ -916,7 +920,6 @@ function openWindow(win) {
         setTimeout(() => {
             _consoleLog('human','warn','HumanInteraction: non-automated click pattern detected');
             _consoleLog('human','warn','Visitor classification: developer | curiosity_score: HIGH');
-            _consoleLog('human','info','Tip: try the Konami code on the desktop ↑↑↓↓←→←→BA');
         }, 600);
     }
     showDesktopOverlay();
@@ -1208,7 +1211,10 @@ function applyDockSize(size) {
 
 /* ==================== WALLPAPER ==================== */
 function setWallpaper(name, save = true) {
-    const num = name.replace('img', '');
+    if (save && localStorage.getItem('mac-dev-mode') === '1') {
+        showNotification('🔒 Wallpaper is locked in developer mode');
+        return;
+    }
     document.body.style.background = `url('img/${num}.jpg') center/cover no-repeat`;
     document.body.style.animation  = 'none';
     if (save) localStorage.setItem('mac-wall', name);
@@ -1225,6 +1231,10 @@ function switchSettingsPane(pane) {
 }
 
 function setAppearanceMode(mode, btn, save = true) {
+    if (save && localStorage.getItem('mac-dev-mode') === '1') {
+        showNotification('🔒 Appearance is locked in developer mode');
+        return;
+    }
     if (btn) {
         document.querySelectorAll('.toggle-btn').forEach(b => {
             if (b.parentNode === btn.parentNode) b.classList.remove('active');
@@ -1261,6 +1271,10 @@ function setAppearanceMode(mode, btn, save = true) {
 }
 
 function setAccentColor(color, dot, save = true) {
+    if (save && localStorage.getItem('mac-dev-mode') === '1') {
+        showNotification('🔒 Accent color is locked in developer mode');
+        return;
+    }
     document.documentElement.style.setProperty('--accent', color);
     document.querySelectorAll('.accent-dot').forEach(d => d.classList.remove('active'));
     if (dot) dot.classList.add('active');
@@ -1268,6 +1282,10 @@ function setAccentColor(color, dot, save = true) {
 }
 
 function setDockSize(size, save = true) {
+    if (save && localStorage.getItem('mac-dev-mode') === '1') {
+        showNotification('🔒 Dock size is locked in developer mode');
+        return;
+    }
     dockBase = parseInt(size);
     applyDockSize(dockBase);
     if (save) localStorage.setItem('mac-dock-size', dockBase);
@@ -1538,13 +1556,20 @@ if (termInput) {
 }
 
 const TERM_COMMANDS = {
-    help:    () => `<span class="g">Available commands:</span>
+    help:    () => {
+        const isRoot = localStorage.getItem('mac-dev-mode') === '1';
+        return `<span class="g">Available commands:</span>
   <span class="term-cmd">about</span>       — Who I am
   <span class="term-cmd">skills</span>      — My tech stack (JSON)
   <span class="term-cmd">projects</span>    — What I've built
   <span class="term-cmd">contact</span>     — How to reach me
   <span class="term-cmd">whoami</span>      — Identity
-  <span class="term-cmd">neofetch</span>    — System info (aesthetic)
+  <span class="term-cmd">neofetch</span>    — System info (dev mode)
+  <span class="term-cmd">ls</span> / <span class="term-cmd">ls -la</span> — List directory
+  <span class="term-cmd">pwd</span>         — Print working directory
+  <span class="term-cmd">uname -a</span>    — Kernel info
+  <span class="term-cmd">uptime</span>      — System uptime
+  <span class="term-cmd">ps aux</span>      — Running processes
   <span class="term-cmd">date</span>        — Current UTC time
   <span class="term-cmd">matrix</span>      — Enter the Matrix 🟩
   <span class="term-cmd">hack</span>        — Totally hacking 💻
@@ -1557,8 +1582,26 @@ const TERM_COMMANDS = {
   <span class="term-cmd">resume</span>      — Download resume
   <span class="term-cmd">hire</span>        — Why hire me?
   <span class="term-cmd">sudo make me a sandwich</span> — Classic
-  <span class="term-cmd">clear</span>       — Clear the terminal`,
-
+  <span class="term-cmd">ping google.com</span> — Network test
+  <span class="term-cmd">history</span>     — Command history
+  <span class="term-cmd">df -h</span>       — Disk usage
+  <span class="term-cmd">free -h</span>     — Memory info
+  <span class="term-cmd">curl ifconfig.me</span> — Your IP
+  <span class="term-cmd">cat /etc/hosts</span> — Hosts file
+  <span class="term-cmd">exit</span>        — Close terminal
+  <span class="term-cmd">sudo reboot</span> — Reboot system
+  <span style="color:#ff453a" class="term-cmd">sudo rm -rf /</span> — ⚠️ Don't.
+  <span class="term-cmd">clear</span>       — Clear the terminal
+${isRoot
+    ? `<span style="color:#00ff41;font-weight:600">  [ ROOT — UNLOCKED ]</span>
+  <span class="term-cmd" style="color:#00ff41">breach</span>      — 💀 Full hack experience
+  <span class="term-cmd" style="color:#ff6b6b">classified</span>  — Classified project list
+  <span class="term-cmd" style="color:#ff6b6b">devlog</span>      — Raw build diary
+  <span class="term-cmd" style="color:#ff6b6b">secrets</span>     — Things I shouldn't share
+  <span class="term-cmd" style="color:#636366">logout</span>      — Exit developer mode
+  <span class="term-cmd" style="color:#4ea8ff">cat /etc/os-release</span> — OS identity`
+    : ''}`;
+    },
     about:   () => `<span class="g">Sunil Saini</span> — Developer &amp; ML Enthusiast
   Full-stack developer focused on <span class="term-cmd">Django</span> + <span class="term-cmd">React</span>
   Building AI-powered tools and beautiful UIs
@@ -1683,17 +1726,436 @@ To github.com:Sunil0620/Portfolio.git
   ✅  Zero-dependency portfolio built from scratch
   ✅  Problem solver, not just a code writer
   → Email: <a class="term-link" href="mailto:sunilsaini5652@gmail.com">sunilsaini5652@gmail.com</a>`,
+
+    /* ── Dev-mode only commands ── */
+    classified: () => localStorage.getItem('mac-dev-mode') !== '1'
+        ? `<span style="color:#ff453a">zsh: Permission denied — developer mode required</span>`
+        : `<span style="color:#ff6b6b;font-weight:700">[ CLASSIFIED — AUTHORIZED ACCESS ]</span>
+  <span class="g">Real Projects (not shown publicly):</span>
+  🤖  LLM-powered code review bot — catches bugs before PRs merge
+  🔐  Internal auth service — JWT + refresh token rotation at scale
+  📊  Realtime analytics pipeline — Kafka + ClickHouse, 50k events/min
+  🧬  ML anomaly detector — flags prod incidents before alerts fire
+  🌐  Edge deployment system — zero-downtime deploys across 12 regions
+  <span class="term-dim">Repos are private. Ask me in an interview.</span>`,
+
+    devlog: () => localStorage.getItem('mac-dev-mode') !== '1'
+        ? `<span style="color:#ff453a">zsh: Permission denied — developer mode required</span>`
+        : `<span class="g">== RAW BUILD LOG ==</span>
+  <span class="term-dim">commit a1b2c3  "init: simple portfolio page"</span>
+  <span class="term-dim">commit d4e5f6  "feat: add boot screen (1hr becomes 3hr)"</span>
+  <span class="term-dim">commit 7g8h9i  "fix: boot screen now skippable on return visit"</span>
+  <span class="term-dim">commit j0k1l2  "feat: music player (youtube embeds, what could go wrong)"</span>
+  <span class="term-dim">commit m3n4o5  "fix: track 2 not playing (it was an array, not a string)"</span>
+  <span class="term-dim">commit p6q7r8  "feat: vs code clone + terminal + spotlight"</span>
+  <span class="term-dim">commit s9t0u1  "feat: kernel panic easter egg (4hrs, 0 regrets)"</span>
+  <span class="term-dim">commit v2w3x4  "feat: you are here"</span>
+  <span style="color:#ffd60a">Total commits: 47  |  Total hours: don't ask  |  Regrets: none</span>`,
+
+    secrets: () => localStorage.getItem('mac-dev-mode') !== '1'
+        ? `<span style="color:#ff453a">zsh: Permission denied — developer mode required</span>`
+        : `<span style="color:#bf5af2">== SECRETS ==</span>
+  The screensaver clock font is Inter weight 200. Took 2 hours to pick.
+  The trash can lid animation pivot point took 45 minutes to get right.
+  "Presence engine" CPU % is completely fake. It's a random drift function.
+  There are ${Object.keys(TERM_COMMANDS).length} terminal commands. You found the hidden ones.
+  The boot sequence can be skipped on return visits (localStorage 'mac-visited').
+  Konami code detection buffer is cleared on every keydown. Naturally.
+  This portfolio has more lines of code than some production apps I've seen.`,
+
+    'sudo rm -rf /': () => {
+        setTimeout(_doRmRf, 80);
+        return `<span style="color:#ff453a;font-weight:700">sudo: executing rm -rf / — you were warned.</span>`;
+    },
+
+    sudo: (args) => localStorage.getItem('mac-dev-mode') !== '1'
+        ? `<span style="color:#ff453a">sudo: command not found in guest mode</span>`
+        : `<span class="g">root access confirmed.</span> What did you want to sudo?
+  <span class="term-dim">Try: breach, classified, devlog, secrets</span>`,
+
+    breach: () => {
+        if (localStorage.getItem('mac-dev-mode') !== '1')
+            return `<span style="color:#ff453a">zsh: permission denied: breach</span><br><span class="term-dim">Trigger the easter egg first.</span>`;
+        /* Run the live breach animation into the terminal output */
+        setTimeout(() => {
+            const out  = document.getElementById('terminal-output');
+            const body = document.getElementById('terminal-body');
+            if (!out) return;
+            const seq = [
+                { d:0,    c:'#ff453a', t:'INITIATING BREACH PROTOCOL...' },
+                { d:200,  c:'#00ff41', t:'[>>>] Scanning open ports ... 22 80 443 8080 ✓' },
+                { d:450,  c:'#00ff41', t:'[>>>] Bypassing firewall ... spoofing MAC addr' },
+                { d:700,  c:'#ffd60a', t:'[!!!] Rate limit detected — rotating proxies' },
+                { d:980,  c:'#00ff41', t:'[>>>] Proxy chain: TOR → VPN → SOCKS5 → localhost' },
+                { d:1250, c:'#00ff41', t:'[>>>] Injecting payload into /dev/null ...' },
+                { d:1520, c:'#00ff41', t:'[>>>] Extracting RSA private key ... 4096-bit' },
+                { d:1800, c:'#ffd60a', t:'[!!!] Anomaly detected in memory segment 0x4200' },
+                { d:2100, c:'#00ff41', t:'[>>>] Patching kernel — writing to /proc/sys/kernel' },
+                { d:2380, c:'#00ff41', t:'[>>>] Installing backdoor on port 1337 ...' },
+                { d:2650, c:'#ff453a', t:'[!!!] ALERT: Intrusion detection triggered!' },
+                { d:2800, c:'#ffd60a', t:'[>>>] Suppressing IDS alerts ... done' },
+                { d:3050, c:'#00ff41', t:'[>>>] Exfiltrating data ... 0 bytes (nothing to steal)' },
+                { d:3300, c:'#00ff41', t:'[>>>] Covering tracks — wiping logs ...' },
+                { d:3550, c:'#00ff41', t:'████████████████████ 100% — BREACH COMPLETE' },
+                { d:3900, c:'#636366', t:'────────────────────────────────────────────────────' },
+                { d:4100, c:'#ffd60a', t:'// Actual status: nothing was hacked. This is a portfolio.' },
+                { d:4350, c:'#636366', t:'// No systems were harmed in the making of this easter egg.' },
+                { d:4600, c:'#00ff41', t:'// You just watched a very convincing fake. Nice.' },
+                { d:4900, c:'#bf5af2', t:'// P.S: Hire the dev who built this. sunilsaini5652@gmail.com' },
+            ];
+            seq.forEach(({ d, c, t }) => {
+                setTimeout(() => {
+                    const p = document.createElement('p');
+                    p.innerHTML = `<span style="color:${c};font-family:var(--mono)">${t}</span>`;
+                    out.appendChild(p);
+                    if (body) body.scrollTop = body.scrollHeight;
+                }, d);
+            });
+        }, 80);
+        return `<span style="color:#ff453a;font-weight:700">💀 BREACH INITIATED — stand by...</span>`;
+    },
+
+    logout() {
+        const isRoot = localStorage.getItem('mac-dev-mode') === '1';
+        if (!isRoot) {
+            return `<span class="r">logout: not in developer mode</span>`;
+        }
+        _exitDevMode();
+        return '';
+    },
+
+    /* ── Linux commands ── */
+    neofetch: () => {
+        const isRoot = localStorage.getItem('mac-dev-mode') === '1';
+        const username = isRoot ? 'root@portfolio' : 'guest@portfolio';
+        const nameColor = isRoot ? '#ff6b6b' : '#00ff41';
+        const upSecs = Math.floor(performance.now() / 1000);
+        const upMins = Math.floor(upSecs / 60);
+        const upSec2 = upSecs % 60;
+        const memUsed = Math.floor(Math.random() * 400 + 200);
+        return `<div style="display:flex;gap:20px;align-items:flex-start"><span style="color:#ffd60a;white-space:pre;line-height:1.6;font-family:var(--mono)">   .--.
+  |o_o |
+  |:_/ |
+ //   \\ \\
+(|     | )
+/'\\_   _/\`\\
+\\___)=(___)/ </span><div style="line-height:1.7;font-family:var(--mono)"><span style="color:${nameColor};font-weight:700">${username}</span>
+<span class="term-dim">--------------</span>
+<span style="color:#ffd60a">OS</span>:      PortfolioOS GNU/Linux x86_64
+<span style="color:#ffd60a">Kernel</span>:  js-6.1.0-portfolio1-ARCH
+<span style="color:#ffd60a">Uptime</span>:  ${upMins}m ${upSec2}s
+<span style="color:#ffd60a">Shell</span>:   bash 5.2.15
+<span style="color:#ffd60a">CPU</span>:     V8 JIT Engine (multi-core)
+<span style="color:#ffd60a">Memory</span>:  ${memUsed}MiB / 8192MiB
+<span style="color:#ffd60a">Theme</span>:   ${isRoot ? 'Hacker Green [CSS]' : 'macOS Light [CSS]'}
+<span style="color:#ffd60a">Contact</span>: sunilsaini5652@gmail.com</div></div>`;
+    },
+
+    whoami: () => localStorage.getItem('mac-dev-mode') === '1' ? 'root' : 'guest',
+
+    'uname -a': () => `Linux portfolio 6.1.0-portfolio1-ARCH #1 SMP PREEMPT_DYNAMIC ${new Date().toDateString()} x86_64 GNU/Linux`,
+    uname:      () => `Linux`,
+
+    pwd: () => localStorage.getItem('mac-dev-mode') === '1'
+        ? `/root/portfolio`
+        : `/home/guest/portfolio`,
+
+    'ls -la': () => `<pre style="line-height:1.5">total 164
+drwxr-xr-x  5 root root    160 ${new Date().toDateString()} .
+drwxr-xr-x 42 root root   1024 ${new Date().toDateString()} ..
+-rw-r--r--  1 root root  <span style="color:#ffd60a">52431</span> ${new Date().toDateString()} <span style="color:#00ff41">index.html</span>
+-rw-r--r--  1 root root <span style="color:#ffd60a">198742</span> ${new Date().toDateString()} <span style="color:#00ff41">script.js</span>
+-rw-r--r--  1 root root  <span style="color:#ffd60a">87610</span> ${new Date().toDateString()} <span style="color:#00ff41">style.css</span>
+drwxr-xr-x  2 root root     64 ${new Date().toDateString()} <span style="color:#4ea8ff">assets/</span>
+-rw-r--r--  1 root root    404 ${new Date().toDateString()} robots.txt</pre>`,
+
+    ls: () => `<span style="color:#4ea8ff">assets/</span>  <span style="color:#00ff41">index.html</span>  robots.txt  <span style="color:#00ff41">script.js</span>  <span style="color:#00ff41">style.css</span>`,
+
+    uptime: () => {
+        const s = Math.floor(performance.now() / 1000);
+        const m = Math.floor(s / 60), sec = s % 60;
+        const load = (Math.random() * 0.6 + 0.1).toFixed(2);
+        return `up ${m} min ${sec} sec,  1 user,  load average: ${load}, ${(+load - 0.05).toFixed(2)}, ${(+load - 0.1).toFixed(2)}`;
+    },
+
+    'ps aux': () => `<pre style="line-height:1.5"><span class="term-dim">USER       PID %CPU %MEM COMMAND</span>
+root         1  0.0  0.1  /sbin/init
+root       420  0.3  1.2  portfolio --serve
+root       421  0.1  0.4  music --stream
+root       422  0.0  0.1  presence --monitor
+root       423  2.1  4.8  V8 --jit --optimize
+root       424  0.0  0.2  console --tail
+root       425  0.1  0.3  screensaver --idle</pre>`,
+
+    'cat /etc/os-release': () => `NAME="PortfolioOS"
+VERSION="2.0 (Hacker Edition)"
+ID=portfolioos
+ID_LIKE=arch
+PRETTY_NAME="PortfolioOS 2.0 (Hacker Edition)"
+HOME_URL="<span style="color:#4ea8ff">https://sunilsaini.dev</span>"
+SUPPORT_URL="<span style="color:#4ea8ff">sunilsaini5652@gmail.com</span>"`,
+
+    'man man': () => `<span class="term-dim">man: read the source code. It's all open.</span>`,
+    man:  () => `<span class="term-dim">What manual page do you want? (Hint: there isn't one. Read the source.)</span>`,
+
+    /* ── More fun commands ── */
+    'ping google.com': () => {
+        const out = document.getElementById('terminal-output');
+        const body = document.getElementById('terminal-body');
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const ms = (Math.random() * 14 + 8).toFixed(3);
+                const p = document.createElement('p');
+                p.innerHTML = `<span style="color:rgba(255,255,255,0.7);font-size:12px">64 bytes from 142.250.80.46 (google.com): icmp_seq=${i+1} ttl=118 time=${ms} ms</span>`;
+                if (out) { out.appendChild(p); if (body) body.scrollTop = body.scrollHeight; }
+                if (i === 4) setTimeout(() => {
+                    const s = document.createElement('div');
+                    s.innerHTML = `<span class="term-dim">--- google.com ping statistics ---\n5 packets transmitted, 5 received, 0% packet loss\nrtt min/avg/max = 8.241/11.874/22.011 ms</span>`;
+                    if (out) { out.appendChild(s); if (body) body.scrollTop = body.scrollHeight; }
+                }, 600);
+            }, i * 900);
+        }
+        return `<span class="term-dim">PING google.com (142.250.80.46) 56(84) bytes of data.</span>`;
+    },
+
+    ping: () => `<span style="color:#ff453a">ping: usage: ping [-c count] host</span>`,
+
+    history: () => `<pre style="line-height:1.6;font-size:12px">    1  git clone https://github.com/Sunil0620/portfolio
+    2  cd portfolio && ls -la
+    3  vim index.html   <span class="term-dim"># 6 hours later → :wq</span>
+    4  git commit -m <span style="color:#ffd60a">"init: works on my machine"</span>
+    5  git commit -m <span style="color:#ffd60a">"fix: still works on my machine"</span>
+    6  git commit -m <span style="color:#ffd60a">"fix: more fixes"</span>
+    7  npm install      <span class="term-dim"># why is node_modules 800MB</span>
+    8  rm -rf node_modules && npm install  <span class="term-dim"># immediate regret</span>
+    9  git commit -m <span style="color:#ffd60a">"feat: portfolio complete"</span>
+   10  git commit -m <span style="color:#ffd60a">"feat: portfolio ACTUALLY complete"</span>
+   11  git commit -m <span style="color:#ffd60a">"feat: kernel panic easter egg (0 regrets)"</span>
+   12  git push --force  <span class="term-dim"># YOLO on main</span>
+   13  sudo rm -rf /     <span class="term-dim"># see what happens</span>
+   14  clear</pre>`,
+
+    exit: () => {
+        setTimeout(() => closeWindow('window-skills'), 400);
+        return `<span class="term-dim">logout</span>`;
+    },
+
+    'df -h': () => `<pre style="line-height:1.6;font-size:12px"><span class="term-dim">Filesystem      Size  Used Avail Use% Mounted on</span>
+/dev/sda1        50G   23G   25G  48% /
+/dev/sda2       100G   61G   33G  65% /home
+tmpfs           3.9G  1.2M  3.9G   1% /run
+portfolio-fs    ∞     ∞     ∞    100% /www</pre>`,
+
+    'free -h': () => {
+        const used = Math.floor(Math.random() * 400 + 200);
+        return `<pre style="line-height:1.6;font-size:12px"><span class="term-dim">               total    used    free  shared  buff/cache  available</span>
+Mem:             8.0G   ${used}M  6.4G    1.2M        240M       7.1G
+Swap:            2.0G     0B   2.0G</pre>`;
+    },
+
+    'curl ifconfig.me': () => `<span style="color:#00ff41">203.0.113.${Math.floor(Math.random()*254+1)}</span>  <span class="term-dim"># (your public IP — not actually)</span>`,
+
+    ':(){ :|:& };:': () => {
+        let n = 0;
+        const iv = setInterval(() => {
+            showNotification(`fork: Resource temporarily unavailable (pid ${1000 + Math.floor(Math.random()*8000)})`);
+            if (++n >= 8) {
+                clearInterval(iv);
+                setTimeout(() => showNotification('🛡️ OOM Killer activated — fork bomb contained'), 500);
+            }
+        }, 180);
+        return `<span style="color:#ff453a;font-weight:700">fork: Resource temporarily unavailable
+fork: Resource temporarily unavailable
+fork: Resource temporarily unavailable</span>
+<span class="term-dim">... (suppressed 48,291 more)</span>
+<span style="color:#00ff41">🛡️ OOM Killer activated — processes terminated</span>`;
+    },
+
+    'cat /etc/hosts': () => `<pre style="line-height:1.6;font-size:12px">127.0.0.1   localhost
+127.0.1.1   portfolio
+::1         localhost ip6-localhost
+
+<span class="term-dim"># custom entries</span>
+0.0.0.0     distractions.com
+0.0.0.0     twitter.com   <span class="term-dim"># productivity hack</span>
+0.0.0.0     reddit.com    <span class="term-dim"># also productivity</span>
+127.0.0.1   hire.me       <span class="term-dim"># hopeful</span></pre>`,
+
+    'sudo reboot': () => {
+        setTimeout(() => { location.reload(); }, 1500);
+        return `<span style="color:#ffd60a">Rebooting system...</span>`;
+    },
+    dev: () => {
+        if (localStorage.getItem('mac-dev-mode') === '1')
+            return `<span class="term-dim">Already in developer mode.</span>`;
+        localStorage.setItem('mac-dev-mode', '1');
+        _applyDevMode(true);
+        return '';
+    },
 };
+
+function _exitDevMode() {
+    // Visual farewell in terminal before wiping state
+    const out  = document.getElementById('terminal-output');
+    const body = document.getElementById('terminal-body');
+    const lines = [
+        { d:0,   c:'#ff453a', t:'[LOGOUT] Terminating root session...' },
+        { d:300, c:'#ffd60a', t:'[  >>  ] Removing dev-mode class...' },
+        { d:600, c:'#ffd60a', t:'[  >>  ] Clearing developer credentials...' },
+        { d:900, c:'#00ff41', t:'[  OK  ] Session closed. Goodbye, root.' },
+        { d:1100,c:'#636366', t:'────────────────────────────────────────────────────' },
+    ];
+    if (out) {
+        lines.forEach(({ d, c, t }) => {
+            setTimeout(() => {
+                const p = document.createElement('p');
+                p.innerHTML = `<span style="color:${c};font-family:var(--mono)">${t}</span>`;
+                out.appendChild(p);
+                if (body) body.scrollTop = body.scrollHeight;
+            }, d);
+        });
+    }
+    setTimeout(() => {
+        localStorage.removeItem('mac-dev-mode');
+        document.documentElement.classList.remove('dev-mode');
+        /* Restore Linux prompt to guest/zsh */
+        const pu = document.getElementById('term-prompt-user');
+        const ps = document.getElementById('term-prompt-sym');
+        const tt = document.getElementById('terminal-header-title');
+        if (pu) { pu.textContent = 'guest@portfolio'; pu.className = 'g'; }
+        if (ps) ps.textContent = '%';
+        if (tt) tt.textContent = 'guest@portfolio — zsh';
+        // Hide the classified dock item
+        document.querySelectorAll('.dev-mode-item').forEach(el => el.style.display = 'none');
+        // Close devnotes window if open
+        const dn = document.getElementById('window-devnotes');
+        if (dn && dn.style.display !== 'none') closeWindow('window-devnotes');
+        showNotification('👋 Developer mode deactivated');
+        _consoleLog('kernel','warn','Root session terminated — developer mode disabled');
+    }, 1400);
+}
+
+function _doRmRf() {
+    const out  = document.getElementById('terminal-output');
+    const body = document.getElementById('terminal-body');
+
+    /* Phase 1 — rapid file deletion log */
+    const files = [
+        '/bin/bash', '/bin/ls', '/bin/sh', '/usr/bin/python3',
+        '/usr/bin/node', '/usr/lib/x86_64-linux-gnu/libc.so.6',
+        '/etc/passwd', '/etc/shadow', '/etc/hosts', '/etc/fstab',
+        '/var/log/syslog', '/var/log/auth.log', '/home/root/.ssh/id_rsa',
+        '/usr/share/fonts', '/usr/lib/systemd/systemd',
+        '/lib/modules/6.1.0-portfolio1', '/proc/1/exe',
+        '/tmp/portfolio.lock', '/dev/sda1',
+        '... [removing 47,821 more files]',
+        '... [filesystem corruption detected]',
+        '... [cannot remove running kernel — skipping]',
+    ];
+    files.forEach((f, i) => {
+        setTimeout(() => {
+            const p = document.createElement('p');
+            p.innerHTML = `<span style="color:#ff453a;font-size:11px">removed '${f}'</span>`;
+            if (out) { out.appendChild(p); if (body) body.scrollTop = body.scrollHeight; }
+        }, i * 90);
+    });
+
+    const base = files.length * 90 + 400;
+
+    /* Phase 2 — windows fall off screen one by one */
+    setTimeout(() => {
+        const wins = [...document.querySelectorAll('.window')];
+        wins.forEach((w, i) => {
+            setTimeout(() => {
+                w.style.transition = 'all 0.5s cubic-bezier(0.4,0,1,1)';
+                w.style.opacity    = '0';
+                w.style.transform  = (w.style.transform||'') + ' scale(0.75) translateY(40px)';
+                setTimeout(() => { w.style.display = 'none'; }, 500);
+            }, i * 220);
+        });
+    }, base);
+
+    /* Phase 3 — dock slides down */
+    setTimeout(() => {
+        const dock = document.getElementById('dock');
+        if (dock) {
+            dock.style.transition = 'transform 0.9s ease-in, opacity 0.9s';
+            dock.style.transform  = 'translateX(-50%) translateY(140px)';
+            dock.style.opacity    = '0';
+        }
+    }, base + 1300);
+
+    /* Phase 4 — menu bar slides up */
+    setTimeout(() => {
+        const mb = document.getElementById('menu-bar');
+        if (mb) {
+            mb.style.transition = 'transform 0.6s ease-in, opacity 0.6s';
+            mb.style.transform  = 'translateY(-50px)';
+            mb.style.opacity    = '0';
+        }
+    }, base + 1900);
+
+    /* Phase 5 — screen goes black */
+    setTimeout(() => {
+        document.body.style.transition  = 'background 1.2s';
+        document.body.style.background  = '#000';
+        document.body.style.animation   = 'none';
+        const desktop = document.getElementById('desktop');
+        if (desktop) { desktop.style.transition = 'background 1.2s'; desktop.style.background = '#000'; }
+    }, base + 2500);
+
+    /* Phase 6 — KERNEL PANIC overlay with countdown */
+    setTimeout(() => {
+        const ov = document.createElement('div');
+        ov.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:40px 60px;font-family:monospace;font-size:12px;color:#ddd;gap:4px;line-height:1.8';
+        ov.innerHTML = `
+<span style="color:#ddd">panic(cpu 0 caller 0xffffff802b4f): <span style="color:#ff453a">Attempted to kill init!</span></span>
+<span style="color:#ddd">Debugger called: &lt;panic&gt;</span>
+<span style="color:#ddd">Backtrace (CPU 0)</span>
+<span style="color:#ddd">&nbsp;&nbsp;frame #0: 0xffffff8020b3a1e0 machine_halt + 0x18</span>
+<span style="color:#ddd">&nbsp;&nbsp;frame #1: 0xffffff8020c94f30 panic + 0x15c</span>
+<span style="color:#ddd">&nbsp;&nbsp;frame #2: 0xffffff802b4f&nbsp;&nbsp;&nbsp;&nbsp; do_exit + 0xa8c</span>
+<span style="color:#ddd">&nbsp;&nbsp;frame #3: 0xdeadbeef&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:#ff453a">rm_rf_root_was_a_bad_idea + 0x40</span></span>
+<span style="color:#636366">&nbsp;</span>
+<span style="color:#ddd">BSD process name corresponding to current thread: <span style="color:#ff453a">rm</span></span>
+<span style="color:#ddd">Boot args: rootdev=disk0 rd=*uuid</span>
+<span style="color:#636366">&nbsp;</span>
+<span style="color:#ffd60a" id="_rmrf_status">System rebooting in 5...</span>`;
+        document.body.appendChild(ov);
+
+        let cnt = 5;
+        const iv = setInterval(() => {
+            cnt--;
+            const el = document.getElementById('_rmrf_status');
+            if (el) el.textContent = cnt > 0
+                ? `System rebooting in ${cnt}...`
+                : 'Rebooting now...';
+            if (cnt <= 0) { clearInterval(iv); setTimeout(() => location.reload(), 800); }
+        }, 1000);
+    }, base + 3800);
+}
+
+function menuLogout() {
+    if (localStorage.getItem('mac-dev-mode') === '1') {
+        _exitDevMode();
+    } else {
+        showNotification('Not in developer mode');
+    }
+}
 
 function execTerminal(cmd) {
     if (!cmd) return;
-    _consoleLog('terminal','info',`guest@portfolio ~ % ${cmd}`);
+    const isRoot = localStorage.getItem('mac-dev-mode') === '1';
+    const user   = isRoot ? 'root@portfolio' : 'guest@portfolio';
+    _consoleLog('terminal','info',`${user} ~ % ${cmd}`);
     const out  = document.getElementById('terminal-output');
     const body = document.getElementById('terminal-body');
 
     /* Echo the command */
     const echo = document.createElement('p');
-    echo.innerHTML = `<span class="g">guest@portfolio</span> <span class="b">~</span> % <span>${escHtml(cmd)}</span>`;
+    const userClass = isRoot ? 'terminal-prompt-user' : 'g';
+    const sym = isRoot ? '#' : '$';
+    echo.innerHTML = `<span class="${userClass}">${user}</span> <span class="b">~</span> ${sym} <span>${escHtml(cmd)}</span>`;
     out.appendChild(echo);
 
     /* Special cowsay */
@@ -3281,10 +3743,81 @@ function _triggerKernelPanic() {
 
 function _applyDevMode(isNew) {
     document.documentElement.classList.add('dev-mode');
+    /* Linux-style root prompt */
+    const pu = document.getElementById('term-prompt-user');
+    const ps = document.getElementById('term-prompt-sym');
+    const tt = document.getElementById('terminal-header-title');
+    if (pu) { pu.textContent = 'root@portfolio'; pu.className = 'terminal-prompt-user'; }
+    if (ps) ps.textContent = '#';
+    if (tt) tt.textContent = 'root@portfolio — bash';
     if (isNew) {
-        setTimeout(() => showNotification('🔧 Developer mode unlocked — you found the easter egg!'), 800);
-        setTimeout(() => _consoleLog('kernel','warn','System recovered — developer mode enabled. Welcome, dev.'), 900);
+        setTimeout(() => showNotification('🔧 Root access granted — check the new dock icon'), 800);
+        setTimeout(() => _consoleLog('kernel','warn','System recovered — developer mode enabled. Welcome, root.'), 900);
+        setTimeout(() => {
+            const win = document.getElementById('window-devnotes');
+            if (win) toggleWindow('window-devnotes');
+        }, 1400);
+        /* Auto-open terminal and run hack welcome sequence */
+        setTimeout(() => {
+            const term = document.getElementById('window-skills');
+            if (term && (term.style.display === 'none' || !term.style.display)) toggleWindow('window-skills');
+            setTimeout(_hackTypeSequence, 700);
+        }, 2400);
+        setTimeout(() => {
+            _consoleLog('portfolio','info','Unlocked terminal commands: classified, devlog, secrets, breach');
+        }, 1800);
     }
+}
+
+/* Typewriter hack sequence — runs in terminal on dev-mode activate */
+function _hackTypeSequence() {
+    const out  = document.getElementById('terminal-output');
+    const body = document.getElementById('terminal-body');
+    if (!out) return;
+    const lines = [
+        { d:0,    html: `<span style="color:#ff453a;font-weight:700">⚠  KERNEL PANIC RECOVERY — DEVELOPER MODE ACTIVE  ⚠</span>` },
+        { d:180,  html: `<span class="term-dim">────────────────────────────────────────────────────</span>` },
+        { d:320,  html: `<span style="color:#00ff41">[  OK  ]</span> Mounting encrypted partition /dev/classified ...` },
+        { d:600,  html: `<span style="color:#00ff41">[  OK  ]</span> Decrypting payload &nbsp;<span id="_hack_bar">░░░░░░░░░░░░░░░░░░░░</span> 0%` },
+        { d:900,  html: null, fn: _animHackBar },
+        { d:2400, html: `<span style="color:#00ff41">[  OK  ]</span> Payload decrypted — integrity verified` },
+        { d:2600, html: `<span style="color:#00ff41">[  OK  ]</span> Escalating privileges ... <span style="color:#ffd60a">root</span>` },
+        { d:2850, html: `<span style="color:#00ff41">[  OK  ]</span> Loading secret terminal commands` },
+        { d:3100, html: `<span class="term-dim">────────────────────────────────────────────────────</span>` },
+        { d:3300, html: `<pre style="color:#00ff41;line-height:1.2">
+  ██████╗  ██████╗  ██████╗ ████████╗
+  ██╔══██╗██╔═══██╗██╔═══██╗╚══██╔══╝
+  ██████╔╝██║   ██║██║   ██║   ██║
+  ██╔══██╗██║   ██║██║   ██║   ██║
+  ██║  ██║╚██████╔╝╚██████╔╝   ██║
+  ╚═╝  ╚═╝ ╚═════╝  ╚═════╝   ╚═╝
+  <span style="color:#ff453a">A C C E S S &nbsp; G R A N T E D</span></pre>` },
+        { d:3800, html: `<span style="color:#00ff41">Type <span style="color:#ffd60a">breach</span> for the full experience. Or just explore.</span>` },
+    ];
+    lines.forEach(({ d, html, fn }) => {
+        setTimeout(() => {
+            if (fn) { fn(); return; }
+            const p = document.createElement('p');
+            p.innerHTML = html;
+            out.appendChild(p);
+            if (body) body.scrollTop = body.scrollHeight;
+        }, d);
+    });
+}
+
+function _animHackBar() {
+    const el = document.getElementById('_hack_bar');
+    if (!el) return;
+    const blocks = '████████████████████';
+    let pct = 0;
+    const iv = setInterval(() => {
+        pct += 5 + Math.floor(Math.random() * 8);
+        if (pct >= 100) { pct = 100; clearInterval(iv); }
+        const filled = Math.floor(pct / 5);
+        el.textContent = blocks.slice(0, filled) + '░'.repeat(20 - filled);
+        const bar = el.parentElement;
+        if (bar) bar.lastChild.textContent = ' ' + pct + '%';
+    }, 90);
 }
 
 function _panicSound() {

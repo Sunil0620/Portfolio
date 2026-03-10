@@ -291,6 +291,8 @@
                     <div class="dd-divider"></div>
                     <button class="dd-item" onclick="lockScreen()">Lock Screen <span class="dd-shortcut">⌃⌘Q</span></button>
                     <button class="dd-item" onclick="location.reload()">Restart…</button>
+                    <div class="dd-divider"></div>
+                    <button class="dd-item" onclick="menuLogout()">Log Out Developer…</button>
                 </div>
             </div>
             <span class="menu-app-name" id="menu-app-name">Finder</span>
@@ -334,7 +336,6 @@
                 </svg>
                 <span id="battery-pct" style="font-size:11px;opacity:0.75;margin-left:1px;">87%</span>
             </span>
-            <span id="presence-cpu" class="presence-cpu" title="CPU usage">12.4%</span>
             <span id="menu-clock" class="menu-clock" onclick="event.stopPropagation(); toggleNotifCenter();" style="cursor:pointer;">Thu Mar 5 12:00 (UTC)</span>
         </div>
     </nav>
@@ -508,6 +509,7 @@
                     <p>Memory: <strong><span class="about-mac-ram">128.0 GB</span></strong> (still not enough for Chrome)</p>
                     <p>Storage: <strong>99% full</strong> (all node_modules)</p>
                     <p>Graphics: <strong>CSS-Powered™</strong></p>
+                    <p>CPU Usage: <strong><span id="presence-cpu">12.4%</span></strong></p>
                     <p>Serial: <strong>SUDO-MAKE-ME-A-SANDWICH</strong></p>
                     <p style="margin-top:8px;font-style:italic;color:var(--text-tertiary)">"It works on my machine" ¯\_(ツ)_/¯</p>
                 </div>
@@ -663,7 +665,7 @@
                         <a href="https://github.com/Sunil0620" target="_blank" class="resume-btn" style="background:linear-gradient(135deg,#333,#555);">🐙 GitHub</a>
                     </div>
 
-                    <p style="margin-top:16px;font-size:12px;color:var(--text-tertiary);">Try: <strong style="color:var(--text-secondary);">Space</strong> for Spotlight · <strong style="color:var(--text-secondary);">right-click</strong> desktop · <strong style="color:var(--text-secondary);">F3</strong> Mission Control</p>
+                    <p style="margin-top:16px;font-size:12px;color:var(--text-tertiary);">Try: <strong style="color:var(--text-secondary);">Space</strong> for Spotlight · <strong style="color:var(--text-secondary);">right-click</strong> desktop · <strong style="color:var(--text-secondary);">F3</strong> Mission Control · <strong style="color:var(--text-secondary);">↑↑↓↓←→←→BA</strong> 🎮</p>
                 </main>
             </div>
             <div class="resize-handle" data-win="window-about"></div>
@@ -737,7 +739,7 @@
                     <div class="ctrl minimize" onclick="minimizeWindow('window-skills')"></div>
                     <div class="ctrl maximize" onclick="maximizeWindow('window-skills')"></div>
                 </div>
-                <span class="header-title terminal-title">guest@portfolio — zsh</span>
+                <span id="terminal-header-title" class="header-title terminal-title">guest@portfolio — zsh</span>
             </div>
             <div class="window-body terminal-body" id="terminal-body">
                 <canvas id="matrix-canvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;"></canvas>
@@ -757,7 +759,7 @@
                     <p><span class="term-dim">Type <span class="term-cmd">help</span> for available commands. Try <span class="term-cmd">matrix</span> or <span class="term-cmd">hack</span> 👀</span></p>
                 </div>
                 <div class="terminal-input-line">
-                    <span class="g">guest@portfolio</span> <span class="b">~</span> % <input type="text" id="terminal-input" class="term-input" spellcheck="false" autocomplete="off">
+                    <span id="term-prompt-user" class="g">guest@portfolio</span> <span class="b">~</span> <span id="term-prompt-sym">%</span> <input type="text" id="terminal-input" class="term-input" spellcheck="false" autocomplete="off">
                 </div>
             </div>
             <div class="resize-handle" data-win="window-skills"></div>
@@ -1228,6 +1230,14 @@
                 <div class="dock-dot" id="dot-window-console"></div>
             </div>
             <div class="dock-sep"></div>
+            <div class="dock-item dev-mode-item" data-app="window-devnotes" data-tip="Classified 🔐">
+                <div class="dock-icon-art devnotes-art">
+                    <svg viewBox="0 0 448 512" width="20" height="20" fill="rgba(255,80,80,0.9)">
+                        <path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
+                    </svg>
+                </div>
+                <div class="dock-dot" id="dot-window-devnotes"></div>
+            </div>
             <div class="dock-item" data-app="trash" data-tip="Trash">
                 <div class="dock-icon-art trash-art">
                     <svg viewBox="0 0 448 512" width="22" height="22" fill="rgba(255,255,255,0.7)">
@@ -1275,6 +1285,51 @@
             <div class="resize-handle" data-win="window-trash"></div>
             <div class="resize-handle-left" data-win="window-trash"></div>
         </div>
+
+    <!-- Developer Notes Window (dev mode only) -->
+    <div class="window" id="window-devnotes" style="width:620px;height:500px;top:70px;left:180px;display:none;">
+        <div class="window-header" style="background:linear-gradient(135deg,#1a0000,#2d0a0a);">
+            <div class="window-controls">
+                <div class="ctrl close" onclick="closeWindow('window-devnotes')"></div>
+                <div class="ctrl minimize" onclick="minimizeWindow('window-devnotes')"></div>
+                <div class="ctrl maximize" onclick="maximizeWindow('window-devnotes')"></div>
+            </div>
+            <span class="header-title" style="color:#ff6b6b;">🔐 classified — developer_notes.txt</span>
+        </div>
+        <div class="window-body textedit-body devnotes-body">
+            <div class="textedit-content devnotes-content">
+                <p class="devnotes-stamp">⚠ TOP SECRET — AUTHORIZED PERSONNEL ONLY ⚠</p>
+                <h1 class="te-h1">Developer Notes</h1>
+                <p class="te-p" style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:20px;">Access granted via Konami sequence. Welcome, fellow dev.</p>
+
+                <h2 class="te-h2">📅 Build Diary</h2>
+                <p class="te-p"><strong>Day 1</strong> — "It's just gonna be a simple portfolio page." — me, a fool</p>
+                <p class="te-p"><strong>Day 3</strong> — Added a boot screen. It now takes 3 seconds to load. Justified it as "authentic macOS feel."</p>
+                <p class="te-p"><strong>Day 7</strong> — Someone suggested dark mode. There is only dark mode. This IS the dark mode.</p>
+                <p class="te-p"><strong>Day 12</strong> — Added a Kishore Kumar music player. Works 70% of the time. Every time.</p>
+                <p class="te-p"><strong>Day 16</strong> — Rewrote the entire CSS. Twice. The first rewrite was to "clean it up." The second was to undo the first.</p>
+                <p class="te-p"><strong>Day 18</strong> — Implemented a kernel panic easter egg. Spent 4 hours on a feature 99% of visitors will never find. You did though. Respect.</p>
+                <p class="te-p"><strong>Day 21</strong> — Portfolio is now ~3000 lines of vanilla JS. Zero dependencies. Mom thinks I'm studying.</p>
+                <br>
+                <h2 class="te-h2">🐛 Known Bugs (honest edition)</h2>
+                <p class="te-p">— YouTube ads play sometimes. YouTube controls that, not me. Sorry.</p>
+                <p class="te-p">— Snake game difficulty "Impossible" is actually impossible. That's intentional.</p>
+                <p class="te-p">— The screensaver aurora looks different every browser. That's a feature.</p>
+                <p class="te-p">— Console CPU % is fake. It's a vibe, not telemetry.</p>
+                <br>
+                <h2 class="te-h2">🔓 Unlocked Terminal Commands</h2>
+                <p class="te-p">Type these in the Terminal app:</p>
+                <p class="te-p"><code style="color:#30d158;">classified</code> — view the real project list</p>
+                <p class="te-p"><code style="color:#30d158;">devlog</code> &nbsp;&nbsp;&nbsp;— full raw build diary</p>
+                <p class="te-p"><code style="color:#30d158;">secrets</code> &nbsp;&nbsp;— things I probably shouldn't share</p>
+                <p class="te-p"><code style="color:#ff453a;">sudo rm -rf /</code> — please don't</p>
+                <br>
+                <p class="te-p" style="color:rgba(255,255,255,0.25);font-size:11px;font-style:italic;">Built with ☕, existential dread, and an unhealthy obsession with macOS UI details.</p>
+            </div>
+        </div>
+        <div class="resize-handle" data-win="window-devnotes"></div>
+        <div class="resize-handle-left" data-win="window-devnotes"></div>
+    </div>
 
     <!-- Console Window -->
     <div class="window" id="window-console" style="width:740px;height:460px;top:80px;left:140px;display:none;">

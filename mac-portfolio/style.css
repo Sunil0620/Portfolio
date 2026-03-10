@@ -873,7 +873,7 @@ body {
     background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
     z-index: 1;
 }
-#terminal-output { flex: 1; user-select: text; -webkit-user-select: text; }
+#terminal-output { user-select: text; -webkit-user-select: text; }
 #terminal-output pre { white-space: pre-wrap; }
 .g { color: #50fa7b; font-weight: 500; }
 .b { color: #8be9fd; }
@@ -2639,12 +2639,10 @@ html.light-mode .snake-hud  { color: rgba(0,0,0,0.6); }
 
 /* =============== PRESENCE ENGINE =============== */
 .presence-cpu {
-    font-size: 10px; color: rgba(255,255,255,0.35);
-    font-family: var(--mono); margin-right: 2px;
-    letter-spacing: 0.2px; user-select: none;
+    font-family: var(--mono);
     transition: color 0.5s;
 }
-.presence-cpu.hot { color: rgba(255,100,80,0.7); }
+.presence-cpu.hot { color: #ff453a; }
 
 /* =============== KERNEL PANIC =============== */
 #kernel-panic {
@@ -2685,9 +2683,265 @@ html.light-mode .snake-hud  { color: rgba(0,0,0,0.6); }
 }
 .panic-restart { font-size: 12px; color: rgba(255,255,255,0.3); margin: 0; }
 
-/* =============== DEV MODE =============== */
-html.dev-mode #dock { border-color: rgba(0,255,100,0.15); }
-html.dev-mode .menu-bar, html.dev-mode #menu-bar {
-    background: rgba(0,20,0,0.85);
+/* ======================================================
+   DEV MODE — FULL HACKER THEME
+   Activated by Konami code ↑↑↓↓←→←→BA
+   ====================================================== */
+html.dev-mode {
+    --hack:      #00ff41;
+    --hack-dim:  #00aa2a;
+    --hack-dark: #001a00;
+    --hack-mid:  #003300;
 }
-html.dev-mode .presence-cpu { color: rgba(80,255,120,0.6); }
+
+/* CRT scanlines overlay */
+html.dev-mode #desktop::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 8999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+    );
+}
+
+/* Desktop wallpaper → black */
+html.dev-mode #desktop { background: #000 !important; }
+html.dev-mode .wallpaper-layer { opacity: 0 !important; }
+
+/* Menu bar */
+html.dev-mode #menu-bar {
+    background: rgba(0,10,0,0.97) !important;
+    border-bottom: 1px solid var(--hack-dim);
+}
+html.dev-mode #menu-bar * { color: var(--hack) !important; }
+html.dev-mode #menu-bar button { background: transparent !important; }
+html.dev-mode .menu-clock { color: var(--hack) !important; font-family: var(--mono) !important; }
+
+/* Dock */
+html.dev-mode #dock-wrapper {
+    background: transparent !important;
+}
+html.dev-mode #dock {
+    background: rgba(0,15,0,0.92) !important;
+    border: 1px solid var(--hack-dim) !important;
+    box-shadow: 0 0 20px rgba(0,255,65,0.15), inset 0 0 30px rgba(0,0,0,0.5) !important;
+}
+html.dev-mode .dock-item:hover .dock-icon-art {
+    box-shadow: 0 0 12px rgba(0,255,65,0.5) !important;
+}
+html.dev-mode .dock-dot { background: var(--hack) !important; }
+
+/* All windows */
+html.dev-mode .window {
+    background: #000 !important;
+    border: 1px solid var(--hack-dim) !important;
+    box-shadow: 0 0 30px rgba(0,255,65,0.12), 0 20px 60px rgba(0,0,0,0.8) !important;
+}
+html.dev-mode .window-header {
+    background: var(--hack-dark) !important;
+    border-bottom: 1px solid var(--hack-dim) !important;
+}
+html.dev-mode .header-title {
+    color: var(--hack) !important;
+    font-family: var(--mono) !important;
+}
+
+/* Window body text → green */
+html.dev-mode .window-body,
+html.dev-mode .finder-main,
+html.dev-mode .finder-sidebar,
+html.dev-mode .notes-pane,
+html.dev-mode .about-mac-body,
+html.dev-mode .music-body,
+html.dev-mode .settings-body,
+html.dev-mode .safari-body,
+html.dev-mode .textedit-body,
+html.dev-mode .textedit-content,
+html.dev-mode .devnotes-body,
+html.dev-mode .devnotes-content {
+    background: #000 !important;
+    color: var(--hack) !important;
+}
+html.dev-mode .window p,
+html.dev-mode .window h1,
+html.dev-mode .window h2,
+html.dev-mode .window h3,
+html.dev-mode .window span,
+html.dev-mode .window label,
+html.dev-mode .window strong,
+html.dev-mode .window li {
+    color: var(--hack) !important;
+    font-family: var(--mono) !important;
+}
+
+/* Scrollbars */
+html.dev-mode ::-webkit-scrollbar-thumb { background: var(--hack-dim) !important; }
+html.dev-mode ::-webkit-scrollbar-track { background: #000 !important; }
+
+/* Inputs */
+html.dev-mode input, html.dev-mode textarea, html.dev-mode select {
+    background: #000 !important;
+    color: var(--hack) !important;
+    border-color: var(--hack-dim) !important;
+    caret-color: var(--hack) !important;
+}
+html.dev-mode ::placeholder { color: var(--hack-dim) !important; }
+
+/* Buttons */
+html.dev-mode button:not(.ctrl) {
+    background: transparent !important;
+    color: var(--hack) !important;
+    border-color: var(--hack-dim) !important;
+}
+html.dev-mode button:not(.ctrl):hover {
+    background: var(--hack-dark) !important;
+    box-shadow: 0 0 8px rgba(0,255,65,0.3) !important;
+}
+
+/* Sidebar items */
+html.dev-mode .sidebar-item,
+html.dev-mode .finder-sidebar-item { color: var(--hack) !important; }
+html.dev-mode .sidebar-item.active,
+html.dev-mode .finder-sidebar-item.active {
+    background: var(--hack-dark) !important;
+    color: var(--hack) !important;
+    border-left-color: var(--hack) !important;
+}
+
+/* Terminal — already green, but deepen the theme */
+html.dev-mode #terminal-body {
+    background: #000 !important;
+    border: none !important;
+}
+html.dev-mode #terminal-output { font-size: 13px; }
+html.dev-mode #terminal-input {
+    background: transparent !important;
+    color: var(--hack) !important;
+    caret-color: var(--hack) !important;
+}
+
+/* Music player */
+html.dev-mode .music-art-wrap,
+html.dev-mode .music-dock-art { filter: hue-rotate(100deg) saturate(2) !important; }
+html.dev-mode .music-fill { background: var(--hack) !important; }
+html.dev-mode .music-btn { color: var(--hack) !important; border-color: var(--hack-dim) !important; }
+
+/* Notification center */
+html.dev-mode #notif-center {
+    background: rgba(0,10,0,0.97) !important;
+    border-color: var(--hack-dim) !important;
+}
+html.dev-mode .nc-card { background: var(--hack-dark) !important; border-color: var(--hack-dim) !important; }
+html.dev-mode .nc-card * { color: var(--hack) !important; }
+
+/* Notification toast */
+html.dev-mode #notification {
+    background: rgba(0,20,0,0.97) !important;
+    border: 1px solid var(--hack-dim) !important;
+}
+html.dev-mode #notification * { color: var(--hack) !important; }
+
+/* VS Code stays mostly the same but tinted */
+html.dev-mode #window-vscode .vscode-editor { filter: hue-rotate(90deg) !important; }
+
+/* Presence CPU */
+html.dev-mode .presence-cpu { color: var(--hack) !important; }
+
+/* Console app */
+html.dev-mode .console-body,
+html.dev-mode .console-log-list { background: #000 !important; }
+html.dev-mode .console-toolbar { background: #001000 !important; }
+html.dev-mode .con-col-msg { color: var(--hack-dim) !important; }
+
+/* Accent color */
+html.dev-mode { --accent: #00ff41 !important; }
+
+/* Glow pulse on window focus */
+html.dev-mode .window.focused {
+    box-shadow: 0 0 40px rgba(0,255,65,0.2), 0 0 2px var(--hack-dim) !important;
+}
+
+/* Dev mode dock icon — hidden until unlock */
+.dev-mode-item { display: none; }
+html.dev-mode .dev-mode-item {
+    display: flex;
+    animation: devItemSlideIn 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes devItemSlideIn {
+    from { transform: translateY(20px) scale(0.5); opacity: 0; }
+    to   { transform: translateY(0)    scale(1);   opacity: 1; }
+}
+.devnotes-art {
+    background: linear-gradient(145deg, #2d0000, #1a0a0a);
+    border: 0.5px solid rgba(255,80,80,0.25);
+    display: flex; align-items: center; justify-content: center;
+}
+.devnotes-art:hover { box-shadow: 0 0 14px rgba(255,60,60,0.4); }
+
+/* Developer Notes window */
+.devnotes-body { background: #100808; }
+.devnotes-content {
+    flex: 1; padding: 24px 28px; overflow-y: auto;
+    color: rgba(255,255,255,0.82); font-size: 13px; line-height: 1.75;
+    background: #100808;
+}
+.devnotes-stamp {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    color: #ff453a; text-align: center;
+    border: 1px solid rgba(255,69,58,0.3); border-radius: 4px;
+    padding: 4px 0; margin-bottom: 18px;
+    background: rgba(255,69,58,0.06);
+}
+
+/* Dev mode terminal prompt turns red */
+html.dev-mode #terminal-output .g { color: #ff453a !important; }
+.terminal-prompt-user { color: #ff453a; }
+
+/* ── Dev mode dock icon (hidden until unlocked) ── */
+.dev-mode-item {
+    display: none !important;
+    opacity: 0;
+}
+html.dev-mode .dev-mode-item {
+    display: flex !important;
+    opacity: 1;
+    animation: devUnlock 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes devUnlock {
+    from { opacity: 0; transform: translateY(20px) scale(0.5); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.devnotes-art {
+    background: linear-gradient(145deg,#2d0000,#1a0000);
+    border: 0.5px solid rgba(255,80,80,0.3);
+    box-shadow: 0 0 12px rgba(255,60,60,0.25);
+}
+html.dev-mode #dock { box-shadow: 0 0 0 1px rgba(255,60,60,0.15), 0 8px 32px rgba(0,0,0,0.6); }
+
+/* ── Developer Notes window ── */
+.devnotes-body { background: #0d0d0d; }
+.devnotes-content { background: #0d0d0d; color: rgba(255,255,255,0.82); }
+.devnotes-stamp {
+    text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: #ff453a; border: 1px solid rgba(255,69,58,0.3); border-radius: 4px;
+    padding: 5px; margin-bottom: 18px; background: rgba(255,69,58,0.07);
+}
+
+/* ── Root terminal prompt ── */
+html.dev-mode .terminal-prompt-user { color: #ff453a !important; }
+html.dev-mode #terminal-body { border-top: 1px solid rgba(255,60,60,0.15); }
+
+/* Blinking block cursor for hack sequence */
+.term-blink {
+    display: inline-block;
+    animation: termBlink 1s step-end infinite;
+    color: #00ff41;
+}
+@keyframes termBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
