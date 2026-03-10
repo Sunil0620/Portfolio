@@ -2037,6 +2037,13 @@ function _createYtPlayer() {
                     nextTrack();
                 } else if (e.data === YT.PlayerState.PLAYING) {
                     skipCount = 0;
+                    /* ── Ad detection: getAdState() is undocumented but reliable ──
+                       Returns 1 while a pre-roll ad is running, 0/-1 for real video */
+                    if (typeof ytPlayer.getAdState === 'function' && ytPlayer.getAdState() === 1) {
+                        document.getElementById('music-track').textContent  = '📺 Ad playing…';
+                        document.getElementById('music-artist').textContent = 'Music starts shortly';
+                        return; /* Don't update progress bar / play state yet */
+                    }
                     musicPlaying = true;
                     document.getElementById('music-play-btn').textContent = '⏸';
                     const dur = Math.floor(ytPlayer.getDuration() || 0);
@@ -2044,6 +2051,9 @@ function _createYtPlayer() {
                         TRACKS[musicTrackIdx].duration = dur;
                         document.getElementById('music-duration').textContent = formatTime(dur);
                     }
+                    /* Restore track name in case ad message was showing */
+                    document.getElementById('music-track').textContent  = TRACKS[musicTrackIdx].name;
+                    document.getElementById('music-artist').textContent = TRACKS[musicTrackIdx].artist;
                     clearInterval(musicTimer);
                     musicTimer = setInterval(updateMusicProgress, 250);
                 } else if (e.data === YT.PlayerState.PAUSED) {

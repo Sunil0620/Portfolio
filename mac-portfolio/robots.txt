@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sunil0620.github.io/Portfolio/sitemap.xml
