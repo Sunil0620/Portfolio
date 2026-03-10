@@ -1215,6 +1215,7 @@ function setWallpaper(name, save = true) {
         showNotification('🔒 Wallpaper is locked in developer mode');
         return;
     }
+    const num = name.replace('img', '');
     document.body.style.background = `url('img/${num}.jpg') center/cover no-repeat`;
     document.body.style.animation  = 'none';
     if (save) localStorage.setItem('mac-wall', name);
