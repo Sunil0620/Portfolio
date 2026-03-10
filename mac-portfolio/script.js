@@ -598,6 +598,10 @@ function onDesktopReady() {
     setTimeout(() => toggleWindow('window-about'), 500);
     setTimeout(() => showNotification('Welcome! Explore via dock or Space for Spotlight'), 1200);
     resetIdleTimer();
+    initVisitorMemory();
+    _initConsole();
+    _initPresence();
+    _initKernelPanic();
 }
 
 /* ==================== LOCK SCREEN ==================== */
@@ -904,6 +908,17 @@ function openWindow(win) {
         win.style.top  = Math.max(40, (window.innerHeight - h) / 4 + (Math.random()-0.5)*40) + 'px';
     }
     bringFront(win);
+    _trackVisitedWindow(win.id);
+    _spikePresence(18);
+    _consoleLog('ws','info',`Application activated: ${win.id} [${win.style.left}, ${win.style.top}]`);
+    if (win.id === 'window-console' && !win._consoleGreeted) {
+        win._consoleGreeted = true;
+        setTimeout(() => {
+            _consoleLog('human','warn','HumanInteraction: non-automated click pattern detected');
+            _consoleLog('human','warn','Visitor classification: developer | curiosity_score: HIGH');
+            _consoleLog('human','info','Tip: try the Konami code on the desktop ↑↑↓↓←→←→BA');
+        }, 600);
+    }
     showDesktopOverlay();
     /* Bounce dock icon */
     const dot = document.getElementById('dot-' + win.id);
@@ -947,6 +962,7 @@ function closeWindow(id) {
     const win = document.getElementById(id);
     if (!win) return;
     if (id === 'window-trash') _setTrashLid(false);
+    _consoleLog('ws','info',`Window closed: ${id}`);
     if (win.id === 'window-readme' && win.dataset.readmeContent) {
         win.querySelector('.header-title').textContent = win.dataset.readmeTitle;
         win.querySelector('.textedit-content').innerHTML = win.dataset.readmeContent;
@@ -1671,6 +1687,7 @@ To github.com:Sunil0620/Portfolio.git
 
 function execTerminal(cmd) {
     if (!cmd) return;
+    _consoleLog('terminal','info',`guest@portfolio ~ % ${cmd}`);
     const out  = document.getElementById('terminal-output');
     const body = document.getElementById('terminal-body');
 
@@ -2136,6 +2153,8 @@ function drawVisualizer() {
 function playTrack(idx) {
     musicTrackIdx = idx;
     const track = TRACKS[idx];
+    _trackVisitedTrack(track.name);
+    _consoleLog('music','info',`Now playing: "${track.name}" — ${track.artist} · ${track.film}`);
 
     // Update all UI
     document.getElementById('music-track').textContent    = track.name;
@@ -2999,4 +3018,292 @@ function resetTrash() {
     if (empty) empty.style.display = 'none';
     if (label) label.textContent   = '8 items · 47.3 GB used';
     if (btn)   { btn.disabled = false; btn.textContent = 'Empty Trash'; btn.style.opacity = ''; }
+}
+
+/* ==================== MEMORY OF VISITOR ==================== */
+function _loadVisitData() {
+    try { return JSON.parse(localStorage.getItem('mac-visit-data') || 'null'); } catch(e) { return null; }
+}
+function _saveVisitData(d) {
+    try { localStorage.setItem('mac-visit-data', JSON.stringify(d)); } catch(e) {}
+}
+function initVisitorMemory() {
+    const prev = _loadVisitData();
+    const now  = Date.now();
+    const data = {
+        count:        (prev ? prev.count : 0) + 1,
+        firstVisit:   prev ? prev.firstVisit : now,
+        lastVisit:    now,
+        prevWindows:  prev ? (prev.sessionWindows || []) : [],
+        prevTracks:   prev ? (prev.sessionTracks  || []) : [],
+        sessionWindows: [],
+        sessionTracks:  [],
+    };
+    _saveVisitData(data);
+    window._visitData = data;
+
+    if (prev && prev.count >= 1) {
+        const days = Math.floor((now - prev.lastVisit) / 86400000);
+        const ago  = days === 0 ? 'earlier today' : days === 1 ? 'yesterday' : `${days} days ago`;
+        const nice = id => id.replace('window-','').replace(/-/g,' ');
+        const explored = (prev.sessionWindows || []).length
+            ? (prev.sessionWindows).slice(0,3).map(nice).join(', ')
+            : 'the portfolio';
+        setTimeout(() => {
+            showNotification(`👋 Welcome back! Last visit: ${ago}. You explored: ${explored}.`);
+            _consoleLog('portfolio','info',`Returning visitor detected — visit #${data.count}, last seen ${ago}`);
+        }, 3800);
+    }
+}
+function _trackVisitedWindow(winId) {
+    if (!window._visitData) return;
+    const s = window._visitData.sessionWindows;
+    if (!s.includes(winId)) { s.push(winId); _saveVisitData(window._visitData); }
+}
+function _trackVisitedTrack(name) {
+    if (!window._visitData) return;
+    const s = window._visitData.sessionTracks;
+    if (!s.includes(name)) { s.push(name); _saveVisitData(window._visitData); }
+}
+
+/* ==================== CONSOLE APP ==================== */
+const _conLogs = [];
+const _CON_PROC = {
+    kernel:    { label: 'kernel',           color: '#ff453a' },
+    ws:        { label: 'WindowServer',     color: '#007aff' },
+    mds:       { label: 'mds',              color: '#30d158' },
+    notifyd:   { label: 'notifyd',          color: '#ffd60a' },
+    dock:      { label: 'Dock',             color: '#bf5af2' },
+    music:     { label: 'Music',            color: '#ff375f' },
+    terminal:  { label: 'Terminal',         color: '#30d158' },
+    portfolio: { label: 'portfolio[js]',    color: '#00d2ff' },
+    human:     { label: 'HumanDetector[1]', color: '#ff9f0a' },
+    presence:  { label: 'presenced',        color: '#636366' },
+};
+let _consoleFilterLevel = 'all';
+
+function _consoleLog(proc, level, msg) {
+    const ts   = new Date();
+    const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})
+                 + '.' + String(ts.getMilliseconds()).padStart(3,'0');
+    const entry = { time, proc, level, msg };
+    _conLogs.push(entry);
+    if (_conLogs.length > 600) _conLogs.shift();
+    _appendConsoleRow(entry);
+}
+
+function _appendConsoleRow(entry) {
+    const list = document.getElementById('console-log-list');
+    if (!list) return;
+    if (_consoleFilterLevel !== 'all' && entry.level !== _consoleFilterLevel) return;
+    const q = (document.getElementById('console-search-input') || {}).value || '';
+    if (q && !(entry.msg + entry.proc).toLowerCase().includes(q.toLowerCase())) return;
+    const p   = _CON_PROC[entry.proc] || { label: entry.proc, color: '#aaa' };
+    const row = document.createElement('div');
+    row.className = `con-row con-level-${entry.level}`;
+    row.dataset.level = entry.level; row.dataset.proc = entry.proc;
+    row.innerHTML =
+        `<span class="con-col-time">${entry.time}</span>` +
+        `<span class="con-col-type con-type-${entry.level}">${entry.level.toUpperCase()}</span>` +
+        `<span class="con-col-process" style="color:${p.color}">${p.label}</span>` +
+        `<span class="con-col-msg">${entry.msg}</span>`;
+    list.appendChild(row);
+    const win = document.getElementById('window-console');
+    if (win && win.style.display !== 'none') list.scrollTop = list.scrollHeight;
+}
+
+function setConsoleFilter(level, btn) {
+    _consoleFilterLevel = level;
+    document.querySelectorAll('.con-filter').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const list = document.getElementById('console-log-list');
+    if (!list) return;
+    list.innerHTML = '';
+    _conLogs.forEach(e => _appendConsoleRow(e));
+}
+
+function filterConsoleLogs() {
+    const list = document.getElementById('console-log-list');
+    if (!list) return;
+    list.innerHTML = '';
+    _conLogs.forEach(e => _appendConsoleRow(e));
+}
+
+function _seedConsoleLogs() {
+    [
+        ['kernel','info', 'Darwin Kernel Version 24.0.0 — Portfolio Edition'],
+        ['kernel','info', 'Copyright © 2024 Sunil Saini. All rights reserved.'],
+        ['ws',    'info', 'WindowServer starting — display compositor initialized'],
+        ['mds',   'info', 'Spotlight indexing: /Portfolio/projects (4 items found)'],
+        ['notifyd','info','Notification daemon ready — focus mode: OFF'],
+        ['dock',  'info', 'Dock registered 9 app icons'],
+        ['portfolio','info','DOM ready — boot sequence initiated'],
+        ['portfolio','info','Assets: style.css (2600+ lines), script.js (3000+ lines), zero dependencies'],
+        ['ws',    'warn', 'YouTube IFrame API: embed restricted — retrying next track'],
+        ['mds',   'info', 'Indexing complete. Trash: 0 items (already emptied)'],
+        ['portfolio','info','AudioContext suspended — awaiting first user gesture'],
+        ['ws',    'info', 'GPU compositing active — Metal renderer'],
+    ].forEach(([p,l,m]) => _consoleLog(p,l,m));
+}
+
+function _initConsole() {
+    _seedConsoleLogs();
+    // Ambient background daemon logs
+    (function _ambient() {
+        const msgs = [
+            ['presence','info',`WindowServer: compositing ${document.querySelectorAll('.window').length} registered windows`],
+            ['mds',     'info', 'SpotlightIndex: portfolio keywords re-indexed'],
+            ['notifyd', 'info', 'Delivered 1 notification to portfolio[js]'],
+            ['kernel',  'info', 'Memory pressure: normal — heap stable'],
+            ['presence','info', 'presenced: heartbeat OK — system responsive'],
+            ['mds',     'warn', 'CoreData: performing vacuum on SQLite metadata store'],
+            ['ws',      'info', 'SkyLight: vsync — frame rendered at 60fps'],
+            ['kernel',  'info', 'sandboxd: allow(1) portfolio-js network-socket'],
+            ['presence','info', 'cfprefsd: syncing preferences to disk'],
+        ];
+        const [p,l,m] = msgs[Math.floor(Math.random() * msgs.length)];
+        _consoleLog(p,l,m);
+        setTimeout(_ambient, 18000 + Math.random() * 35000);
+    })();
+}
+
+/* ==================== PRESENCE ENGINE ==================== */
+let _cpuLoad   = 12;
+let _cpuTarget = 12;
+
+function _initPresence() {
+    // Drift CPU naturally, spike on activity
+    setInterval(() => {
+        _cpuTarget = 6 + Math.random() * 14;
+        _cpuLoad   = _cpuLoad + (_cpuTarget - _cpuLoad) * 0.25;
+        const el = document.getElementById('presence-cpu');
+        if (!el) return;
+        el.textContent = _cpuLoad.toFixed(1) + '%';
+        el.classList.toggle('hot', _cpuLoad > 55);
+    }, 2200);
+
+    // Ambient notification-center cards every 45–120s
+    const _presenceMsgs = [
+        ['💾','mds',      'Spotlight: portfolio index updated'],
+        ['⚡','kernel',   'CPU: burst mode released — idle throttle active'],
+        ['🌐','Safari',   'Network: portfolio_net — 12ms latency'],
+        ['🔒','securityd','Code signature: verified OK'],
+        ['💻','Terminal', 'Background process exited with code 0'],
+        ['🎵','Music',    'Audio buffer preloaded — next track ready'],
+        ['📦','npm',      'portfolio@1.0.0 — all dependencies up to date'],
+        ['🛠','Xcode',    'Build succeeded — 0 errors, 0 warnings'],
+    ];
+    (function _ambientCard() {
+        const [icon, app, msg] = _presenceMsgs[Math.floor(Math.random() * _presenceMsgs.length)];
+        _addPresenceCard(icon, app, msg);
+        _consoleLog('presence','info',`${app}: ${msg}`);
+        setTimeout(_ambientCard, 45000 + Math.random() * 75000);
+    })();
+}
+
+function _spikePresence(amount) {
+    _cpuLoad = Math.min(92, _cpuLoad + (amount || 25) + Math.random() * 15);
+    const el = document.getElementById('presence-cpu');
+    if (el) { el.textContent = _cpuLoad.toFixed(1) + '%'; el.classList.add('hot'); }
+}
+
+function _addPresenceCard(icon, app, msg) {
+    const nc = document.getElementById('notif-center');
+    if (!nc) return;
+    const now  = new Date();
+    const time = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+    const card = document.createElement('div');
+    card.className = 'nc-card';
+    card.innerHTML =
+        `<div class="nc-card-header"><span class="nc-app-icon">${icon}</span>` +
+        `<span class="nc-app-name">${app}</span><span class="nc-time">${time}</span></div>` +
+        `<div class="nc-card-body">${msg}</div>`;
+    const anchor = nc.querySelector('#nc-github-list');
+    anchor ? anchor.before(card) : nc.appendChild(card);
+    setTimeout(() => card.remove(), 180000);
+}
+
+/* ==================== KERNEL PANIC EASTER EGG ==================== */
+const _PANIC_SEQ = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let _panicBuf = [];
+
+function _initKernelPanic() {
+    if (localStorage.getItem('mac-dev-mode') === '1') _applyDevMode(false);
+    document.addEventListener('keydown', e => {
+        _panicBuf.push(e.key);
+        if (_panicBuf.length > _PANIC_SEQ.length) _panicBuf.shift();
+        if (_panicBuf.join(',') === _PANIC_SEQ.join(',')) {
+            _panicBuf = [];
+            _triggerKernelPanic();
+        }
+    });
+}
+
+function _triggerKernelPanic() {
+    const overlay  = document.getElementById('kernel-panic');
+    const trace    = document.getElementById('panic-trace');
+    const fill     = document.getElementById('panic-progress-fill');
+    const countEl  = document.getElementById('panic-countdown');
+    if (!overlay) return;
+
+    if (trace) trace.textContent =
+        `panic(cpu 3 caller 0xffffff80043d3d): "EasterEgg exploit triggered"\n` +
+        `frame #0: kernel + 0xd3c000  _dispatch_visitor_event + 0x42\n` +
+        `frame #1: portfolio.js + 0x8042  _handleKeySequence + 0x60\n` +
+        `frame #2: 0xffffff802b4f  konami_sequence_detected + 0x1a\n\n` +
+        `Kernel slide: 0x206b39f9\nCaught by easter-egg trap at 0x0000dead\n\n` +
+        `BSD process name: Google Chrome\nMac OS Version: Portfolio 1.0`;
+
+    overlay.classList.remove('hidden');
+    _panicSound();
+    _consoleLog('kernel','error','panic: EasterEgg exploit triggered — system halting');
+
+    // Countdown
+    let secs = 5;
+    const iv = setInterval(() => {
+        secs--;
+        if (countEl) countEl.textContent = secs;
+        if (secs <= 0) clearInterval(iv);
+    }, 1000);
+
+    // Progress fill over 5s
+    requestAnimationFrame(() => {
+        if (fill) { fill.style.transition = 'width 5s linear'; fill.style.width = '100%'; }
+    });
+
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+        if (fill) { fill.style.transition = 'none'; fill.style.width = '0'; }
+        localStorage.setItem('mac-dev-mode','1');
+        _applyDevMode(true);
+    }, 5200);
+}
+
+function _applyDevMode(isNew) {
+    document.documentElement.classList.add('dev-mode');
+    if (isNew) {
+        setTimeout(() => showNotification('🔧 Developer mode unlocked — you found the easter egg!'), 800);
+        setTimeout(() => _consoleLog('kernel','warn','System recovered — developer mode enabled. Welcome, dev.'), 900);
+    }
+}
+
+function _panicSound() {
+    try {
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        if (ac.state === 'suspended') ac.resume();
+        const t = ac.currentTime;
+        // White noise burst
+        const len = Math.floor(ac.sampleRate * 0.35);
+        const buf = ac.createBuffer(1, len, ac.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.7));
+        const src = ac.createBufferSource(); src.buffer = buf;
+        const g = ac.createGain(); g.gain.setValueAtTime(0.45, t);
+        src.connect(g); g.connect(ac.destination); src.start(t);
+        // Low rumble
+        const osc = ac.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = 55;
+        const og  = ac.createGain(); og.gain.setValueAtTime(0.3, t);
+        og.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+        osc.connect(og); og.connect(ac.destination); osc.start(t); osc.stop(t + 0.6);
+    } catch(e) {}
 }
