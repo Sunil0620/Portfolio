@@ -2170,7 +2170,7 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
                     : Math.random() * 11 + 5;    /* fast outer sparks */
                 this.vx = Math.cos(angle) * speed;
                 this.vy = Math.sin(angle) * speed;
-                this.friction = Math.random() * 0.04 + 0.84; /* 0.84–0.88 decel */
+                this.friction = Math.random() * 0.03 + 0.93; /* 0.93–0.96 smooth decel */
             } else {
                 this.vx = (Math.random() - 0.5) * 0.6;
                 this.vy = (Math.random() - 0.5) * 0.6;
@@ -2178,24 +2178,26 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
             this.alpha = isBurst ? 1.0 : Math.random() * 0.6 + 0.3;
         }
         update() {
-            const dx = this.x - mouse.x, dy = this.y - mouse.y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if (mouse.active && dist < MOUSE_RADIUS && dist > 0) {
-                const angle = Math.atan2(dy, dx);
-                if (dist < 80) { const f = (80-dist)/80; this.vx += Math.cos(angle)*f*2.5; this.vy += Math.sin(angle)*f*2.5; }
-                else { const f = (MOUSE_RADIUS-dist)/MOUSE_RADIUS*0.15; this.vx -= Math.cos(angle)*f; this.vy -= Math.sin(angle)*f; }
+            /* mouse repulsion — skip for burst sparks */
+            if (!this.isBurst) {
+                const dx = this.x - mouse.x, dy = this.y - mouse.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (mouse.active && dist < MOUSE_RADIUS && dist > 0) {
+                    const angle = Math.atan2(dy, dx);
+                    if (dist < 80) { const f = (80-dist)/80; this.vx += Math.cos(angle)*f*2.5; this.vy += Math.sin(angle)*f*2.5; }
+                    else { const f = (MOUSE_RADIUS-dist)/MOUSE_RADIUS*0.15; this.vx -= Math.cos(angle)*f; this.vy -= Math.sin(angle)*f; }
+                }
             }
-            this.vx *= 0.97; this.vy *= 0.97;
+            /* single friction: burst uses its own value, ambient uses global */
+            const fr = this.isBurst ? this.friction : 0.97;
+            this.vx *= fr; this.vy *= fr;
             this.x += this.vx; this.y += this.vy;
             this.r = this.baseR + Math.sin(frame * this.pulseSpeed + this.pulseOffset) * 0.6;
             if (this.isBurst) {
-                /* per-particle decel so sparks feel physical */
-                this.vx *= this.friction; this.vy *= this.friction;
                 this.life -= 0.018;
-                /* ease-out alpha: stays bright then drops off smoothly */
                 this.alpha = Math.max(0, Math.pow(this.life, 0.55));
                 this.r = this.baseR * (0.3 + this.life * 0.7);
-                return; /* skip position-wrapping for burst sparks */
+                return;
             }
             if (this.x < -30) this.x = W+20; if (this.x > W+30) this.x = -20;
             if (this.y < -30) this.y = H+20; if (this.y > H+30) this.y = -20;
@@ -2214,9 +2216,10 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
 
     function drawConnections() {
         for (let i = 0; i < particles.length; i++) {
-            const p1 = particles[i]; if (p1.alpha <= 0) continue;
+            const p1 = particles[i];
+            if (p1.isBurst || p1.alpha <= 0) continue; /* skip burst sparks — too many at once */
             for (let j = i+1; j < particles.length; j++) {
-                const p2 = particles[j]; if (p2.alpha <= 0) continue;
+                const p2 = particles[j]; if (p2.isBurst || p2.alpha <= 0) continue;
                 const dx = p1.x-p2.x, dy = p1.y-p2.y;
                 const dist = Math.sqrt(dx*dx+dy*dy);
                 if (dist < CONNECT_DIST) {
