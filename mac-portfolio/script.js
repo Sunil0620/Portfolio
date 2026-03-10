@@ -182,9 +182,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (locked) return;
         resetIdleTimer();
         const isMeta = e.metaKey || e.ctrlKey;
-        if ((isMeta && e.key === ' ') || e.key === 'F4') { e.preventDefault(); toggleSpotlight(); return; }
+        const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+        if ((e.key === ' ' && !inInput) || e.key === 'F4') { e.preventDefault(); toggleSpotlight(); return; }
         if (e.key === 'F3') { e.preventDefault(); triggerMissionControl(); return; }
+        if (isMeta && e.key === 's') {
+            e.preventDefault();
+            const dirtyDots = document.querySelectorAll('.vsc-dirty');
+            let hadDirty = false;
+            dirtyDots.forEach(d => { if (d.style.display !== 'none') hadDirty = true; d.style.display = 'none'; });
+            showNotification(hadDirty ? '💾 script.js — saved' : '💾 All files up to date');
+            return;
+        }
         if (isMeta && e.key === 'q') { e.preventDefault(); lockScreen(); return; }
+        if (!inInput && e.key >= '1' && e.key <= '6') {
+            e.preventDefault();
+            const wins = ['window-about','window-projects','window-skills','window-contact','window-music','window-vscode'];
+            toggleWindow(wins[parseInt(e.key) - 1]);
+            return;
+        }
         if (e.key === 'Escape') {
             hideSpotlight(); hideControlCenter(); hideNotifCenter();
             if (missionControlActive) triggerMissionControl();
@@ -228,6 +243,13 @@ document.addEventListener('DOMContentLoaded', () => {
     /* Notification Centre date */
     updateNCDate();
 
+    /* Dynamic notes date */
+    const notesDateEl = document.getElementById('notes-current-date');
+    if (notesDateEl) {
+        const nd = new Date();
+        notesDateEl.textContent = nd.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+
     /* Tab visibility easter egg */
     document.addEventListener('visibilitychange', () => {
         document.title = document.hidden
@@ -235,8 +257,18 @@ document.addEventListener('DOMContentLoaded', () => {
             : 'Portfolio — macOS Sonoma';
     });
 
-    /* Desktop mouse parallax */
-    initParallax();
+    /* Desktop click ripple */
+    document.addEventListener('click', e => {
+        if (locked) return;
+        if (e.target.closest('.window') || e.target.closest('#dock-wrapper') || e.target.closest('#menu-bar')) return;
+        const r = document.createElement('div');
+        r.className = 'click-ripple';
+        r.style.left = e.clientX + 'px';
+        r.style.top  = e.clientY + 'px';
+        document.body.appendChild(r);
+        r.addEventListener('animationend', () => r.remove());
+    });
+
 });
 
 /* ==================== KONAMI CODE EASTER EGG ==================== */
@@ -247,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === seq[idx]) { idx++; } else { idx = e.key === seq[0] ? 1 : 0; }
         if (idx === seq.length) {
             idx = 0;
-            openWindow('window-skills');
+            toggleWindow('window-skills');
             setTimeout(() => {
                 const ti = document.getElementById('terminal-input');
                 if (ti) { ti.value = 'fortune'; ti.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); }
@@ -332,18 +364,6 @@ function playBootChime() {
     } catch (e) { /* silently skip if audio not available */ }
 }
 
-/* ==================== PARALLAX WALLPAPER ==================== */
-function initParallax() {
-    document.addEventListener('mousemove', e => {
-        if (locked) return;
-        const xPct = (e.clientX / window.innerWidth  - 0.5) * 2; // -1 to 1
-        const yPct = (e.clientY / window.innerHeight - 0.5) * 2;
-        const depth = 8;
-        document.body.style.setProperty('--parallax-x', `${xPct * depth}px`);
-        document.body.style.setProperty('--parallax-y', `${yPct * depth}px`);
-    });
-}
-
 /* ==================== DESKTOP OVERLAY ==================== */
 let openWindowCount = 0;
 function showDesktopOverlay() {
@@ -381,6 +401,7 @@ function resetIdleTimer() {
 );
 
 let saverAnimId = null;
+let _saverClockIv = null;
 
 function activateScreensaver() {
     if (locked) return;
@@ -388,18 +409,28 @@ function activateScreensaver() {
     if (!ss) return;
     ss.classList.remove('hidden');
     startSaverAnimation();
+    _updateSaverClock();
+    _saverClockIv = setInterval(_updateSaverClock, 1000);
 
     function dismiss(e) {
         if (e) e.preventDefault();
-        ss.classList.add('hidden');
-        cancelAnimationFrame(saverAnimId);
         ss.removeEventListener('click', dismiss);
-        ss.removeEventListener('keydown', dismiss);
         document.removeEventListener('keydown', dismiss);
-        resetIdleTimer();
+        cancelAnimationFrame(saverAnimId);
+        clearInterval(_saverClockIv);
+        ss.style.opacity = '0';
+        setTimeout(() => { ss.classList.add('hidden'); ss.style.opacity = ''; resetIdleTimer(); }, 520);
     }
     ss.addEventListener('click', dismiss);
     document.addEventListener('keydown', dismiss);
+}
+
+function _updateSaverClock() {
+    const now = new Date();
+    const te = document.getElementById('saver-time');
+    const de = document.getElementById('saver-date');
+    if (te) te.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    if (de) de.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
 function startSaverAnimation() {
@@ -408,41 +439,94 @@ function startSaverAnimation() {
     const ctx = canvas.getContext('2d');
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
+    const W = canvas.width, H = canvas.height;
 
-    const circles = Array.from({ length: 60 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 80 + 20,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
-        hue: Math.random() * 360,
-        alpha: Math.random() * 0.15 + 0.05,
+    // ── Star field ──
+    const stars = Array.from({ length: 200 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.1 + 0.15,
+        a: Math.random() * 0.55 + 0.1,
+        phase: Math.random() * Math.PI * 2,
+        spd:   Math.random() * 0.012 + 0.004,
     }));
 
+    // ── Aurora layers: [r,g,b, wavespeed, frequency, yCenter%, amplitude%, ribbonHeight%, peak-alpha] ──
+    const LAYERS = [
+        { r:0,   g:220, b:185, spd:0.00055, freq:0.0022, yR:0.46, amp:0.10, ht:0.24, al:0.58 },
+        { r:90,  g:40,  b:255, spd:0.00080, freq:0.0030, yR:0.42, amp:0.12, ht:0.22, al:0.46 },
+        { r:0,   g:145, b:255, spd:0.00042, freq:0.0037, yR:0.52, amp:0.09, ht:0.18, al:0.38 },
+        { r:190, g:25,  b:255, spd:0.00095, freq:0.0026, yR:0.40, amp:0.11, ht:0.25, al:0.34 },
+        { r:15,  g:255, b:130, spd:0.00060, freq:0.0018, yR:0.50, amp:0.08, ht:0.16, al:0.28 },
+    ];
+
     let frame = 0;
+
+    function drawLayer(l) {
+        const yBase  = l.yR * H;
+        const ribbonH = l.ht * H;
+
+        // Compute sine-wave spine
+        const pts = [];
+        for (let x = 0; x <= W; x += 5) {
+            const y = yBase
+                + Math.sin(x * l.freq          + frame * l.spd * 55) * l.amp * H
+                + Math.sin(x * l.freq * 1.85   + frame * l.spd * 37 + 1.3) * l.amp * H * 0.38;
+            pts.push({ x, y });
+        }
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+
+        // Upper ribbon (above spine)
+        ctx.beginPath();
+        pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y - ribbonH) : ctx.lineTo(p.x, p.y - ribbonH));
+        for (let i = pts.length - 1; i >= 0; i--) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.closePath();
+        const gU = ctx.createLinearGradient(0, yBase - ribbonH, 0, yBase);
+        gU.addColorStop(0,   `rgba(${l.r},${l.g},${l.b},0)`);
+        gU.addColorStop(0.45,`rgba(${l.r},${l.g},${l.b},${l.al})`);
+        gU.addColorStop(1,   `rgba(${l.r},${l.g},${l.b},${l.al * 0.55})`);
+        ctx.fillStyle = gU;
+        ctx.fill();
+
+        // Lower tail (below spine, shorter)
+        ctx.beginPath();
+        pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+        for (let i = pts.length - 1; i >= 0; i--) ctx.lineTo(pts[i].x, pts[i].y + ribbonH * 0.38);
+        ctx.closePath();
+        const gD = ctx.createLinearGradient(0, yBase, 0, yBase + ribbonH * 0.38);
+        gD.addColorStop(0, `rgba(${l.r},${l.g},${l.b},${l.al * 0.55})`);
+        gD.addColorStop(1, `rgba(${l.r},${l.g},${l.b},0)`);
+        ctx.fillStyle = gD;
+        ctx.fill();
+
+        ctx.restore();
+    }
+
     function draw() {
         frame++;
-        ctx.fillStyle = 'rgba(0,0,0,0.03)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        circles.forEach(c => {
-            c.x += c.vx; c.y += c.vy;
-            c.hue = (c.hue + 0.2) % 360;
-            if (c.x < -c.r)  c.x = canvas.width  + c.r;
-            if (c.x > canvas.width  + c.r) c.x = -c.r;
-            if (c.y < -c.r)  c.y = canvas.height + c.r;
-            if (c.y > canvas.height + c.r) c.y = -c.r;
+        // Deep-space background — full clear each frame (crisp, no trails)
+        ctx.fillStyle = '#03040a';
+        ctx.fillRect(0, 0, W, H);
 
-            const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
-            grad.addColorStop(0, `hsla(${c.hue},80%,60%,${c.alpha})`);
-            grad.addColorStop(1, `hsla(${c.hue},80%,60%,0)`);
+        // Stars
+        stars.forEach(s => {
+            s.phase += s.spd;
+            const a = s.a * (0.55 + 0.45 * Math.sin(s.phase));
             ctx.beginPath();
-            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-            ctx.fillStyle = grad;
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${a.toFixed(2)})`;
             ctx.fill();
         });
+
+        // Aurora
+        LAYERS.forEach(drawLayer);
+
         saverAnimId = requestAnimationFrame(draw);
     }
+
     draw();
 }
 
@@ -512,7 +596,7 @@ function doLogin() {
 
 function onDesktopReady() {
     setTimeout(() => toggleWindow('window-about'), 500);
-    setTimeout(() => showNotification('Welcome! Explore via dock or ⌘Space for Spotlight'), 1200);
+    setTimeout(() => showNotification('Welcome! Explore via dock or Space for Spotlight'), 1200);
     resetIdleTimer();
 }
 
@@ -571,7 +655,82 @@ function ccBrightness(val) {
 }
 function ccVolume(val) {
     masterVolume = val / 100;
-    if (musicGainNode) musicGainNode.gain.setTargetAtTime(masterVolume * 0.3, audioCtx.currentTime, 0.05);
+    if (ytPlayer && ytReady) ytPlayer.setVolume(masterVolume * 100);
+}
+
+/* ==================== WIFI TOGGLE ==================== */
+let wifiOn = true;
+function ccToggleWifi() {
+    wifiOn = !wifiOn;
+    const tile = document.getElementById('cc-wifi-tile');
+    const sub  = tile?.querySelector('.cc-tile-sub');
+    if (tile)  tile.classList.toggle('active', wifiOn);
+    if (sub)   sub.textContent = wifiOn ? 'Connected' : 'Off';
+    showNotification(wifiOn ? 'Wi-Fi: Connected to Portfolio_Network' : 'Wi-Fi: Turned off');
+}
+
+/* ==================== TEXTEDIT TOOLBAR ==================== */
+function teSetFont(font) {
+    const el = document.querySelector('.textedit-content');
+    if (el) el.style.fontFamily = font === 'Menlo' ? "'Menlo','Monaco',monospace" : "'Inter',system-ui,sans-serif";
+}
+function teSetSize(size) {
+    const el = document.querySelector('.textedit-content');
+    if (el) el.style.fontSize = size + 'px';
+}
+
+/* ==================== VSCODE TAB CLOSE ==================== */
+function vscodeCloseTab(type) {
+    const tab = document.getElementById('vstab-' + type);
+    if (tab) tab.style.display = 'none';
+    const exp = document.getElementById('vsexp-' + type);
+    if (exp) exp.style.opacity = '0.4';
+    /* Switch to another visible tab */
+    const order = ['js','css','html'];
+    const next = order.find(t => t !== type && document.getElementById('vstab-'+t)?.style.display !== 'none');
+    if (next) { vscodeOpenFile(next); }
+    else {
+        const code = document.getElementById('vscode-code');
+        if (code) code.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-tertiary);font-size:13px;">No files open — click a file in the explorer</div>';
+    }
+    showNotification('Closed ' + type + ' tab');
+}
+
+/* ==================== VSCODE DEBUG TABS ==================== */
+function vscodeDebugTab(tabName, el) {
+    document.querySelectorAll('.vscode-debug-tab').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const log = document.getElementById('vscode-debug-log');
+    if (!log) return;
+    if (tabName === 'PROBLEMS') {
+        log.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:var(--text-tertiary);">No problems detected</div>';
+    } else if (tabName === 'OUTPUT') {
+        log.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:#30d158;">[Output] Portfolio build successful · 0 errors</div>';
+    } else {
+        /* CONSOLE — re-run debug */
+        runVscodeDebug();
+    }
+}
+
+/* ==================== NPM INFO TOAST ==================== */
+const _npmData = {
+    'react': { desc:'A declarative UI library by Meta.', dep: 'react-dom, scheduler', size:'50 KB' },
+    'webpack': { desc:'Module bundler for modern JS apps.', dep:'acorn, tapable, watchpack', size:'5.2 MB' },
+    'babel-core': { desc:'JS transpiler — write future JS today.', dep:'@babel/core, browse-rs', size:'3.1 MB' },
+    'lodash': { desc:'Utility library delivering consistency.', dep:'none', size:'531 KB' },
+    'express': { desc:'Fast, unopinionated web framework.', dep:'path-to-regexp, cookie', size:'210 KB' },
+    'left-pad': { desc:'Pads the left side of strings. Once broke the internet.', dep:'none', size:'4 KB' },
+    'is-odd': { desc:'Returns true if a number is odd. Seriously.', dep:'is-number', size:'3 KB' },
+    'is-even': { desc:'Returns true if a number is even. Uses is-odd internally.', dep:'is-odd', size:'2 KB' },
+    'is-string': { desc:'Checks if a value is a string.', dep:'has-tostringtag', size:'4 KB' },
+    'is-boolean': { desc:'Checks if a value is a boolean.', dep:'none', size:'2 KB' },
+    'assert-never': { desc:'TypeScript exhaustiveness checking helper.', dep:'none', size:'1 KB' },
+};
+function showNpmInfo(el) {
+    const pkg = el.textContent.replace('📦 ', '').trim();
+    const name = pkg.split('@')[0];
+    const info = _npmData[name] || { desc: 'A dependency of a dependency of a dependency.', dep: 'unknown', size: '???' };
+    showNotification(`📦 ${pkg}: ${info.desc}`);
 }
 
 /* ==================== NOTIFICATION CENTER ==================== */
@@ -580,6 +739,7 @@ function toggleNotifCenter() {
     const cc = document.getElementById('control-center');
     cc.classList.add('hidden');
     nc.classList.toggle('hidden');
+    if (!nc.classList.contains('hidden')) fetchGitHubActivity();
 }
 function hideNotifCenter() {
     const el = document.getElementById('notif-center');
@@ -676,6 +836,18 @@ function execSpotlight(idx) {
     if (r) { r.action(); hideSpotlight(); }
 }
 
+/* Open Spotlight pre-filled with a query (from tag clicks) */
+function openSpotlightWithQuery(query) {
+    const sl = document.getElementById('spotlight');
+    const input = document.getElementById('spotlight-input');
+    if (!sl || !input) return;
+    sl.classList.remove('hidden');
+    sl.style.animation = '';
+    input.value = query;
+    renderSpotlightResults(query);
+    setTimeout(() => input.focus(), 50);
+}
+
 /* ==================== CONTEXT MENU ==================== */
 function showContextMenu(x, y) {
     const cm = document.getElementById('context-menu');
@@ -742,7 +914,25 @@ function openWindow(win) {
         if (art) { art.classList.add('bouncing'); setTimeout(() => art.classList.remove('bouncing'), 700); }
     }
     if (win.id === 'window-music') initMusicVisualizer();
-    if (win.id === 'window-vscode') buildVSCode();
+    if (win.id === 'window-trash') _setTrashLid(true);
+    if (win.id === 'window-about') {
+        setTimeout(() => {
+            win.querySelectorAll('.skill-bar-fill[data-width]').forEach(bar => {
+                bar.style.width = '0%';
+                setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, 50);
+            });
+        }, 80);
+    }
+    if (win.id === 'window-vscode') {
+        buildVSCode();
+        setTimeout(() => {
+            ['js','css','html'].forEach(t => {
+                const d = document.getElementById('vsdirty-' + t);
+                const tab = document.getElementById('vstab-' + t);
+                if (d && tab && tab.style.display !== 'none') d.style.display = 'inline';
+            });
+        }, 4000);
+    }
     if (win.id === 'window-about-mac') {
         const ramEl = win.querySelector('.about-mac-ram');
         if (ramEl && !ramEl.dataset.animating) {
@@ -756,6 +946,7 @@ function openWindow(win) {
 function closeWindow(id) {
     const win = document.getElementById(id);
     if (!win) return;
+    if (id === 'window-trash') _setTrashLid(false);
     if (win.id === 'window-readme' && win.dataset.readmeContent) {
         win.querySelector('.header-title').textContent = win.dataset.readmeTitle;
         win.querySelector('.textedit-content').innerHTML = win.dataset.readmeContent;
@@ -771,6 +962,7 @@ function closeWindow(id) {
 function minimizeWindow(id) {
     const win = document.getElementById(id);
     if (!win) return;
+    if (id === 'window-trash') _setTrashLid(false);
     win.style.transform = 'scale(0.3) translateY(100%)';
     win.style.opacity   = '0';
     win.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
@@ -809,7 +1001,11 @@ function maximizeWindow(id) {
 }
 
 function closeAllWindows() {
-    document.querySelectorAll('.window').forEach(w => closeWindow(w.id));
+    document.querySelectorAll('.window').forEach(w => {
+        if (w.style.display !== 'none' && !w.classList.contains('minimized')) {
+            minimizeWindow(w.id);
+        }
+    });
 }
 function showAllWindows() {
     document.querySelectorAll('.window').forEach(w => {
@@ -868,6 +1064,10 @@ function triggerMissionControl() {
 /* ==================== DRAGGABLE ==================== */
 function makeDraggable(header, el) {
     header.addEventListener('mousedown', start);
+    header.addEventListener('dblclick', e => {
+        if (e.target.closest('.window-controls') || e.target.closest('.url-bar')) return;
+        minimizeWindow(el.id);
+    });
     function start(e) {
         if (e.target.closest('.window-controls') || e.target.closest('.url-bar')) return;
         e.preventDefault();
@@ -964,7 +1164,9 @@ function initDock() {
         item.addEventListener('click', () => {
             const app = item.getAttribute('data-app');
             if (app === 'trash') {
-                showNotification('Trash is empty — unlike your node_modules');
+                const tw = document.getElementById('window-trash');
+                if (!tw || tw.style.display === 'none') resetTrash();
+                toggleWindow('window-trash');
                 return;
             }
             if (app) toggleWindow(app);
@@ -1017,7 +1219,7 @@ function setAppearanceMode(mode, btn, save = true) {
     const root = document.documentElement;
     if (mode === 'light') {
         root.classList.add('light-mode');
-        root.style.setProperty('--win-bg',           'rgba(245,245,247,0.92)');
+        root.style.setProperty('--win-bg',           'rgba(248,248,255,0.55)');
         root.style.setProperty('--win-shadow',       '0 22px 70px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.05)');
         root.style.setProperty('--text-primary',     'rgba(0,0,0,0.85)');
         root.style.setProperty('--text-secondary',   'rgba(0,0,0,0.55)');
@@ -1029,7 +1231,7 @@ function setAppearanceMode(mode, btn, save = true) {
         root.style.setProperty('--glass-border',     'rgba(0,0,0,0.1)');
     } else {
         root.classList.remove('light-mode');
-        root.style.setProperty('--win-bg',           'rgba(28,28,30,0.82)');
+        root.style.setProperty('--win-bg',           'rgba(28,28,38,0.45)');
         root.style.setProperty('--win-shadow',       '0 32px 100px rgba(0,0,0,0.6), 0 8px 32px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(255,255,255,0.08)');
         root.style.setProperty('--text-primary',     'rgba(255,255,255,0.92)');
         root.style.setProperty('--text-secondary',   'rgba(255,255,255,0.55)');
@@ -1152,6 +1354,106 @@ function switchNote(note, row) {
     if (pane) { pane.classList.add('active-pane'); pane.classList.remove('hidden'); }
 }
 
+/* ==================== FINDER SIDEBAR SECTIONS ==================== */
+let _finderHomeContent = null;
+function switchFinderSection(section, rowEl) {
+    document.querySelectorAll('#window-about .sidebar-item').forEach(r => r.classList.remove('active'));
+    if (rowEl) rowEl.classList.add('active');
+    const main = document.querySelector('#window-about .finder-main');
+    if (!main) return;
+    if (!_finderHomeContent) _finderHomeContent = main.innerHTML;
+
+    const sections = {
+        home: _finderHomeContent,
+        documents: `
+            <p class="notes-date">Documents</p>
+            <h2 style="font-size:18px;margin-bottom:16px;">📁 ~/Documents</h2>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;cursor:pointer;" onclick="window.open('assets/Sunil-Saini-Resume.pdf','_blank')">
+                    <span style="font-size:28px;">📄</span>
+                    <div><strong>Sunil-Saini-Resume.pdf</strong><br><small style="color:var(--text-secondary)">PDF · 142 KB · Click to open</small></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
+                    <span style="font-size:28px;">📋</span>
+                    <div><strong>skills.json</strong><br><small style="color:var(--text-secondary)">JSON · 2 KB · Tech stack</small></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
+                    <span style="font-size:28px;">📝</span>
+                    <div><strong>cover-letter-template.docx</strong><br><small style="color:var(--text-secondary)">Word · 18 KB</small></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
+                    <span style="font-size:28px;">🗄️</span>
+                    <div><strong>portfolio-notes.md</strong><br><small style="color:var(--text-secondary)">Markdown · 6 KB</small></div>
+                </div>
+            </div>`,
+        downloads: `
+            <p class="notes-date">Downloads</p>
+            <h2 style="font-size:18px;margin-bottom:16px;">📥 ~/Downloads</h2>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
+                    <span style="font-size:28px;">🗜️</span>
+                    <div><strong>portfolio-source.zip</strong><br><small style="color:var(--text-secondary)">ZIP · 1.2 MB · Today</small></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
+                    <span style="font-size:28px;">🖼️</span>
+                    <div><strong>screenshots.tar.gz</strong><br><small style="color:var(--text-secondary)">Archive · 4.8 MB · Yesterday</small></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
+                    <span style="font-size:28px;">📦</span>
+                    <div><strong>node_modules-backup.tar</strong><br><small style="color:var(--text-secondary)">Archive · 47.3 GB · (Please delete)</small></div>
+                </div>
+            </div>`,
+        work: `
+            <p class="notes-date">Work Experience</p>
+            <h2 style="font-size:18px;margin-bottom:16px;">💼 Experience</h2>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <div style="padding:14px;background:var(--surface);border-radius:10px;border-left:3px solid var(--accent);">
+                    <strong>Full-Stack Developer</strong> <span style="color:var(--text-tertiary);font-size:12px;float:right">2023 — present</span>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">Building Django + React applications. ML/AI integrations with GPT-4.</p>
+                    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">Django</span>
+                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">React</span>
+                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">Python</span>
+                    </div>
+                </div>
+                <div style="padding:14px;background:var(--surface);border-radius:10px;border-left:3px solid #30d158;">
+                    <strong>Open to Work</strong>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">Actively seeking freelance, internship and full-time opportunities.</p>
+                    <a href="mailto:sunilsaini5652@gmail.com" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:8px;">📧 sunilsaini5652@gmail.com</a>
+                </div>
+            </div>`,
+        opensource: `
+            <p class="notes-date">Open Source</p>
+            <h2 style="font-size:18px;margin-bottom:16px;">🐙 github.com/Sunil0620</h2>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="padding:14px;background:var(--surface);border-radius:10px;" onclick="window.open('https://github.com/Sunil0620/Portfolio','_blank')" style="cursor:pointer">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>🖥️ Portfolio</strong>
+                        <span style="font-size:11px;color:var(--text-tertiary)">★ Public</span>
+                    </div>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">macOS Sonoma-style portfolio — zero dependencies.</p>
+                    <div style="margin-top:6px;display:flex;gap:6px;">
+                        <span style="font-size:11px;color:var(--text-tertiary)">HTML · CSS · JS</span>
+                    </div>
+                </div>
+                <div style="padding:14px;background:var(--surface);border-radius:10px;" onclick="window.open('https://github.com/Sunil0620','_blank')" style="cursor:pointer">
+                    <strong>View all repositories →</strong>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">github.com/Sunil0620</p>
+                </div>
+            </div>`,
+    };
+
+    main.innerHTML = sections[section] || sections.home;
+    /* Re-init skill bar animations for home */
+    if (section === 'home') {
+        main.querySelectorAll('.skill-bar-fill[data-width]').forEach(bar => {
+            const w = bar.dataset.width;
+            bar.style.width = '0%';
+            setTimeout(() => { bar.style.width = w + '%'; }, 50);
+        });
+    }
+}
+
 /* ==================== CONTACT FORM ==================== */
 function handleContactForm(e) {
     e.preventDefault();
@@ -1170,6 +1472,7 @@ function handleContactForm(e) {
         if (res.ok) {
             btn.textContent = 'Message Sent! ✅';
             showNotification('Message sent! Sunil will reply soon 🚀');
+            launchConfetti();
             form.reset();
             setTimeout(() => { btn.textContent = 'Send Message ✉️'; btn.disabled = false; }, 3000);
         } else {
@@ -1232,6 +1535,11 @@ const TERM_COMMANDS = {
   <span class="term-cmd">cowsay [text]</span> — Wise words from a cow
   <span class="term-cmd">sl</span>          — 🚂 Steam locomotive
   <span class="term-cmd">weather</span>     — ASCII weather report
+  <span class="term-cmd">stats</span>       — Session statistics
+  <span class="term-cmd">snake</span>       — Launch 🐍 Snake game
+  <span class="term-cmd">linkedin</span>    — Open LinkedIn profile
+  <span class="term-cmd">resume</span>      — Download resume
+  <span class="term-cmd">hire</span>        — Why hire me?
   <span class="term-cmd">sudo make me a sandwich</span> — Classic
   <span class="term-cmd">clear</span>       — Clear the terminal`,
 
@@ -1337,6 +1645,28 @@ To github.com:Sunil0620/Portfolio.git
         const q = quotes[Math.floor(Math.random() * quotes.length)];
         return `<span style="color:var(--maximize);font-style:italic">${q.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
     },
+    stats: () => {
+        const timeEl = document.getElementById('stat-time');
+        const appsEl = document.getElementById('stat-apps');
+        const cmdsEl = document.getElementById('stat-cmds');
+        const t = timeEl ? timeEl.textContent : '0s';
+        const a = appsEl ? appsEl.textContent : '0';
+        const c = cmdsEl ? cmdsEl.textContent : '0';
+        return `<span class="g">Session Stats:</span>
+  ⏱  Time on desktop:  <strong>${t}</strong>
+  📂  Apps opened:      <strong>${a}</strong>
+  💻  Commands run:     <strong>${c}</strong>`;
+    },
+    snake: () => { toggleWindow('window-snake'); return '<span class="g">🐍 Launching Snake Game…</span>'; },
+    linkedin: () => { window.open('https://www.linkedin.com/in/sunil-saini-6190ba255/','_blank'); return '<span class="g">Opening LinkedIn…</span>'; },
+    resume: () => { window.open('https://sunil0620.github.io/Portfolio/','_blank'); return '<span class="g">Opening portfolio / resume…</span>'; },
+    hire: () => `<span class="g">Why hire Sunil?</span>
+  ✅  Full-stack: Django + React + Next.js
+  ✅  ML/AI experience — GPT-4 integrations, RAG systems
+  ✅  Ships fast, writes clean, explains clearly
+  ✅  Zero-dependency portfolio built from scratch
+  ✅  Problem solver, not just a code writer
+  → Email: <a class="term-link" href="mailto:sunilsaini5652@gmail.com">sunilsaini5652@gmail.com</a>`,
 };
 
 function execTerminal(cmd) {
@@ -1663,39 +1993,94 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
     }
 })();
 
-/* ==================== MUSIC PLAYER ==================== */
-let audioCtx       = null;
-let musicGainNode  = null;
-let musicPlaying   = false;
-let musicTrackIdx  = 0;
-let musicStartTime = 0;
-let musicElapsed   = 0;
-let musicTimer     = null;
-let musicAnalyser  = null;
-let vizAnimId      = null;
-let currentNodes   = [];
+/* ==================== MUSIC PLAYER (YouTube IFrame API) ==================== */
 
 const TRACKS = [
-    { name: 'Lo-fi Coding Session', artist: "Sunil's Playlist", emoji: '🎵', duration: 180,
-      notes: [261,293,329,349,392,440,493,523], tempo: 0.4, style: 'lofi' },
-    { name: 'Midnight Debug',       artist: "Sunil's Playlist", emoji: '🌙', duration: 150,
-      notes: [220,246,261,293,329,349,392,440], tempo: 0.35, style: 'ambient' },
-    { name: 'Deploy Day',           artist: "Sunil's Playlist", emoji: '🚀', duration: 120,
-      notes: [293,329,370,415,440,493,554,587], tempo: 0.25, style: 'chill' },
-    { name: 'It Works™',            artist: "Sunil's Playlist", emoji: '✅', duration: 105,
-      notes: [349,392,440,523,587,659,698,784], tempo: 0.45, style: 'upbeat' },
+    { ytId: 'UNjhqT_hlbg', name: 'Chala Jata Hoon',       artist: 'Kishore Kumar',      film: 'Mere Jeevan Saathi (1972)',     emoji: '🚶', duration: 265 },
+    { ytId: 'RVeLrwoB_xw', name: 'Mere Sapno Ki Rani', artist: 'Kishore Kumar', film: 'Aradhana (1969)', emoji: '🚂', duration: 301 },
+    { ytId: '1GUXATqIkxs', name: 'Likhe Jo Khat Tujhe',   artist: 'Mohammed Rafi',      film: 'Kanyadaan (1968)',              emoji: '💌', duration: 271 },
+    { ytId: 'l7GR1S-HNGo', name: 'Ajeeb Dastan Hai Yeh',  artist: 'Lata Mangeshkar',    film: 'Dil Apna Preet Parayi (1960)', emoji: '✨', duration: 248 },
+    { ytId: 'mfEQgoVi7P4', name: 'Abhi Na Jao Chhod Kar', artist: 'Mohammed Rafi & Asha Bhosle', film: 'Hum Dono (1961)',      emoji: '💫', duration: 272 },
+    { ytId: '3wAnXhoCBXQ', name: 'Lag Ja Gale',           artist: 'Lata Mangeshkar',    film: 'Woh Kaun Thi (1964)',           emoji: '🌹', duration: 267 },
+    { ytId: 'jWrQLYTVw5A', name: 'Kuch Toh Log Kahenge',  artist: 'Kishore Kumar',      film: 'Amar Prem (1972)',              emoji: '🌙', duration: 296 },
+    { ytId: 'Ys3HtMHWuTc', name: 'Baharon Phool Barsao',  artist: 'Mohammed Rafi',      film: 'Suraj (1966)',                  emoji: '🌸', duration: 303 },
+    { ytId: 'aRghXKLFlgo', name: 'Teri Aankhon Ke Siva',  artist: 'Mohammed Rafi',      film: 'Chirag (1969)',                 emoji: '👁️', duration: 256 },
+    { ytId: 'QLwkAjJT864', name: 'Dil Ke Jharokhe Mein',  artist: 'Mohammed Rafi',      film: 'Brahmachari (1968)',            emoji: '🎶', duration: 252 },
 ];
 
-function initAudio() {
-    if (audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    musicGainNode = audioCtx.createGain();
-    musicGainNode.gain.setValueAtTime(masterVolume * 0.3, audioCtx.currentTime);
-    musicAnalyser = audioCtx.createAnalyser();
-    musicAnalyser.fftSize = 128;
-    musicGainNode.connect(musicAnalyser);
-    musicAnalyser.connect(audioCtx.destination);
+let ytPlayer     = null;
+let ytReady      = false;
+let musicPlaying = false;
+let musicTrackIdx = 0;
+let musicTimer   = null;
+let vizAnimId    = null;
+let skipCount    = 0;
+
+// ── Player factory — called by queue when YouTube API is ready ──
+function _createYtPlayer() {
+    const pageOrigin = (window.location.origin && window.location.origin !== 'null')
+        ? window.location.origin : 'http://localhost';
+    ytPlayer = new YT.Player('yt-iframe', {
+        height: '200', width: '200',
+        playerVars: {
+            autoplay: 0, controls: 0, disablekb: 1,
+            fs: 0, iv_load_policy: 3, modestbranding: 1,
+            rel: 0, playsinline: 1, origin: pageOrigin,
+        },
+        events: {
+            onReady: function() {
+                ytReady = true;
+            },
+            onStateChange: function(e) {
+                if (e.data === YT.PlayerState.ENDED) {
+                    skipCount = 0;
+                    nextTrack();
+                } else if (e.data === YT.PlayerState.PLAYING) {
+                    skipCount = 0;
+                    musicPlaying = true;
+                    document.getElementById('music-play-btn').textContent = '⏸';
+                    const dur = Math.floor(ytPlayer.getDuration() || 0);
+                    if (dur > 0) {
+                        TRACKS[musicTrackIdx].duration = dur;
+                        document.getElementById('music-duration').textContent = formatTime(dur);
+                    }
+                    clearInterval(musicTimer);
+                    musicTimer = setInterval(updateMusicProgress, 250);
+                } else if (e.data === YT.PlayerState.PAUSED) {
+                    musicPlaying = false;
+                    document.getElementById('music-play-btn').textContent = '▶';
+                    clearInterval(musicTimer);
+                }
+            },
+            onError: function() {
+                skipCount++;
+                if (skipCount >= TRACKS.length) {
+                    skipCount = 0;
+                    musicPlaying = false;
+                    document.getElementById('music-play-btn').textContent = '▶';
+                    document.getElementById('music-track').textContent  = 'Cannot load music';
+                    document.getElementById('music-artist').textContent =
+                        window.location.protocol === 'file:'
+                            ? 'Run via localhost (python3 -m http.server)'
+                            : 'All tracks blocked by YouTube';
+                    return;
+                }
+                setTimeout(nextTrack, 600);
+            }
+        }
+    });
 }
+
+// If YouTube API already fired (cached script) — run now; otherwise queue it
+if (window._ytLoaded) {
+    _createYtPlayer();
+} else {
+    window._ytQueue = window._ytQueue || [];
+    window._ytQueue.push(_createYtPlayer);
+}
+
+function initAudio() { /* no-op — YouTube handles audio */ }
+function stopCurrentNodes() { /* no-op */ }
 
 function initMusicVisualizer() {
     if (vizAnimId) return;
@@ -1708,35 +2093,30 @@ function drawVisualizer() {
     const ctx = canvas.getContext('2d');
     const W = canvas.width = canvas.offsetWidth || 340;
     const H = canvas.height = 60;
+    const BARS = 36;
+    // Randomised per-bar phase + speed so each bar moves independently
+    const phase = Array.from({length: BARS}, () => Math.random() * Math.PI * 2);
+    const speed = Array.from({length: BARS}, () => 0.6 + Math.random() * 2.2);
+    const base  = Array.from({length: BARS}, () => 6  + Math.random() * 22);
 
     function frame() {
         ctx.clearRect(0, 0, W, H);
-        if (musicAnalyser && musicPlaying) {
-            const bufLen = musicAnalyser.frequencyBinCount;
-            const data   = new Uint8Array(bufLen);
-            musicAnalyser.getByteFrequencyData(data);
-            const barW = (W / bufLen) * 2;
-            let x = 0;
-            for (let i = 0; i < bufLen; i++) {
-                const barH = (data[i] / 255) * H;
-                const hue  = (i / bufLen) * 280 + 200;
-                ctx.fillStyle = `hsl(${hue},80%,60%)`;
-                ctx.beginPath();
-                ctx.roundRect(x, H - barH, barW - 1, barH, 2);
-                ctx.fill();
-                x += barW + 1;
-            }
-        } else {
-            /* Idle wave */
-            const t = Date.now() / 1000;
-            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-            ctx.lineWidth = 2;
+        const t  = Date.now() / 1000;
+        const bW = W / BARS - 1;
+        for (let i = 0; i < BARS; i++) {
+            const energy = musicPlaying
+                ? 0.3 + 0.7 * Math.abs(Math.sin(t * speed[i] + phase[i]))
+                : 0.06 + 0.04 * Math.abs(Math.sin(t * 0.5 + phase[i]));
+            const h   = Math.max(2, base[i] * energy);
+            const hue = (i / BARS) * 280 + 200;
+            ctx.fillStyle = musicPlaying
+                ? `hsl(${hue},80%,60%)`
+                : 'rgba(255,255,255,0.12)';
+            const x = i * (bW + 1);
             ctx.beginPath();
-            for (let x2 = 0; x2 <= W; x2 += 4) {
-                const y = H/2 + Math.sin(x2/40 + t) * 6 + Math.sin(x2/20 + t*1.5) * 3;
-                x2 === 0 ? ctx.moveTo(x2, y) : ctx.lineTo(x2, y);
-            }
-            ctx.stroke();
+            if (ctx.roundRect) ctx.roundRect(x, H - h, bW, h, 2);
+            else ctx.rect(x, H - h, bW, h);
+            ctx.fill();
         }
         vizAnimId = requestAnimationFrame(frame);
     }
@@ -1744,114 +2124,96 @@ function drawVisualizer() {
 }
 
 function playTrack(idx) {
-    stopCurrentNodes();
     musicTrackIdx = idx;
     const track = TRACKS[idx];
-    /* Update UI */
-    document.getElementById('music-track').textContent  = track.name;
-    document.getElementById('music-artist').textContent = track.artist;
+
+    // Update all UI
+    document.getElementById('music-track').textContent    = track.name;
+    document.getElementById('music-artist').textContent   = track.artist + ' · ' + track.film;
     document.getElementById('music-art-emoji').textContent = track.emoji;
     document.getElementById('music-duration').textContent = formatTime(track.duration);
-    document.querySelectorAll('.playlist-item').forEach((el, i) => el.classList.toggle('active', i === idx));
-    musicElapsed = 0;
-    musicPlaying = false;
-    document.getElementById('music-play-btn').textContent = '▶';
-    toggleMusic();
+    document.getElementById('music-elapsed').textContent  = '0:00';
+    updateMusicProgressUI(0);
+    document.querySelectorAll('.playlist-item').forEach((el, i) =>
+        el.classList.toggle('active', i === idx));
+
+    if (!ytReady || !ytPlayer) return;
+
+    // Use direct video ID for deterministic playback.
+    if (track.ytId) {
+        ytPlayer.loadVideoById(track.ytId);
+    } else {
+        setTimeout(nextTrack, 300);
+        return;
+    }
+    document.getElementById('music-play-btn').textContent = '⏸';
 }
 
 function toggleMusic() {
-    if (!audioCtx) initAudio();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-
-    if (musicPlaying) {
-        pauseMusic();
+    if (!ytReady || !ytPlayer) {
+        // Player not ready yet — show loading and poll every 300 ms
+        const btn = document.getElementById('music-play-btn');
+        if (btn) btn.textContent = '⏳';
+        const poll = setInterval(function() {
+            if (ytReady && ytPlayer) {
+                clearInterval(poll);
+                playTrack(musicTrackIdx);
+            }
+        }, 300);
+        return;
+    }
+    const state = ytPlayer.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) {
+        ytPlayer.pauseVideo();
+    } else if (state === YT.PlayerState.PAUSED) {
+        ytPlayer.playVideo();
     } else {
-        startMusic();
+        playTrack(musicTrackIdx);
     }
 }
 
 function startMusic() {
-    musicPlaying = true;
-    document.getElementById('music-play-btn').textContent = '⏸';
-    musicStartTime = audioCtx.currentTime - musicElapsed;
-    playAmbient();
-    clearInterval(musicTimer);
-    musicTimer = setInterval(updateMusicProgress, 250);
+    if (ytPlayer && ytReady) ytPlayer.playVideo();
 }
 
 function pauseMusic() {
+    if (ytPlayer && ytReady) ytPlayer.pauseVideo();
     musicPlaying = false;
     document.getElementById('music-play-btn').textContent = '▶';
-    musicElapsed = audioCtx.currentTime - musicStartTime;
-    stopCurrentNodes();
     clearInterval(musicTimer);
 }
 
 function stopMusic() {
-    pauseMusic();
-    musicElapsed = 0;
+    if (ytPlayer && ytReady) ytPlayer.stopVideo();
+    musicPlaying = false;
+    document.getElementById('music-play-btn').textContent = '▶';
+    clearInterval(musicTimer);
     updateMusicProgressUI(0);
+    document.getElementById('music-elapsed').textContent = '0:00';
     if (vizAnimId) { cancelAnimationFrame(vizAnimId); vizAnimId = null; }
 }
 
-function stopCurrentNodes() {
-    currentNodes.forEach(n => { try { n.stop(); } catch(e) {} });
-    currentNodes = [];
-}
-
-function playAmbient() {
-    if (!audioCtx || !musicGainNode) return;
-    const track  = TRACKS[musicTrackIdx];
-    const notes  = track.notes;
-    const tempo  = track.tempo;
-    const now    = audioCtx.currentTime;
-    const startOff = musicElapsed % (notes.length * tempo);
-
-    /* Build a looping sequence using oscillators + envelopes */
-    for (let rep = 0; rep < 12; rep++) {
-        notes.forEach((freq, i) => {
-            const t = now + (rep * notes.length + i) * tempo - startOff;
-            if (t < now) return;
-
-            const osc  = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = ['sine','triangle','sine','square'][musicTrackIdx % 4];
-            osc.frequency.setValueAtTime(freq, t);
-
-            gain.gain.setValueAtTime(0, t);
-            gain.gain.linearRampToValueAtTime(0.12, t + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + tempo * 0.85);
-
-            osc.connect(gain); gain.connect(musicGainNode);
-            osc.start(t); osc.stop(t + tempo);
-            currentNodes.push(osc);
-        });
-    }
-    /* Restart when sequence ends */
-    const seqDuration = notes.length * tempo * 12 - startOff;
-    setTimeout(() => { if (musicPlaying) { stopCurrentNodes(); playAmbient(); } }, seqDuration * 1000 - 200);
-}
-
 function updateMusicProgress() {
-    if (!musicPlaying) return;
-    musicElapsed = audioCtx.currentTime - musicStartTime;
-    const track = TRACKS[musicTrackIdx];
-    if (musicElapsed >= track.duration) { nextTrack(); return; }
-    updateMusicProgressUI(musicElapsed / track.duration);
-    document.getElementById('music-elapsed').textContent = formatTime(Math.floor(musicElapsed));
+    if (!ytPlayer || !ytReady || !musicPlaying) return;
+    const elapsed = ytPlayer.getCurrentTime()  || 0;
+    const total   = ytPlayer.getDuration()     || TRACKS[musicTrackIdx].duration;
+    if (total > 0) updateMusicProgressUI(elapsed / total);
+    document.getElementById('music-elapsed').textContent = formatTime(Math.floor(elapsed));
 }
+
 function updateMusicProgressUI(pct) {
-    const fill  = document.getElementById('music-fill');
-    const thumb = document.getElementById('music-thumb');
-    if (fill)  fill.style.width  = (pct * 100) + '%';
+    const fill = document.getElementById('music-fill');
+    if (fill) fill.style.width = (pct * 100) + '%';
 }
 
 function seekMusic(e) {
-    const bar = document.getElementById('music-progress-bar');
+    const bar  = document.getElementById('music-progress-bar');
     const rect = bar.getBoundingClientRect();
     const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    musicElapsed = pct * TRACKS[musicTrackIdx].duration;
-    if (musicPlaying) { stopCurrentNodes(); musicStartTime = audioCtx.currentTime - musicElapsed; playAmbient(); }
+    if (ytPlayer && ytReady) {
+        const total = ytPlayer.getDuration() || TRACKS[musicTrackIdx].duration;
+        ytPlayer.seekTo(pct * total, true);
+    }
     updateMusicProgressUI(pct);
 }
 
@@ -1861,78 +2223,186 @@ function prevTrack() { playTrack((musicTrackIdx - 1 + TRACKS.length) % TRACKS.le
 function formatTime(secs) {
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
-    return `${m}:${s.toString().padStart(2,'0')}`;
+    return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
 /* ==================== VS CODE CLONE ==================== */
 function buildVSCode() {
     const container = document.getElementById('vscode-code');
-    if (!container || container.innerHTML.trim()) return;
+    if (!container) return;
+    if (!container.dataset.vsinit) {
+        container.dataset.vsinit = '1';
+        vscodeOpenFile('js');
+    }
+    setTimeout(runVscodeDebug, 500);
+}
 
-    const snippet = [
-        ['/* macOS Portfolio — script.js v2 */', 'cmt'],
-        ['', ''],
-        ["'use strict';", 'str'],
-        ['', ''],
-        ['let zIndex = 100;', 'var'],
-        ['let locked = true;', 'var'],
-        ['let missionControlActive = false;', 'var'],
-        ['', ''],
-        ['/* Boot Sequence */', 'cmt'],
-        ['document.addEventListener(', 'fn'],
-        ["  'DOMContentLoaded', () => {", 'str'],
-        ['  const bootFill = document.getElementById(', 'kw'],
-        ["    'boot-fill');", 'str'],
-        ['  let progress = 0;', 'var'],
-        ['', ''],
-        ['  const bootInterval = setInterval(() => {', 'kw'],
-        ['    progress += Math.random() * 7 + 2;', 'num'],
-        ['    if (progress >= 100) {', 'kw'],
-        ['      clearInterval(bootInterval);', 'fn'],
-        ['      /* Transition to login */', 'cmt'],
-        ['      bootScreen.classList.add(', 'fn'],
-        ["        'hidden');", 'str'],
-        ['    }', 'punc'],
-        ['    bootFill.style.width = progress + \'%\';', 'var'],
-        ['  }, 130);', 'num'],
-        ['', ''],
-        ['/* Music Player (Web Audio API) */', 'cmt'],
-        ['function playAmbient() {', 'fn'],
-        ['  const osc = audioCtx', 'var'],
-        ['    .createOscillator();', 'fn'],
-        ["  osc.type = 'sine';", 'str'],
-        ['  const gain = audioCtx.createGain();', 'var'],
-        ['  gain.gain.setValueAtTime(0.12, t);', 'num'],
-        ['  osc.connect(gain);', 'fn'],
-        ['  gain.connect(musicGainNode);', 'fn'],
-        ['  osc.start(t); osc.stop(t + tempo);', 'fn'],
-        ['}', 'punc'],
-        ['', ''],
-        ['/* Matrix Effect */', 'cmt'],
-        ['function startMatrix() {', 'fn'],
-        ["  const chars = 'アイウエオ0123456789';", 'str'],
-        ['  const drops = Array(cols).fill(1);', 'fn'],
-        ['  ctx.fillStyle = \'#0f0\';', 'str'],
-        ['  ctx.font = \'14px monospace\';', 'str'],
-        ['}', 'punc'],
-        ['', ''],
-        ['/* Zero Dependencies. Pure JS. */', 'cmt'],
-        ["// 'How did you make this?' — Everyone", 'cmt'],
-    ];
+/* ==================== VSCODE SIDEBAR SWITCHER ==================== */
+function switchVscodeSidebar(panel, iconEl) {
+    document.querySelectorAll('#window-vscode .vscode-sidebar-icon').forEach(i => i.classList.remove('active'));
+    if (iconEl) iconEl.classList.add('active');
+    ['explorer','search','git','ext'].forEach(p => {
+        const el = document.getElementById('vscode-panel-' + p);
+        if (el) el.style.display = p === panel ? '' : 'none';
+    });
+}
 
-    const colorMap = {
-        cmt: 'syn-cmt', str: 'syn-str', fn: 'syn-fn',
-        kw: 'syn-kw', var: 'syn-var', num: 'syn-num', punc: 'syn-punc',
-    };
+/* ==================== VSCODE FILE SWITCHER ==================== */
+function vscodeOpenFile(type) {
+    const names = {js:'script.js', css:'style.css', html:'index.html'};
+    const langs = {js:'JavaScript', css:'CSS', html:'HTML'};
+    /* Restore tab if it was closed */
+    const tabEl = document.getElementById('vstab-' + type);
+    if (tabEl && tabEl.style.display === 'none') {
+        tabEl.style.display = '';
+        const expEl = document.getElementById('vsexp-' + type);
+        if (expEl) expEl.style.opacity = '';
+    }
+    ['js','css','html'].forEach(t => {
+        const ex = document.getElementById('vsexp-'+t);
+        const tb = document.getElementById('vstab-'+t);
+        if (ex) ex.classList.toggle('active', t===type);
+        if (tb) tb.classList.toggle('active', t===type);
+    });
+    const titleEl = document.querySelector('.vscode-title');
+    if (titleEl) titleEl.textContent = names[type]+' — Portfolio — Visual Studio Code';
+    const sbRight = document.getElementById('vsc-sb-right');
+    if (sbRight) sbRight.textContent = 'Ln 1, Col 1 \u00a0|\u00a0 '+langs[type]+' \u00a0|\u00a0 UTF-8';
+    const codeEl = document.getElementById('vscode-code');
+    if (!codeEl) return;
+    codeEl.innerHTML = '<div class="code-line"><span class="line-num">1</span><span class="code-content syn-cmt">// Loading '+names[type]+'…</span></div>';
+    fetch(names[type])
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(text => _vsRender(codeEl, text, type))
+        .catch(() => _vsRenderFallback(codeEl, type));
+}
 
-    container.innerHTML = snippet.map(([text, type], i) => {
-        const cls = colorMap[type] || '';
-        const safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        return `<div class="code-line">
-            <span class="line-num">${i + 1}</span>
-            <span class="code-content ${cls}">${safe || '&nbsp;'}</span>
-        </div>`;
+function _vsColorJS(s) {
+    const t = s.trimStart();
+    if (t.startsWith('//') || t.startsWith('*') || t.startsWith('/*')) return '<span class="syn-cmt">'+s+'</span>';
+    return s
+        .replace(/('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`[^`]*`)/g, '<span class="syn-str">$1</span>')
+        .replace(/\b(const|let|var|function|return|if|else|for|while|class|new|typeof|try|catch|async|await|of|in|switch|case|break|import|export|default|this)\b/g, '<span class="syn-kw">$1</span>')
+        .replace(/\b(true|false|null|undefined)\b/g, '<span class="syn-bool">$1</span>')
+        .replace(/\b(\d+\.?\d*)\b/g, '<span class="syn-num">$1</span>')
+        .replace(/\b([A-Za-z_$][A-Za-z0-9_$]*)(?=\s*\()/g, '<span class="syn-fn">$1</span>');
+}
+function _vsColorCSS(s) {
+    const t = s.trimStart();
+    if (t.startsWith('/*') || t.startsWith('*')) return '<span class="syn-cmt">'+s+'</span>';
+    if (/^[.#@a-zA-Z:[]/.test(t)) return '<span class="syn-cls">'+s+'</span>';
+    return s
+        .replace(/(#[0-9a-fA-F]{3,8}|rgba?\([^)]+\))/g, '<span class="syn-num">$1</span>')
+        .replace(/^(\s*)([\w-]+)(\s*:)/g, '$1<span class="syn-var">$2</span>$3');
+}
+function _vsColorHTML(s) {
+    return s
+        .replace(/(&lt;\/?[a-zA-Z][^&gt;]*&gt;)/g, '<span class="syn-kw">$1</span>')
+        .replace(/\b([a-z-]+)(?==)/g, '<span class="syn-var">$1</span>')
+        .replace(/("(?:[^"]*)")/g, '<span class="syn-str">$1</span>');
+}
+function _vsRender(el, text, type) {
+    const colorFn = type==='js'?_vsColorJS:type==='css'?_vsColorCSS:_vsColorHTML;
+    const lines = text.split('\n').slice(0, 500);
+    el.innerHTML = lines.map((line, i) => {
+        const safe = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return '<div class="code-line"><span class="line-num">'+(i+1)+'</span><span class="code-content">'+
+            (colorFn(safe)||'&nbsp;')+'</span></div>';
     }).join('');
+    const sbLeft = document.getElementById('vsc-sb-left');
+    if (sbLeft) sbLeft.innerHTML = '⎇ main &nbsp;|&nbsp; 0 errors &nbsp;|&nbsp; 0 warnings &nbsp;|&nbsp; '+lines.length+' lines';
+}
+function _vsRenderFallback(el, type) {
+    const fallbacks = {
+        js:  [['/* macOS Portfolio — script.js */','cmt'],["'use strict';",'str'],['',''],['let zIndex = 100;','var'],['let locked = true;','var'],['',''],['/* Boot Sequence */','cmt'],['document.addEventListener(','fn'],[" 'DOMContentLoaded', () => {",'str'],['  const boot = document.getElementById(','kw'],["    'boot-fill');",'str'],['  let progress = 0;','var'],['',''],['  const iv = setInterval(() => {','kw'],['    progress += Math.random() * 7 + 2;','num'],['    if (progress >= 100) clearInterval(iv);','kw'],['    bootFill.style.width = progress + \'%\';','var'],['  }, 130);','num'],['',''],['/* Zero Dependencies. Pure JS. */','cmt'],["// 'How did you make this?' — Everyone",'cmt']],
+        css: [['/* macOS Portfolio — style.css */','cmt'],['',''],['* { box-sizing: border-box; margin: 0; }','cls'],['',''],['body {','cls'],['  background: #1c1c1e;','num'],["  font-family: -apple-system, 'SF Pro Display';",'str'],['  color: rgba(255,255,255,0.85);','num'],['  overflow: hidden;','var'],['}','punc'],['',''],['/* Window system */','cmt'],['.window {','cls'],['  backdrop-filter: blur(40px) saturate(180%);','var'],['  border-radius: 12px;','num'],['  border: 0.5px solid rgba(255,255,255,0.1);','num'],['}','punc']],
+        html:[['&lt;!DOCTYPE html&gt;','kw'],['&lt;html lang="en"&gt;','kw'],['&lt;head&gt;','kw'],["  &lt;meta charset='UTF-8'&gt;",'kw'],['  &lt;title&gt;Sunil Saini — Portfolio&lt;/title&gt;','kw'],['  &lt;link rel="stylesheet" href="style.css"&gt;','kw'],['&lt;/head&gt;','kw'],['&lt;body&gt;','kw'],['',''],['  &lt;!-- Boot Screen --&gt;','cmt'],['  &lt;div id="boot-screen"&gt;','kw'],['    &lt;div id="boot-fill"&gt;&lt;/div&gt;','kw'],['  &lt;/div&gt;','kw'],['',''],['  &lt;!-- Desktop --&gt;','cmt'],['  &lt;div id="desktop"&gt;','kw'],['    &lt;div id="windows-container"&gt;&lt;/div&gt;','kw'],['  &lt;/div&gt;','kw'],['&lt;/body&gt;','kw']],
+    };
+    const colorMap = {cmt:'syn-cmt',str:'syn-str',fn:'syn-fn',kw:'syn-kw',var:'syn-var',num:'syn-num',punc:'syn-punc',cls:'syn-cls'};
+    const snippet = fallbacks[type] || fallbacks.js;
+    el.innerHTML = snippet.map(([text, t], i) => {
+        const cls = colorMap[t] || '';
+        return '<div class="code-line"><span class="line-num">'+(i+1)+'</span><span class="code-content '+cls+'">'+(text||'&nbsp;')+'</span></div>';
+    }).join('');
+}
+
+/* ==================== VSCODE SELF-DIAGNOSTICS ==================== */
+function runVscodeDebug() {
+    const log = document.getElementById('vscode-debug-log');
+    if (!log) return;
+    log.innerHTML = '';
+    const sbLeft = document.getElementById('vsc-sb-left');
+    const steps = [
+        [0,    'info', '> Portfolio Diagnostics v2.1 — Starting…'],
+        [350,  'info', '  Scanning DOM structure…'],
+        [750,  'ok',   '  ✓ 47 elements validated, 0 detached nodes'],
+        [1050, 'info', '  Checking CSS keyframes…'],
+        [1400, 'ok',   '  ✓ 14 animations healthy'],
+        [1700, 'info', '  Auditing Web Audio graph…'],
+        [2100, 'ok',   '  ✓ AudioContext nodes clean'],
+        [2450, 'warn', '  ⚠  warn: Snake high-score cache may be stale'],
+        [2750, 'warn', '  ⚠  warn: Battery interval drift +2ms detected'],
+        [3150, 'info', '  Auto-patch applying…'],
+        [3550, 'ok',   '  ✓ Fixed: Score cache refreshed'],
+        [3850, 'ok',   '  ✓ Fixed: Battery interval recalibrated'],
+        [4250, 'info', '  Fetching GitHub activity…'],
+        [4700, 'ok',   '  ✓ Commits loaded from github.com/Sunil0620'],
+        [5050, 'info', '  Running final checks…'],
+        [5350, 'ok',   '  ✓ localStorage valid (7 keys)'],
+        [5650, 'ok',   '  ✓ All systems operational 🟢'],
+    ];
+    const colors = {info:'rgba(255,255,255,0.45)', ok:'#30d158', warn:'#ffd60a', err:'#ff453a'};
+    steps.forEach(([delay, type, msg]) => {
+        setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = 'vscode-log-line';
+            div.style.color = colors[type] || colors.info;
+            div.textContent = msg;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+            if (type==='warn' && sbLeft && !sbLeft.dataset.warned) { sbLeft.dataset.warned='1'; sbLeft.innerHTML='⎇ main &nbsp;|&nbsp; 0 errors &nbsp;|&nbsp; 2 warnings'; }
+            if (delay>=3800 && sbLeft) { delete sbLeft.dataset.warned; sbLeft.innerHTML='⎇ main &nbsp;|&nbsp; 0 errors &nbsp;|&nbsp; 0 warnings'; }
+        }, delay);
+    });
+}
+
+/* ==================== GITHUB ACTIVITY ==================== */
+function fetchGitHubActivity() {
+    const list = document.getElementById('nc-github-list');
+    if (!list || list.dataset.loaded) return;
+    list.dataset.loaded = '1';
+    fetch('https://api.github.com/users/Sunil0620/events?per_page=10')
+        .then(r => r.json())
+        .then(events => {
+            const pushes = events.filter(e => e.type==='PushEvent').slice(0, 5);
+            if (!pushes.length) throw new Error('none');
+            list.innerHTML = pushes.map(e => {
+                const commit = e.payload.commits && e.payload.commits[e.payload.commits.length-1];
+                const msg = commit ? commit.message.split('\n')[0].slice(0,60) : 'Pushed commits';
+                const repo = e.repo.name.replace('Sunil0620/', '');
+                const ago = _ghTimeAgo(new Date(e.created_at));
+                return '<div class="nc-card" style="cursor:pointer" onclick="window.open(\'https://github.com/'+e.repo.name+'\',\'_blank\')">'
+                    +'<div class="nc-card-header"><span class="nc-app-icon">🐙</span>'
+                    +'<span class="nc-app-name">GitHub — '+repo+'</span>'
+                    +'<span class="nc-time">'+ago+'</span></div>'
+                    +'<div class="nc-card-body">'+msg+'</div></div>';
+            }).join('');
+        })
+        .catch(() => {
+            list.dataset.loaded = '';
+            list.innerHTML = '<div class="nc-card" style="cursor:pointer" onclick="window.open(\'https://github.com/Sunil0620\',\'_blank\')">'
+                +'<div class="nc-card-header"><span class="nc-app-icon">🐙</span>'
+                +'<span class="nc-app-name">GitHub</span>'
+                +'<span class="nc-time">recent</span></div>'
+                +'<div class="nc-card-body">Latest work @ github.com/Sunil0620ⓓ</div></div>';
+        });
+}
+function _ghTimeAgo(date) {
+    const s = Math.floor((Date.now()-date)/1000);
+    if (s<60) return s+'s ago';
+    if (s<3600) return Math.floor(s/60)+'m ago';
+    if (s<86400) return Math.floor(s/3600)+'h ago';
+    return Math.floor(s/86400)+'d ago';
 }
 
 /* ==================== RESTORE SETTINGS ==================== */
@@ -1994,3 +2464,529 @@ function buildVSCode() {
         img.src = src;
     });
 })();
+
+/* ==================== FEATURE PACK ==================== */
+(function featurePack() {
+    'use strict';
+
+    /* ─── 1. SESSION STATS ─── */
+    const _t0 = Date.now();
+    let _apps = 0, _cmds = 0;
+    window.incrementAppsOpened  = function() { _apps++; const e=document.getElementById('stat-apps');  if(e) e.textContent=_apps; };
+    window.incrementCommandsRun = function() { _cmds++; const e=document.getElementById('stat-cmds');  if(e) e.textContent=_cmds; };
+    setInterval(function() {
+        const s=Math.floor((Date.now()-_t0)/1000), m=Math.floor(s/60);
+        const e=document.getElementById('stat-time');
+        if(e) e.textContent = m>0 ? m+'m '+(s%60)+'s' : s+'s';
+    }, 1000);
+
+    /* ─── 2. BATTERY SIMULATION ─── */
+    let _batt = parseInt(localStorage.getItem('mac-battery')||'87');
+    const _battEl = () => document.getElementById('battery-pct');
+    const _battDraw = () => { const e=_battEl(); if(e){ e.textContent=_batt+'%'; e.style.color=_batt<=15?'#ff453a':_batt<=30?'#ff9f0a':''; } };
+    _battDraw();
+    setInterval(function() {
+        if (_batt > 5) _batt--;
+        if (_batt === 20 && !sessionStorage.getItem('batt-warned')) {
+            sessionStorage.setItem('batt-warned','1');
+            if (window.showNotification) window.showNotification('Battery Low','20% remaining — plug in soon.');
+        }
+        localStorage.setItem('mac-battery', _batt);
+        _battDraw();
+    }, 90000);
+
+    /* ─── 3. WINDOW STATE MEMORY ─── */
+    function _save(win) {
+        if (!win||!win.id) return;
+        try { localStorage.setItem('ws-'+win.id, JSON.stringify({l:win.style.left,t:win.style.top,w:win.style.width,h:win.style.height})); } catch(e){}
+    }
+    function _load(win) {
+        if (!win||!win.id) return;
+        try { const s=JSON.parse(localStorage.getItem('ws-'+win.id)||'null'); if(!s)return; if(s.l)win.style.left=s.l; if(s.t)win.style.top=s.t; const minW=parseInt(win.dataset.minw)||0,minH=parseInt(win.dataset.minh)||0; if(s.w&&(!minW||parseInt(s.w)>=minW)) win.style.width=s.w; if(s.h&&(!minH||parseInt(s.h)>=minH)) win.style.height=s.h; } catch(e){}
+    }
+    document.addEventListener('mouseup', function() {
+        document.querySelectorAll('.window').forEach(function(w){ if(w.style.display!=='none') _save(w); });
+    }, {passive:true});
+
+    /* ─── 4. PATCH CORE FUNCTIONS ─── */
+    const _oOpen = window.openWindow;
+    if (typeof _oOpen==='function') window.openWindow = function(win) { _load(win); if(window.incrementAppsOpened) incrementAppsOpened(); if(window.playWindowOpenSound) playWindowOpenSound(); return _oOpen.call(this,win); };
+
+    const _oClose = window.closeWindow;
+    if (typeof _oClose==='function') window.closeWindow = function(id) { const w=document.getElementById(id); if(w) _save(w); if(window.playWindowCloseSound) playWindowCloseSound(); return _oClose.call(this,id); };
+
+    const _oMin = window.minimizeWindow;
+    if (typeof _oMin==='function') window.minimizeWindow = function(id) { if(window.playMinimizeSound) playMinimizeSound(); return _oMin.call(this,id); };
+
+    const _oExec = window.execTerminal;
+    if (typeof _oExec==='function') window.execTerminal = function(cmd) { if(window.incrementCommandsRun) incrementCommandsRun(); return _oExec.call(this,cmd); };
+
+    const _oNotif = window.showNotification;
+    if (typeof _oNotif==='function') window.showNotification = function(t,b,i) { if(window.playNotifSound) playNotifSound(); return _oNotif.call(this,t,b,i); };
+
+    /* ─── 5. UI SOUNDS ─── */
+    let _ac=null;
+    function _gac(){ if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}} if(_ac&&_ac.state==='suspended')_ac.resume(); return _ac; }
+
+    // macOS window open: soft upward pop (warm, airy)
+    window.playWindowOpenSound = function(){
+        const ac=_gac(); if(!ac)return;
+        try{
+            const t=ac.currentTime;
+            const o=ac.createOscillator(), g=ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type='sine';
+            o.frequency.setValueAtTime(460,t); o.frequency.exponentialRampToValueAtTime(860,t+0.07);
+            g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.055,t+0.008);
+            g.gain.exponentialRampToValueAtTime(0.001,t+0.11);
+            o.start(t); o.stop(t+0.12);
+        }catch(e){}
+    };
+
+    // macOS window close: soft downward thud
+    window.playWindowCloseSound = function(){
+        const ac=_gac(); if(!ac)return;
+        try{
+            const t=ac.currentTime;
+            const o=ac.createOscillator(), g=ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type='sine';
+            o.frequency.setValueAtTime(720,t); o.frequency.exponentialRampToValueAtTime(400,t+0.09);
+            g.gain.setValueAtTime(0.05,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.10);
+            o.start(t); o.stop(t+0.11);
+        }catch(e){}
+    };
+
+    // macOS minimize: genie whoosh — falling pitch sweep
+    window.playMinimizeSound = function(){
+        const ac=_gac(); if(!ac)return;
+        try{
+            const t=ac.currentTime;
+            const o=ac.createOscillator(), g=ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type='sine';
+            o.frequency.setValueAtTime(700,t); o.frequency.exponentialRampToValueAtTime(180,t+0.16);
+            g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.05,t+0.01);
+            g.gain.exponentialRampToValueAtTime(0.001,t+0.17);
+            o.start(t); o.stop(t+0.18);
+        }catch(e){}
+    };
+
+    // macOS "Glass" notification — two-tone crystal chime (C5 → G5)
+    window.playNotifSound = function(){
+        const ac=_gac(); if(!ac)return;
+        try{
+            const t=ac.currentTime;
+            // First chime: C5 (523 Hz) + octave harmonic
+            [[523.25,0],[1046.5,0]].forEach(([f,d])=>{
+                const o=ac.createOscillator(),g=ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type='sine'; o.frequency.value=f;
+                g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(f>600?0.022:0.045,t+d+0.004);
+                g.gain.exponentialRampToValueAtTime(0.001,t+d+0.38);
+                o.start(t+d); o.stop(t+d+0.4);
+            });
+            // Second chime: G5 (784 Hz) offset
+            [[784,0.12],[1568,0.12]].forEach(([f,d])=>{
+                const o=ac.createOscillator(),g=ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type='sine'; o.frequency.value=f;
+                g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(f>800?0.018:0.038,t+d+0.004);
+                g.gain.exponentialRampToValueAtTime(0.001,t+d+0.32);
+                o.start(t+d); o.stop(t+d+0.34);
+            });
+        }catch(e){}
+    };
+
+    // macOS keyboard click: very short dampened noise tap
+    window.playTypeClick = function(){
+        const ac=_gac(); if(!ac)return;
+        try{
+            const len=Math.floor(ac.sampleRate*0.011);
+            const b=ac.createBuffer(1,len,ac.sampleRate);
+            const d=b.getChannelData(0);
+            for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(len*0.22));
+            const s=ac.createBufferSource(), g=ac.createGain();
+            const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=3800; f.Q.value=1.2;
+            s.buffer=b; g.gain.value=0.035;
+            s.connect(f); f.connect(g); g.connect(ac.destination); s.start();
+        }catch(e){}
+    };
+
+    /* ─── 6. TYPING SOUND ─── */
+    const _ti=document.getElementById('terminal-input');
+    if (_ti) _ti.addEventListener('keydown',function(e){ if(e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&window.playTypeClick) playTypeClick(); },{passive:true});
+
+    /* ─── 7. FAST BOOT ─── */
+    if (localStorage.getItem('mac-visited')==='1') {
+        const bar=document.getElementById('boot-progress');
+        if(bar){bar.style.transition='none';bar.style.width='100%';}
+    }
+    localStorage.setItem('mac-visited','1');
+
+})();
+
+/* ==================== SNAKE GAME ==================== */
+window.snakeGame = (function(){
+    const CELL=20, COLS=26, ROWS=26;
+    const SPEEDS=[140,105,75,50,35];
+    let canvas,ctx,scoreEl,bestEl,speedEl,pauseBtn;
+    let snake,food,dir,nextDir,score,best,running,paused,rafId,lastTick,tickMs;
+    let inited=false, _ac=null;
+
+    function _gac(){ if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}} if(_ac&&_ac.state==='suspended') _ac.resume(); return _ac; }
+    function _eatSnd(){
+        const ac=_gac(); if(!ac)return;
+        try{
+            const t=ac.currentTime;
+            [[1400,0,0.055],[2100,0.07,0.055]].forEach(([freq,delay,dur])=>{
+                const o=ac.createOscillator(),g=ac.createGain();
+                o.connect(g); g.connect(ac.destination);
+                o.type='square'; o.frequency.value=freq;
+                g.gain.setValueAtTime(0.0,t+delay);
+                g.gain.linearRampToValueAtTime(0.14,t+delay+0.005);
+                g.gain.setValueAtTime(0.14,t+delay+dur-0.01);
+                g.gain.linearRampToValueAtTime(0.0,t+delay+dur);
+                o.start(t+delay); o.stop(t+delay+dur);
+            });
+        }catch(e){}
+    }
+
+    function _gameOverSnd(){
+        const ac=_gac(); if(!ac) return;
+        try{
+            const t=ac.currentTime;
+
+            // ── Noise crack (impact hit) ──
+            const buf=ac.createBuffer(1,Math.floor(ac.sampleRate*0.12),ac.sampleRate);
+            const d=buf.getChannelData(0);
+            for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
+            const noise=ac.createBufferSource(); noise.buffer=buf;
+            const nf=ac.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=1800; nf.Q.value=0.6;
+            const ng=ac.createGain();
+            noise.connect(nf); nf.connect(ng); ng.connect(ac.destination);
+            ng.gain.setValueAtTime(0.55,t); ng.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+            noise.start(t); noise.stop(t+0.14);
+
+            // ── First bass thud (K) ──
+            const b1=ac.createOscillator(), bg1=ac.createGain();
+            b1.connect(bg1); bg1.connect(ac.destination);
+            b1.type='sine';
+            b1.frequency.setValueAtTime(220,t); b1.frequency.exponentialRampToValueAtTime(45,t+0.45);
+            bg1.gain.setValueAtTime(1.0,t); bg1.gain.exponentialRampToValueAtTime(0.001,t+0.55);
+            b1.start(t); b1.stop(t+0.55);
+
+            // ── Orchestra sawtooth sweep (dramatic fall) ──
+            const os=ac.createOscillator(), osg=ac.createGain(), osf=ac.createBiquadFilter();
+            osf.type='lowpass'; osf.frequency.value=700; osf.Q.value=1.2;
+            os.connect(osf); osf.connect(osg); osg.connect(ac.destination);
+            os.type='sawtooth';
+            os.frequency.setValueAtTime(320,t); os.frequency.exponentialRampToValueAtTime(55,t+1.1);
+            osg.gain.setValueAtTime(0.0,t); osg.gain.linearRampToValueAtTime(0.38,t+0.04);
+            osg.gain.setValueAtTime(0.38,t+0.1); osg.gain.exponentialRampToValueAtTime(0.001,t+1.15);
+            os.start(t); os.stop(t+1.15);
+
+            // ── Second bass thud (O) — offset for K·O feel ──
+            const b2=ac.createOscillator(), bg2=ac.createGain();
+            b2.connect(bg2); bg2.connect(ac.destination);
+            b2.type='sine';
+            b2.frequency.setValueAtTime(180,t+0.20); b2.frequency.exponentialRampToValueAtTime(38,t+0.65);
+            bg2.gain.setValueAtTime(0.75,t+0.20); bg2.gain.exponentialRampToValueAtTime(0.001,t+0.75);
+            b2.start(t+0.20); b2.stop(t+0.75);
+
+            // ── High metallic ring (Tekken hit sparkle) ──
+            const r=ac.createOscillator(), rg=ac.createGain();
+            r.connect(rg); rg.connect(ac.destination);
+            r.type='sine'; r.frequency.setValueAtTime(1200,t);
+            r.frequency.exponentialRampToValueAtTime(400,t+0.35);
+            rg.gain.setValueAtTime(0.18,t); rg.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+            r.start(t); r.stop(t+0.35);
+        }catch(e){}
+    }
+    function init(){
+        canvas=document.getElementById('snake-canvas'); if(!canvas)return;
+        ctx=canvas.getContext('2d');
+        scoreEl=document.getElementById('snake-score');
+        bestEl=document.getElementById('snake-best');
+        speedEl=document.getElementById('snake-speed-label');
+        pauseBtn=document.getElementById('snake-pause-btn');
+        best=parseInt(localStorage.getItem('snake-best')||'0');
+        if(bestEl) bestEl.textContent=best;
+        idle(); inited=true;
+    }
+    function idle(){
+        if(!ctx)return;
+        ctx.fillStyle='#0d0d0d'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle='rgba(255,255,255,0.025)';
+        for(let x=0;x<COLS;x++) for(let y=0;y<ROWS;y++) ctx.fillRect(x*CELL+CELL/2-1,y*CELL+CELL/2-1,2,2);
+    }
+    function start(){
+        if(!inited) init();
+        snake=[{x:16,y:13},{x:15,y:13},{x:14,y:13}];
+        dir={x:1,y:0}; nextDir={x:1,y:0};
+        score=0; running=true; paused=false; tickMs=SPEEDS[0];
+        if(scoreEl) scoreEl.textContent='0';
+        if(speedEl) speedEl.textContent='1';
+        if(pauseBtn){ pauseBtn.textContent='⏸'; pauseBtn.title='Pause (P)'; }
+        const ov=document.getElementById('snake-overlay'); if(ov) ov.classList.add('hidden');
+        placeFood();
+        if(rafId) cancelAnimationFrame(rafId);
+        lastTick=performance.now(); rafId=requestAnimationFrame(loop);
+    }
+    function stop(){ running=false; paused=false; if(rafId) cancelAnimationFrame(rafId); if(pauseBtn) pauseBtn.textContent='⏸'; }
+    function togglePause(){
+        if(!running) return;
+        paused=!paused;
+        if(paused){
+            if(pauseBtn){ pauseBtn.textContent='▶'; pauseBtn.title='Resume (P)'; }
+            drawPauseOverlay();
+        } else {
+            if(pauseBtn){ pauseBtn.textContent='⏸'; pauseBtn.title='Pause (P)'; }
+            lastTick=performance.now();
+            rafId=requestAnimationFrame(loop);
+        }
+    }
+    function drawPauseOverlay(){
+        if(!ctx) return;
+        ctx.fillStyle='rgba(0,0,0,0.55)';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle='rgba(48,209,88,0.9)';
+        ctx.font='bold 36px -apple-system,system-ui,sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText('⏸ PAUSED',canvas.width/2,canvas.height/2-10);
+        ctx.font='13px -apple-system,system-ui,sans-serif';
+        ctx.fillStyle='rgba(255,255,255,0.5)';
+        ctx.fillText('Press P or Esc to resume',canvas.width/2,canvas.height/2+30);
+    }
+    function loop(ts){
+        if(!running||paused) return;
+        if(ts-lastTick>=tickMs){lastTick=ts;tick();}
+        rafId=requestAnimationFrame(loop);
+    }
+    function tick(){
+        dir=nextDir;
+        const h={x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+        if(h.x<0||h.x>=COLS||h.y<0||h.y>=ROWS) return over();
+        for(let i=0;i<snake.length;i++) if(snake[i].x===h.x&&snake[i].y===h.y) return over();
+        snake.unshift(h);
+        if(h.x===food.x&&h.y===food.y){
+            score++; if(scoreEl) scoreEl.textContent=score;
+            _eatSnd();
+            const lv=score<5?0:score<12?1:score<22?2:score<35?3:4;
+            tickMs=SPEEDS[lv]; if(speedEl) speedEl.textContent=lv+1;
+            placeFood();
+        } else { snake.pop(); }
+        draw();
+    }
+    function placeFood(){
+        let p; do{ p={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)}; }while(snake.some(s=>s.x===p.x&&s.y===p.y)); food=p;
+    }
+    function rr(x,y,w,h,r){
+        if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();return;}
+        ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.fill();
+    }
+    function draw(){
+        ctx.fillStyle='#0d0d0d'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle='rgba(255,255,255,0.025)';
+        for(let x=0;x<COLS;x++) for(let y=0;y<ROWS;y++) ctx.fillRect(x*CELL+CELL/2-1,y*CELL+CELL/2-1,2,2);
+        const fx=food.x*CELL+CELL/2, fy=food.y*CELL+CELL/2;
+        const gr=ctx.createRadialGradient(fx,fy,0,fx,fy,CELL);
+        gr.addColorStop(0,'rgba(255,45,85,0.4)'); gr.addColorStop(1,'transparent');
+        ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(fx,fy,CELL,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#ff2d55'; ctx.beginPath(); ctx.arc(fx,fy,CELL/2-2,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.arc(fx-2,fy-2,2,0,Math.PI*2); ctx.fill();
+        for(let i=snake.length-1;i>=1;i--){
+            const t=i/Math.max(snake.length-1,1);
+            ctx.fillStyle=`rgb(${Math.round(22+(1-t)*18)},${Math.round(190-t*70)},${Math.round(75-t*30)})`;
+            rr(snake[i].x*CELL+1,snake[i].y*CELL+1,CELL-2,CELL-2,4);
+        }
+        const hx=snake[0].x*CELL, hy=snake[0].y*CELL;
+        ctx.fillStyle='#30d158'; rr(hx+1,hy+1,CELL-2,CELL-2,5);
+        ctx.fillStyle='#001a09';
+        const ez=2.5;
+        if(dir.x===1)       {ctx.fillRect(hx+CELL-6,hy+4,ez,ez);ctx.fillRect(hx+CELL-6,hy+CELL-7,ez,ez);}
+        else if(dir.x===-1) {ctx.fillRect(hx+4,hy+4,ez,ez);ctx.fillRect(hx+4,hy+CELL-7,ez,ez);}
+        else if(dir.y===-1) {ctx.fillRect(hx+4,hy+4,ez,ez);ctx.fillRect(hx+CELL-7,hy+4,ez,ez);}
+        else                {ctx.fillRect(hx+4,hy+CELL-7,ez,ez);ctx.fillRect(hx+CELL-7,hy+CELL-7,ez,ez);}
+    }
+    function over(){
+        running=false; paused=false; cancelAnimationFrame(rafId);
+        if(pauseBtn) pauseBtn.textContent='⏸';
+        _gameOverSnd();
+        if(score>best){best=score;localStorage.setItem('snake-best',best);if(bestEl)bestEl.textContent=best;}
+        ctx.fillStyle='rgba(255,45,85,0.15)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        const ov=document.getElementById('snake-overlay');
+        const ti=document.getElementById('snake-title');
+        const ms=document.getElementById('snake-msg');
+        const fi=document.getElementById('snake-final');
+        const bt=document.getElementById('snake-start-btn');
+        if(ov) ov.classList.remove('hidden');
+        if(ti) ti.textContent = score>=15?'🏆 GREAT!':'💀 GAME OVER';
+        if(ms) ms.textContent = score===best&&best>0?'🎉 New High Score!':'Try again?';
+        if(fi){fi.style.display='block';fi.textContent='Score: '+score+'  |  Best: '+best;}
+        if(bt) bt.textContent='↺ PLAY AGAIN';
+    }
+    function handleClick(e){
+        if(!running){ start(); return; }
+        if(paused){ togglePause(); return; }
+        if(!canvas||!snake) return;
+        const rect=canvas.getBoundingClientRect();
+        const cx=e.clientX-rect.left, cy=e.clientY-rect.top;
+        const hx=snake[0].x*CELL+CELL/2, hy=snake[0].y*CELL+CELL/2;
+        const dx=cx-hx, dy=cy-hy;
+        if(Math.abs(dx)>Math.abs(dy)){
+            if(dx>0&&dir.x!==-1) nextDir={x:1,y:0};
+            if(dx<0&&dir.x!==1)  nextDir={x:-1,y:0};
+        } else {
+            if(dy>0&&dir.y!==-1) nextDir={x:0,y:1};
+            if(dy<0&&dir.y!==1)  nextDir={x:0,y:-1};
+        }
+    }
+    function keys(){
+        document.addEventListener('keydown',function(e){
+            const w=document.getElementById('window-snake');
+            if(!w||w.style.display==='none') return;
+            if(e.key==='p'||e.key==='P'||e.key==='Escape'){
+                if(running){ e.preventDefault(); togglePause(); return; }
+            }
+            if(!running&&e.code==='Space'){e.preventDefault();start();return;}
+            if(paused) return;
+            switch(e.key){
+                case 'ArrowUp':   case 'w':case 'W': if(dir.y!==1) {nextDir={x:0,y:-1};e.preventDefault();} break;
+                case 'ArrowDown': case 's':case 'S': if(dir.y!==-1){nextDir={x:0,y:1}; e.preventDefault();} break;
+                case 'ArrowLeft': case 'a':case 'A': if(dir.x!==1) {nextDir={x:-1,y:0};e.preventDefault();} break;
+                case 'ArrowRight':case 'd':case 'D': if(dir.x!==-1){nextDir={x:1,y:0}; e.preventDefault();} break;
+            }
+        });
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){init();keys();});
+    else {init();keys();}
+    return {start,stop,init,handleClick,togglePause};
+})();
+
+/* ==================== COPY EMAIL ==================== */
+function copyEmail(e) {
+    navigator.clipboard?.writeText('sunilsaini5652@gmail.com').then(() => {
+        showNotification('📋 Email copied to clipboard!');
+    }).catch(() => {
+        showNotification('📧 sunilsaini5652@gmail.com');
+    });
+}
+
+/* ==================== CONFETTI ==================== */
+function launchConfetti() {
+    const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9f43','#ffffff'];
+    const form = document.getElementById('contact-form');
+    const rect = form ? form.getBoundingClientRect() : { left: window.innerWidth * 0.3, bottom: window.innerHeight * 0.7, width: 300 };
+    for (let i = 0; i < 50; i++) {
+        const p = document.createElement('div');
+        const size = 5 + Math.random() * 7;
+        p.style.cssText = `
+            position:fixed;pointer-events:none;z-index:99999;
+            left:${rect.left + Math.random() * (rect.width || 300)}px;
+            top:${rect.bottom || window.innerHeight * 0.7}px;
+            width:${size}px;height:${size}px;
+            background:${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius:${Math.random() > 0.4 ? '50%' : '3px'};
+            animation:confetti-fly ${0.7 + Math.random() * 1.1}s ease-out forwards;
+            animation-delay:${Math.random() * 0.5}s;
+        `;
+        document.body.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+    }
+}
+
+/* ==================== TRASH ==================== */
+function _setTrashLid(open) {
+    const art = document.querySelector('.dock-item[data-app="trash"] .trash-art');
+    if (art) art.classList.toggle('open', open);
+}
+
+let _trashEmptied = localStorage.getItem('trashEmptied') === '1';
+function emptyTrash() {
+    if (_trashEmptied) return;
+    _trashEmptied = true;
+    localStorage.setItem('trashEmptied', '1');
+    const btn = document.getElementById('trash-empty-btn');
+    if (btn) btn.disabled = true;
+
+    // ── macOS paper crumple sound ──
+    try {
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        if (ac.state === 'suspended') ac.resume();
+        const t = ac.currentTime;
+        // Five overlapping crinkle bursts — staggered for organic paper feel
+        [
+            [0.00, 0.18, 2800, 0.28],
+            [0.04, 0.14, 1900, 0.22],
+            [0.09, 0.16, 3500, 0.20],
+            [0.15, 0.13, 2200, 0.17],
+            [0.22, 0.12, 4000, 0.13],
+        ].forEach(([delay, dur, freq, vol]) => {
+            const len = Math.floor(ac.sampleRate * dur);
+            const buf = ac.createBuffer(1, len, ac.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < len; i++)
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.35));
+            const src = ac.createBufferSource(); src.buffer = buf;
+            const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1100;
+            const lp = ac.createBiquadFilter(); lp.type = 'lowpass';  lp.frequency.value = 5500;
+            const bp = ac.createBiquadFilter(); bp.type = 'peaking';  bp.frequency.value = freq; bp.gain.value = 8; bp.Q.value = 1.5;
+            const g  = ac.createGain();
+            g.gain.setValueAtTime(vol, t + delay);
+            g.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
+            src.connect(hp); hp.connect(bp); bp.connect(lp); lp.connect(g); g.connect(ac.destination);
+            src.start(t + delay); src.stop(t + delay + dur);
+        });
+        // Tiny transient click at the very start (paper separation)
+        const ck = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.008), ac.sampleRate);
+        const ckd = ck.getChannelData(0);
+        for (let i = 0; i < ckd.length; i++) ckd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ckd.length * 0.4));
+        const cks = ac.createBufferSource(); cks.buffer = ck;
+        const ckg = ac.createGain(); ckg.gain.value = 0.12;
+        cks.connect(ckg); ckg.connect(ac.destination); cks.start(t);
+    } catch(e) {}
+
+    // ── Animate items out staggered ──
+    const items = document.querySelectorAll('#trash-items-list .trash-item');
+    items.forEach((el, i) => {
+        setTimeout(() => {
+            el.style.transition = 'transform 0.3s ease-in, opacity 0.3s ease-in';
+            el.style.transform = 'translateX(60px) scale(0.8)';
+            el.style.opacity = '0';
+        }, i * 60);
+    });
+
+    // ── Show empty state after animation ──
+    const total = items.length;
+    setTimeout(() => {
+        const list = document.getElementById('trash-items-list');
+        const empty = document.getElementById('trash-empty-state');
+        const label = document.getElementById('trash-count-label');
+        if (list) list.style.display = 'none';
+        if (empty) empty.style.display = 'flex';
+        if (label) label.textContent = 'Zero items · 0 bytes · Finally clean';
+        if (btn) { btn.textContent = 'Already Empty'; btn.style.opacity = '0.4'; }
+    }, total * 60 + 350);
+}
+
+function resetTrash() {
+    const list  = document.getElementById('trash-items-list');
+    const empty = document.getElementById('trash-empty-state');
+    const label = document.getElementById('trash-count-label');
+    const btn   = document.getElementById('trash-empty-btn');
+    if (_trashEmptied) {
+        /* Already emptied this session — show empty state directly */
+        if (list)  list.style.display  = 'none';
+        if (empty) empty.style.display = 'flex';
+        if (label) label.textContent   = 'Zero items · 0 bytes · Finally clean';
+        if (btn)   { btn.disabled = true; btn.textContent = 'Already Empty'; btn.style.opacity = '0.4'; }
+        return;
+    }
+    const items = document.querySelectorAll('#trash-items-list .trash-item');
+    items.forEach(el => { el.style.transform = ''; el.style.opacity = ''; el.style.transition = ''; });
+    if (list)  list.style.display  = '';
+    if (empty) empty.style.display = 'none';
+    if (label) label.textContent   = '8 items · 47.3 GB used';
+    if (btn)   { btn.disabled = false; btn.textContent = 'Empty Trash'; btn.style.opacity = ''; }
+}

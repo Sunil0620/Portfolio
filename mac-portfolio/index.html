@@ -17,6 +17,16 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- YouTube IFrame API — loaded early so it is ready before user interacts -->
+    <script>
+        window._ytQueue = [];
+        function onYouTubeIframeAPIReady() {
+            window._ytLoaded = true;
+            window._ytQueue.forEach(function(f){ f(); });
+            window._ytQueue = [];
+        }
+    </script>
+    <script src="https://www.youtube.com/iframe_api" async></script>
 </head>
 <body>
 
@@ -146,6 +156,11 @@
 <!-- ===================== SCREEN SAVER ===================== -->
 <div id="screen-saver" class="hidden">
     <canvas id="saver-canvas"></canvas>
+    <div class="saver-overlay">
+        <div class="saver-time" id="saver-time">00:00</div>
+        <div class="saver-date" id="saver-date">Monday, January 1</div>
+        <div class="saver-name">Sunil Saini &nbsp;·&nbsp; Full Stack Developer</div>
+    </div>
     <div class="saver-hint">Click or press any key to wake</div>
 </div>
 
@@ -259,7 +274,7 @@
         <div class="menu-left">
             <div class="menu-dropdown" id="apple-menu">
                 <button class="menu-btn apple-btn" aria-label="Apple Menu">
-                    <svg viewBox="0 0 384 512" width="13" height="13">
+                    <svg viewBox="0 0 384 512" width="13" height="13" fill="currentColor">
                         <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-9 59.5 24 125.7c15.4 31.5 47.7 87.1 82.2 86.8 32-.3 40.7-18.1 76.5-18.1 36.3 0 44.5 18.1 77.4 18.1 35.7 0 63.8-51.5 77.8-82.7-53.7-22.1-66.7-74-32.2-111.4-18.1-24.3-43.2-38.3-70.3-40.7-21.7-1.9-46.7 8.2-61.9 8.2-14.8 0-35.5-8.7-52.9-8.7-22.6 0-49.7 10.3-64.8 30zM226.3 97.4c17.6-21.2 28.5-49.5 25.4-77.4-24.1 1-53.2 16.3-71.1 38.3-15.6 19.3-28.7 48.7-24.7 75.8 26.6 2.1 53.3-14.4 70.4-36.7z"/>
                     </svg>
                 </button>
@@ -296,20 +311,21 @@
         </div>
         <div class="menu-right">
             <button class="bar-icon spotlight-btn" title="Spotlight Search" onclick="event.stopPropagation(); toggleSpotlight();">
-                <svg viewBox="0 0 512 512" width="14" height="14" style="pointer-events:none;">
+                <svg viewBox="0 0 512 512" width="14" height="14" fill="currentColor" style="pointer-events:none;">
                     <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
                 </svg>
             </button>
             <!-- Control Center trigger -->
             <button class="bar-icon cc-trigger" id="cc-trigger" title="Control Center" onclick="event.stopPropagation(); toggleControlCenter();">
-                <svg viewBox="0 0 640 512" width="15" height="15" style="pointer-events:none;">
+                <svg viewBox="0 0 640 512" width="15" height="15" fill="currentColor" style="pointer-events:none;">
                     <path d="M54.2 202.9C123.2 136.7 216.8 96 320 96s196.8 40.7 265.8 106.9c12.8 12.2 33 11.8 45.2-1s11.8-33-1-45.2C549.7 79.5 440.4 32 320 32S90.3 79.5 10.3 156.7c-12.8 12.2-13.2 32.3-1 45.2s32.3 13.2 45.2 1zM320 256c57.5 0 110.3 20.6 151.2 54.8 13.2 11.1 32.9 9.4 44-3.9s9.4-32.9-3.9-44C470.8 229.4 398.3 192 320 192s-150.8 37.4-191.3 70.9c-13.2 11.1-14.9 30.8-3.9 44s30.8 14.9 44 3.9C209.7 276.6 262.5 256 320 256zm0 128c-23.4 0-44.7 9.4-60.2 24.6-13 12.8-13.1 33.8-.3 46.8s33.8 13.1 46.8.3c3.5-3.4 8.5-5.7 13.7-5.7s10.2 2.2 13.7 5.7c12.9 12.8 33.8 12.6 46.8-.3s12.6-33.8-.3-46.8C364.7 393.4 343.4 384 320 384z"/>
                 </svg>
             </button>
-            <span class="bar-icon" title="Battery">
-                <svg viewBox="0 0 576 512" width="17" height="17">
+            <span class="bar-icon" title="Battery" style="display:inline-flex;align-items:center;gap:2px;">
+                <svg viewBox="0 0 576 512" width="17" height="17" fill="currentColor">
                     <path d="M464 160c8.8 0 16 7.2 16 16v160c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16H464zM80 96C35.8 96 0 131.8 0 176V336c0 44.2 35.8 80 80 80H464c44.2 0 80-35.8 80-80v-16c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32V176c0-44.2-35.8-80-80-80H80zm320 96H96V320H400V192z"/>
                 </svg>
+                <span id="battery-pct" style="font-size:11px;opacity:0.75;margin-left:1px;">87%</span>
             </span>
             <span id="menu-clock" class="menu-clock" onclick="event.stopPropagation(); toggleNotifCenter();" style="cursor:pointer;">Thu Mar 5 12:00 (UTC)</span>
         </div>
@@ -318,7 +334,7 @@
     <!-- ===== CONTROL CENTER ===== -->
     <div id="control-center" class="control-center hidden">
         <div class="cc-section">
-            <div class="cc-tile cc-wide" id="cc-wifi-tile">
+            <div class="cc-tile cc-wide" id="cc-wifi-tile" onclick="ccToggleWifi()" style="cursor:pointer;">
                 <div class="cc-tile-icon">
                     <svg viewBox="0 0 640 512" width="18" height="18" fill="currentColor">
                         <path d="M54.2 202.9C123.2 136.7 216.8 96 320 96s196.8 40.7 265.8 106.9c12.8 12.2 33 11.8 45.2-1s11.8-33-1-45.2C549.7 79.5 440.4 32 320 32S90.3 79.5 10.3 156.7c-12.8 12.2-13.2 32.3-1 45.2s32.3 13.2 45.2 1zM320 256c57.5 0 110.3 20.6 151.2 54.8 13.2 11.1 32.9 9.4 44-3.9s9.4-32.9-3.9-44C470.8 229.4 398.3 192 320 192s-150.8 37.4-191.3 70.9c-13.2 11.1-14.9 30.8-3.9 44s30.8 14.9 44 3.9C209.7 276.6 262.5 256 320 256zm0 128c-23.4 0-44.7 9.4-60.2 24.6-13 12.8-13.1 33.8-.3 46.8s33.8 13.1 46.8.3c3.5-3.4 8.5-5.7 13.7-5.7s10.2 2.2 13.7 5.7c12.9 12.8 33.8 12.6 46.8-.3s12.6-33.8-.3-46.8C364.7 393.4 343.4 384 320 384z"/>
@@ -376,13 +392,15 @@
             </div>
             <div class="nc-card-body">Open to freelance & internships — let's build something amazing!</div>
         </div>
-        <div class="nc-card">
-            <div class="nc-card-header">
-                <span class="nc-app-icon">🐙</span>
-                <span class="nc-app-name">GitHub</span>
-                <span class="nc-time">2m ago</span>
+        <div id="nc-github-list">
+            <div class="nc-card nc-github-loading">
+                <div class="nc-card-header">
+                    <span class="nc-app-icon">🐙</span>
+                    <span class="nc-app-name">GitHub</span>
+                    <span class="nc-time" id="nc-github-time">loading…</span>
+                </div>
+                <div class="nc-card-body" style="opacity:0.45;">Fetching latest commits…</div>
             </div>
-            <div class="nc-card-body">New commit pushed to Portfolio/main ✓</div>
         </div>
         <div class="nc-card">
             <div class="nc-card-header">
@@ -415,13 +433,11 @@
 
     <!-- ===== RIGHT-CLICK CONTEXT MENU ===== -->
     <div id="context-menu" class="context-menu hidden">
-        <button class="ctx-item disabled">New Folder</button>
-        <div class="ctx-divider"></div>
-        <button class="ctx-item disabled">Get Info</button>
+        <button class="ctx-item" onclick="openAboutMac(); hideContextMenu()">Get Info</button>
         <button class="ctx-item" onclick="toggleWindow('window-settings'); hideContextMenu()">Change Wallpaper…</button>
         <div class="ctx-divider"></div>
-        <button class="ctx-item disabled">Sort By <span class="dd-shortcut">▸</span></button>
-        <button class="ctx-item disabled">Clean Up</button>
+        <button class="ctx-item" onclick="toggleWindow('window-skills'); hideContextMenu()">Open Terminal</button>
+        <button class="ctx-item" onclick="toggleWindow('window-vscode'); hideContextMenu()">Open VS Code</button>
         <div class="ctx-divider"></div>
         <button class="ctx-item" onclick="showAllWindows(); hideContextMenu()">Show All Windows</button>
         <button class="ctx-item" onclick="closeAllWindows(); hideContextMenu()">Hide All Windows</button>
@@ -455,7 +471,7 @@
         </div>
         <div class="notif-body">
             <strong>Welcome!</strong>
-            <p>Explore my work — open the dock apps or use Spotlight (⌘Space)</p>
+            <p>Explore my work — open the dock apps or use Spotlight (Space)</p>
         </div>
     </div>
 
@@ -463,7 +479,7 @@
     <div id="windows-container">
 
         <!-- About This Mac -->
-        <div class="window" id="window-about-mac" style="width:360px;height:420px;top:80px;left:250px;display:none;">
+        <div class="window" id="window-about-mac" style="width:360px;height:490px;top:80px;left:250px;display:none;">
             <div class="window-header">
                 <div class="window-controls">
                     <div class="ctrl close" onclick="closeWindow('window-about-mac')"></div>
@@ -486,6 +502,12 @@
                     <p>Graphics: <strong>CSS-Powered™</strong></p>
                     <p>Serial: <strong>SUDO-MAKE-ME-A-SANDWICH</strong></p>
                     <p style="margin-top:8px;font-style:italic;color:var(--text-tertiary)">"It works on my machine" ¯\_(ツ)_/¯</p>
+                </div>
+                <div id="session-stats" style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text-secondary);">
+                    <div style="font-weight:600;margin-bottom:2px;opacity:0.5;text-transform:uppercase;letter-spacing:0.06em;font-size:10px;">Session</div>
+                    <span>⏱ Time: <strong id="stat-time">0s</strong></span>
+                    <span>📂 Apps opened: <strong id="stat-apps">0</strong></span>
+                    <span>💻 Commands run: <strong id="stat-cmds">0</strong></span>
                 </div>
             </div>
         </div>
@@ -588,13 +610,12 @@
             <div class="window-body finder-body">
                 <aside class="finder-sidebar">
                     <p class="sidebar-label">Favourites</p>
-                    <div class="sidebar-item active"><span class="si-icon">🏠</span> Home</div>
-                    <div class="sidebar-item"><span class="si-icon">📄</span> Documents</div>
-                    <div class="sidebar-item"><span class="si-icon">📥</span> Downloads</div>
-                    <div class="sidebar-item"><span class="si-icon">🖼️</span> Pictures</div>
+                    <div class="sidebar-item active" onclick="switchFinderSection('home', this)"><span class="si-icon">🏠</span> Home</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('documents', this)"><span class="si-icon">📄</span> Documents</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('downloads', this)"><span class="si-icon">📥</span> Downloads</div>
                     <p class="sidebar-label" style="margin-top:14px;">Tags</p>
-                    <div class="sidebar-item"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff375f;margin-right:6px;"></span> Work</div>
-                    <div class="sidebar-item"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#30d158;margin-right:6px;"></span> Open Source</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('work', this)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff375f;margin-right:6px;"></span> Work</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('opensource', this)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#30d158;margin-right:6px;"></span> Open Source</div>
                 </aside>
                 <main class="finder-main">
                     <div class="about-status-indicator">
@@ -615,18 +636,18 @@
 
                     <h4 class="about-section-title">Stack</h4>
                     <div class="about-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">TypeScript</span>
-                        <span class="tag">Python</span>
-                        <span class="tag">React</span>
-                        <span class="tag">Next.js</span>
-                        <span class="tag">Django</span>
-                        <span class="tag">Node.js</span>
-                        <span class="tag">Docker</span>
-                        <span class="tag">PostgreSQL</span>
-                        <span class="tag">AWS</span>
-                        <span class="tag">ML / AI</span>
-                        <span class="tag">Git</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('JavaScript')">JavaScript</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('TypeScript')">TypeScript</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('Python')">Python</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('React')">React</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('Next.js')">Next.js</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('Django')">Django</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('Node.js')">Node.js</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('Docker')">Docker</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('PostgreSQL')">PostgreSQL</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('AWS')">AWS</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('ML / AI')">ML / AI</span>
+                        <span class="tag" onclick="openSpotlightWithQuery('Git')">Git</span>
                     </div>
 
                     <div style="margin-top:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
@@ -634,7 +655,7 @@
                         <a href="https://github.com/Sunil0620" target="_blank" class="resume-btn" style="background:linear-gradient(135deg,#333,#555);">🐙 GitHub</a>
                     </div>
 
-                    <p style="margin-top:16px;font-size:12px;color:var(--text-tertiary);">Try: <strong style="color:var(--text-secondary);">⌘Space</strong> for Spotlight · <strong style="color:var(--text-secondary);">right-click</strong> desktop · <strong style="color:var(--text-secondary);">F3</strong> Mission Control</p>
+                    <p style="margin-top:16px;font-size:12px;color:var(--text-tertiary);">Try: <strong style="color:var(--text-secondary);">Space</strong> for Spotlight · <strong style="color:var(--text-secondary);">right-click</strong> desktop · <strong style="color:var(--text-secondary);">F3</strong> Mission Control</p>
                 </main>
             </div>
             <div class="resize-handle" data-win="window-about"></div>
@@ -751,10 +772,6 @@
                         <strong>Get in Touch</strong>
                         <small>Email &amp; Work</small>
                     </div>
-                    <div class="note-row" onclick="switchNote('socials', this)">
-                        <strong>Socials</strong>
-                        <small>GitHub &amp; Links</small>
-                    </div>
                     <div class="note-row" onclick="switchNote('focus', this)">
                         <strong>Focus</strong>
                         <small>Django &amp; React</small>
@@ -763,12 +780,13 @@
                 <main class="notes-main">
                     <!-- Contact pane -->
                     <div id="note-contact" class="note-pane active-pane">
-                        <p class="notes-date">March 2026</p>
+                        <p class="notes-date" id="notes-current-date">March 2026</p>
                         <h2>Let's build something amazing 🚀</h2>
                         <p>I'm currently open to freelance projects, internships, and open-source collaboration.</p>
                         <br>
-                        <p>📧 <strong>Email:</strong> <a href="mailto:sunilsaini5652@gmail.com">sunilsaini5652@gmail.com</a></p>
+                        <p>📧 <strong>Email:</strong> <a href="mailto:sunilsaini5652@gmail.com" onclick="copyEmail(event)">sunilsaini5652@gmail.com</a></p>
                         <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/Sunil0620" target="_blank">github.com/Sunil0620</a></p>
+                        <p>💼 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/sunil-saini-6190ba255/" target="_blank">linkedin.com/in/sunil-saini-6190ba255</a></p>
                         <br>
                         <div class="contact-form">
                             <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">Or drop me a message directly:</p>
@@ -778,26 +796,6 @@
                                 <textarea name="message" class="form-textarea" placeholder="Your message..." required></textarea>
                                 <button type="submit" class="form-submit">Send Message ✉️</button>
                             </form>
-                        </div>
-                    </div>
-                    <!-- Socials pane -->
-                    <div id="note-socials" class="note-pane hidden">
-                        <p class="notes-date">Socials</p>
-                        <h2>Find me online 🌐</h2>
-                        <br>
-                        <div class="social-links">
-                            <a href="https://github.com/Sunil0620" target="_blank" class="social-link">
-                                <span class="social-icon">🐙</span>
-                                <div><strong>GitHub</strong><small>github.com/Sunil0620</small></div>
-                            </a>
-                            <a href="mailto:sunilsaini5652@gmail.com" class="social-link">
-                                <span class="social-icon">📧</span>
-                                <div><strong>Email</strong><small>sunilsaini5652@gmail.com</small></div>
-                            </a>
-                            <a href="https://github.com/Sunil0620" target="_blank" class="social-link">
-                                <span class="social-icon">💼</span>
-                                <div><strong>LinkedIn</strong><small>Connect with me</small></div>
-                            </a>
                         </div>
                     </div>
                     <!-- Focus pane -->
@@ -819,24 +817,24 @@
         </div>
 
         <!-- Music Player -->
-        <div class="window" id="window-music" style="width:380px;height:520px;top:60px;left:500px;display:none;">
+        <div class="window" id="window-music" style="width:380px;height:640px;top:60px;left:500px;display:none;">
             <div class="window-header">
                 <div class="window-controls">
                     <div class="ctrl close" onclick="closeWindow('window-music'); stopMusic()"></div>
                     <div class="ctrl minimize" onclick="minimizeWindow('window-music')"></div>
                     <div class="ctrl maximize" onclick="maximizeWindow('window-music')"></div>
                 </div>
-                <span class="header-title">Music</span>
+                <span class="header-title">🎵 Classics</span>
             </div>
             <div class="window-body music-body">
                 <div class="music-art" id="music-art">
                     <div class="music-art-inner" id="music-art-inner">
-                        <span id="music-art-emoji">🎵</span>
+                        <span id="music-art-emoji">🚶</span>
                     </div>
                 </div>
                 <div class="music-info">
-                    <div class="music-track" id="music-track">Lo-fi Coding Session</div>
-                    <div class="music-artist" id="music-artist">Sunil's Playlist</div>
+                    <div class="music-track" id="music-track">Chala Jata Hoon</div>
+                    <div class="music-artist" id="music-artist">Kishore Kumar · Mere Jeevan Saathi (1972)</div>
                 </div>
                 <canvas id="music-visualizer" class="music-visualizer" width="340" height="80"></canvas>
                 <div class="music-progress-wrap">
@@ -845,7 +843,7 @@
                         <div class="music-fill" id="music-fill"></div>
                         <div class="music-thumb" id="music-thumb"></div>
                     </div>
-                    <span class="music-time" id="music-duration">3:00</span>
+                    <span class="music-time" id="music-duration">4:25</span>
                 </div>
                 <div class="music-controls">
                     <button class="music-btn" onclick="prevTrack()" title="Previous">⏮</button>
@@ -855,20 +853,45 @@
                 <div class="music-playlist">
                     <div class="playlist-item active" id="pl-0" onclick="playTrack(0)">
                         <span class="pl-num">1</span>
-                        <div class="pl-info"><span>Lo-fi Coding Session</span><small>3:00</small></div>
+                        <div class="pl-info"><span>Chala Jata Hoon</span><small>Kishore Kumar</small></div>
                     </div>
                     <div class="playlist-item" id="pl-1" onclick="playTrack(1)">
                         <span class="pl-num">2</span>
-                        <div class="pl-info"><span>Midnight Debug</span><small>2:30</small></div>
+                        <div class="pl-info"><span>Mere Sapno Ki Rani</span><small>Kishore Kumar</small></div>
                     </div>
                     <div class="playlist-item" id="pl-2" onclick="playTrack(2)">
                         <span class="pl-num">3</span>
-                        <div class="pl-info"><span>Deploy Day</span><small>2:00</small></div>
+                        <div class="pl-info"><span>Likhe Jo Khat Tujhe</span><small>Mohammed Rafi</small></div>
                     </div>
                     <div class="playlist-item" id="pl-3" onclick="playTrack(3)">
                         <span class="pl-num">4</span>
-                        <div class="pl-info"><span>It Works™</span><small>1:45</small></div>
+                        <div class="pl-info"><span>Ajeeb Dastan Hai Yeh</span><small>Lata Mangeshkar</small></div>
                     </div>
+                    <div class="playlist-item" id="pl-4" onclick="playTrack(4)">
+                        <span class="pl-num">5</span>
+                        <div class="pl-info"><span>Abhi Na Jao Chhod Kar</span><small>Mohammed Rafi & Asha Bhosle</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-5" onclick="playTrack(5)">
+                        <span class="pl-num">6</span>
+                        <div class="pl-info"><span>Lag Ja Gale</span><small>Lata Mangeshkar</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-6" onclick="playTrack(6)">
+                        <span class="pl-num">7</span>
+                        <div class="pl-info"><span>Kuch Toh Log Kahenge</span><small>Kishore Kumar</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-7" onclick="playTrack(7)">
+                        <span class="pl-num">8</span>
+                        <div class="pl-info"><span>Baharon Phool Barsao</span><small>Mohammed Rafi</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-8" onclick="playTrack(8)">
+                        <span class="pl-num">9</span>
+                        <div class="pl-info"><span>Teri Aankhon Ke Siva</span><small>Mohammed Rafi</small></div>
+                    </div>
+                    <div class="playlist-item" id="pl-9" onclick="playTrack(9)">
+                        <span class="pl-num">10</span>
+                        <div class="pl-info"><span>Dil Ke Jharokhe Mein</span><small>Mohammed Rafi</small></div>
+                    </div>
+                    <div class="music-yt-badge">▶ Powered by YouTube</div>
                 </div>
             </div>
             <div class="resize-handle" data-win="window-music"></div>
@@ -888,33 +911,85 @@
             <div class="window-body vscode-body">
                 <div class="vscode-main-area">
                     <div class="vscode-sidebar">
-                        <div class="vscode-sidebar-icon active" title="Explorer">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .12.11.56.18 1H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .12-.11.56-.18 1h-3.64C12.11 5.56 12 5.12 12 5c0-1.1.9-2 2-2z"/></svg>
+                        <div class="vscode-sidebar-top">
+                            <div class="vscode-sidebar-icon active" title="Explorer" onclick="switchVscodeSidebar('explorer',this)">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .12.11.56.18 1H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .12-.11.56-.18 1h-3.64C12.11 5.56 12 5.12 12 5c0-1.1.9-2 2-2z"/></svg>
+                            </div>
+                            <div class="vscode-sidebar-icon" title="Search" onclick="switchVscodeSidebar('search',this)">
+                                <svg viewBox="0 0 512 512" width="20" height="20" fill="currentColor"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+                            </div>
+                            <div class="vscode-sidebar-icon" title="Source Control" onclick="switchVscodeSidebar('git',this)">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17 12c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2zM9 8c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2zm8 10h-2v-2H9V8H7v2H5v2h2v2H5v2h2v-2h2v2h8v-2z"/></svg>
+                            </div>
+                            <div class="vscode-sidebar-icon" title="Extensions" onclick="switchVscodeSidebar('ext',this)">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7s2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/></svg>
+                            </div>
                         </div>
-                        <div class="vscode-sidebar-icon" title="Search">
-                            <svg viewBox="0 0 512 512" width="20" height="20" fill="currentColor"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
-                        </div>
-                        <div class="vscode-sidebar-icon" title="Source Control">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17 12c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2zM9 8c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2zm8 10h-2v-2H9V8H7v2H5v2h2v2H5v2h2v-2h2v2h8v-2z"/></svg>
+                        <div class="vscode-sidebar-bottom">
+                            <div class="vscode-sidebar-icon" title="Settings">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                            </div>
                         </div>
                     </div>
-                    <div class="vscode-explorer">
+                    <!-- Explorer Panel -->
+                    <div id="vscode-panel-explorer" class="vscode-explorer">
                         <div class="vscode-exp-header">EXPLORER</div>
-                        <div class="vscode-exp-item open"><span>📂</span> mac-portfolio</div>
-                        <div class="vscode-exp-file active"><span>📄</span> script.js</div>
-                        <div class="vscode-exp-file"><span>🎨</span> style.css</div>
-                        <div class="vscode-exp-file"><span>🌐</span> index.html</div>
-                        <div class="vscode-exp-item"><span>📁</span> img</div>
-                        <div class="vscode-exp-item"><span>📁</span> User</div>
+                        <div class="vscode-exp-item open"><span class="folder-caret">▾</span><span>📂</span> mac-portfolio</div>
+                        <div class="vscode-exp-file active" id="vsexp-js" onclick="vscodeOpenFile('js')"><span class="file-icon fi-js">JS</span> script.js</div>
+                        <div class="vscode-exp-file" id="vsexp-css" onclick="vscodeOpenFile('css')"><span class="file-icon fi-css">CSS</span> style.css</div>
+                        <div class="vscode-exp-file" id="vsexp-html" onclick="vscodeOpenFile('html')"><span class="file-icon fi-html">HTM</span> index.html</div>
+                        <div class="vscode-exp-file"><span class="file-icon fi-json">JSON</span> package.json</div>
+                        <div class="vscode-exp-file"><span class="file-icon fi-md">MD</span> README.md</div>
+                        <div class="vscode-exp-file"><span class="file-icon fi-git">GIT</span> .gitignore</div>
+                    </div>
+                    <!-- Search Panel -->
+                    <div id="vscode-panel-search" class="vscode-explorer" style="display:none;">
+                        <div class="vscode-exp-header">SEARCH</div>
+                        <div style="padding:6px 8px;"><input class="vscode-panel-input" placeholder="Search" readonly value="playTrack"></div>
+                        <div class="vscode-exp-header" style="margin-top:4px;color:rgba(255,255,255,0.3);">3 results in 2 files</div>
+                        <div class="vscode-exp-item" style="font-size:12px;color:rgba(255,255,255,0.6);">📄 script.js</div>
+                        <div class="vscode-search-match">2050 &nbsp;<span class="syn-kw">function</span> <span class="syn-fn">playTrack</span>(idx)</div>
+                        <div class="vscode-search-match">2084 &nbsp;&nbsp;&nbsp;&nbsp;<span class="syn-fn">playTrack</span>(musicTrackIdx)</div>
+                        <div class="vscode-exp-item" style="font-size:12px;color:rgba(255,255,255,0.6);">📄 index.html</div>
+                        <div class="vscode-search-match">854 &nbsp;onclick="<span class="syn-fn">playTrack</span>(0)"</div>
+                    </div>
+                    <!-- Git Panel -->
+                    <div id="vscode-panel-git" class="vscode-explorer" style="display:none;">
+                        <div class="vscode-exp-header">SOURCE CONTROL — GIT</div>
+                        <div style="padding:6px 8px;"><input class="vscode-panel-input" placeholder="Message (⌘↵ to commit)" readonly></div>
+                        <div class="vscode-exp-header" style="margin-top:4px;">CHANGES <span style="color:#e2c08d;margin-left:4px;">3</span></div>
+                        <div class="vscode-exp-file"><span class="git-badge">M</span> script.js</div>
+                        <div class="vscode-exp-file"><span class="git-badge">M</span> style.css</div>
+                        <div class="vscode-exp-file"><span class="git-badge">M</span> index.html</div>
+                        <div style="padding:8px 12px;font-size:11px;color:rgba(255,255,255,0.25);">⎇ main · 3 uncommitted changes</div>
+                    </div>
+                    <!-- Extensions Panel -->
+                    <div id="vscode-panel-ext" class="vscode-explorer" style="display:none;">
+                        <div class="vscode-exp-header">EXTENSIONS — INSTALLED</div>
+                        <div class="vscode-ext-item"><span class="ext-icon" style="background:#f7b731;">P</span><div><div style="font-size:12px;color:rgba(255,255,255,0.8);">Prettier</div><div style="font-size:11px;color:rgba(255,255,255,0.35);">Code formatter</div></div></div>
+                        <div class="vscode-ext-item"><span class="ext-icon" style="background:#4b32c3;">E</span><div><div style="font-size:12px;color:rgba(255,255,255,0.8);">ESLint</div><div style="font-size:11px;color:rgba(255,255,255,0.35);">JS linter</div></div></div>
+                        <div class="vscode-ext-item"><span class="ext-icon" style="background:#e84393;">G</span><div><div style="font-size:12px;color:rgba(255,255,255,0.8);">GitLens</div><div style="font-size:11px;color:rgba(255,255,255,0.35);">Git supercharged</div></div></div>
+                        <div class="vscode-ext-item"><span class="ext-icon" style="background:#0078d4;">C</span><div><div style="font-size:12px;color:rgba(255,255,255,0.8);">GitHub Copilot</div><div style="font-size:11px;color:rgba(255,255,255,0.35);">AI pair programmer</div></div></div>
                     </div>
                     <div class="vscode-editor">
-                        <div class="vscode-tabs">
-                            <div class="vscode-tab active"><span>script.js</span><span class="vscode-tab-close">×</span></div>
+                        <div class="vscode-tabs" id="vscode-tabs-row">
+                            <div class="vscode-tab active" id="vstab-js" onclick="vscodeOpenFile('js')"><span class="vsc-dirty" id="vsdirty-js">●</span><span>script.js</span><span class="vscode-tab-close" onclick="event.stopPropagation(); vscodeCloseTab('js')">×</span></div>
+                            <div class="vscode-tab" id="vstab-css" onclick="vscodeOpenFile('css')"><span class="vsc-dirty" id="vsdirty-css">●</span><span>style.css</span><span class="vscode-tab-close" onclick="event.stopPropagation(); vscodeCloseTab('css')">×</span></div>
+                            <div class="vscode-tab" id="vstab-html" onclick="vscodeOpenFile('html')"><span class="vsc-dirty" id="vsdirty-html">●</span><span>index.html</span><span class="vscode-tab-close" onclick="event.stopPropagation(); vscodeCloseTab('html')">×</span></div>
                         </div>
                         <div class="vscode-code" id="vscode-code"></div>
                     </div>
                 </div>
-                <div class="vscode-statusbar"><span class="vsc-sb-left">⎇ main &nbsp;|&nbsp; 0 errors &nbsp;|&nbsp; 0 warnings</span><span class="vsc-sb-right">Ln 1, Col 1 &nbsp;|&nbsp; JavaScript &nbsp;|&nbsp; UTF-8</span></div>
+                <div class="vscode-statusbar" id="vscode-statusbar"><span class="vsc-sb-left" id="vsc-sb-left">⎇ main &nbsp;|&nbsp; 0 errors &nbsp;|&nbsp; 0 warnings</span><span class="vsc-sb-right" id="vsc-sb-right">Ln 1, Col 1 &nbsp;|&nbsp; JavaScript &nbsp;|&nbsp; UTF-8</span></div>
+                <div id="vscode-debug-panel" class="vscode-debug-panel">
+                    <div class="vscode-debug-tabs">
+                        <span class="vscode-debug-tab active" onclick="vscodeDebugTab('CONSOLE', this)">CONSOLE</span>
+                        <span class="vscode-debug-tab" onclick="vscodeDebugTab('PROBLEMS', this)">PROBLEMS</span>
+                        <span class="vscode-debug-tab" onclick="vscodeDebugTab('OUTPUT', this)">OUTPUT</span>
+                        <button class="vscode-debug-toggle" onclick="document.getElementById('vscode-debug-log').classList.toggle('vscode-debug-collapsed')">⌃</button>
+                    </div>
+                    <div id="vscode-debug-log" class="vscode-debug-log"></div>
+                </div>
             </div>
             <div class="resize-handle" data-win="window-vscode"></div>
             <div class="resize-handle-left" data-win="window-vscode"></div>
@@ -932,14 +1007,14 @@
             </div>
             <div class="window-body textedit-body">
                 <div class="textedit-toolbar">
-                    <select class="te-font-select"><option>Inter</option><option>Menlo</option></select>
-                    <select class="te-size-select"><option>14</option><option>16</option><option>18</option></select>
+                    <select class="te-font-select" onchange="teSetFont(this.value)"><option>Inter</option><option>Menlo</option></select>
+                    <select class="te-size-select" onchange="teSetSize(this.value)"><option>14</option><option>16</option><option>18</option></select>
                     <div class="te-divider"></div>
-                    <button class="te-btn"><strong>B</strong></button>
-                    <button class="te-btn"><em>I</em></button>
-                    <button class="te-btn" style="text-decoration:underline">U</button>
+                    <button class="te-btn" onclick="document.execCommand('bold')" title="Bold"><strong>B</strong></button>
+                    <button class="te-btn" onclick="document.execCommand('italic')" title="Italic"><em>I</em></button>
+                    <button class="te-btn" onclick="document.execCommand('underline')" style="text-decoration:underline" title="Underline">U</button>
                 </div>
-                <div class="textedit-content">
+                <div class="textedit-content" contenteditable="true" spellcheck="false">
                     <h1 class="te-h1">📄 Portfolio — macOS Sonoma</h1>
                     <br>
                     <p class="te-p">A hyper-realistic macOS desktop environment running entirely in your browser.</p>
@@ -952,7 +1027,7 @@
                     <p class="te-p">• Interactive Terminal with easter eggs</p>
                     <p class="te-p">• Music Player with Web Audio visualizer</p>
                     <p class="te-p">• VS Code clone showing its own source code</p>
-                    <p class="te-p">• Spotlight search (⌘Space)</p>
+                    <p class="te-p">• Spotlight search (Space)</p>
                     <p class="te-p">• Mission Control (F3)</p>
                     <p class="te-p">• Control Center &amp; Notification Center</p>
                     <p class="te-p">• Screen saver after 90s inactivity</p>
@@ -990,17 +1065,17 @@
                     ⚠️ <strong>Warning:</strong> Opening this folder may collapse a nearby star. Proceed with caution.
                 </div>
                 <div class="nm-grid">
-                    <div class="nm-item">📦 react@18.2.0</div>
-                    <div class="nm-item">📦 webpack@5.91.0</div>
-                    <div class="nm-item">📦 babel-core@7.x</div>
-                    <div class="nm-item">📦 lodash@4.17.21</div>
-                    <div class="nm-item">📦 express@4.18.3</div>
-                    <div class="nm-item">📦 left-pad@1.3.0</div>
-                    <div class="nm-item">📦 is-odd@3.0.1</div>
-                    <div class="nm-item">📦 is-even@1.0.0</div>
-                    <div class="nm-item">📦 is-string@1.0.7</div>
-                    <div class="nm-item">📦 is-boolean@1.0.1</div>
-                    <div class="nm-item">📦 assert-never@1.2.1</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 react@18.2.0</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 webpack@5.91.0</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 babel-core@7.x</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 lodash@4.17.21</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 express@4.18.3</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 left-pad@1.3.0</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-odd@3.0.1</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-even@1.0.0</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-string@1.0.7</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-boolean@1.0.1</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)">📦 assert-never@1.2.1</div>
                     <div class="nm-item nm-item-more">+ 2,847,282 more…</div>
                 </div>
                 <p style="font-size:11px;color:var(--text-tertiary);margin-top:auto;text-align:center;">
@@ -1041,6 +1116,36 @@
             <div class="resize-handle-left" data-win="window-todo"></div>
         </div>
 
+        <!-- Snake Game -->
+        <div class="window" id="window-snake" data-minw="580" data-minh="660" style="width:580px;height:660px;top:80px;left:280px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-snake'); if(window.snakeGame) snakeGame.stop();"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-snake')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-snake')"></div>
+                </div>
+                <span class="header-title">🐍 Snake — Arcade</span>
+            </div>
+            <div class="window-body snake-window-body">
+                <div class="snake-hud">
+                    <span>Score: <strong id="snake-score">0</strong></span>
+                    <span>Best: <strong id="snake-best">0</strong></span>
+                    <span>Speed: <strong id="snake-speed-label">1</strong></span>
+                    <button id="snake-pause-btn" class="snake-pause-btn" onclick="if(window.snakeGame) snakeGame.togglePause()">⏸</button>
+                </div>
+                <canvas id="snake-canvas" width="520" height="520" onclick="if(window.snakeGame) snakeGame.handleClick(event)"></canvas>
+                <div id="snake-overlay" class="snake-overlay" onclick="if(window.snakeGame) snakeGame.start()">
+                    <div class="snake-overlay-content">
+                        <div id="snake-title" class="snake-ol-title">🐍 SNAKE</div>
+                        <div id="snake-msg" class="snake-ol-msg">Click or press Space to start</div>
+                        <div id="snake-final" class="snake-ol-final" style="display:none;"></div>
+                        <button id="snake-start-btn" class="snake-start-btn" onclick="event.stopPropagation(); if(window.snakeGame) snakeGame.start()">▶ START</button>
+                    </div>
+                </div>
+                <div class="snake-hint">Click canvas to steer &nbsp;•&nbsp; WASD / ↑↓←→ to move &nbsp;•&nbsp; Space to start &nbsp;•&nbsp; P / Esc to pause</div>
+            </div>
+        </div>
+
     </div><!-- /windows-container -->
 
     <!-- ===== DOCK ===== -->
@@ -1060,7 +1165,7 @@
                 <div class="dock-dot" id="dot-window-about"></div>
             </div>
             <div class="dock-item" data-app="window-skills" data-tip="Terminal">
-                <div class="dock-icon-art terminal-art">>_</div>
+                <div class="dock-icon-art terminal-art">&gt;_</div>
                 <div class="dock-dot" id="dot-window-skills"></div>
             </div>
             <div class="dock-item" data-app="window-projects" data-tip="Projects">
@@ -1079,13 +1184,13 @@
                 <div class="dock-dot" id="dot-window-contact"></div>
             </div>
             <div class="dock-item" data-app="window-music" data-tip="Music">
-                <div class="dock-icon-art music-art">🎵</div>
+                <div class="dock-icon-art music-dock-art">🎵</div>
                 <div class="dock-dot" id="dot-window-music"></div>
             </div>
             <div class="dock-item" data-app="window-vscode" data-tip="VS Code">
                 <div class="dock-icon-art vscode-art">
-                    <svg viewBox="0 0 100 100" width="28" height="28">
-                        <path fill="#007ACC" d="M74.5 7.5L50 32 25.5 10 7.5 19l24.5 31L7.5 81l18 9L50 68l24.5 22 18-9-24.5-31 24.5-31z"/>
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="white" style="position:relative;z-index:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.4));">
+                        <path d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 19.06V4.94a1.5 1.5 0 0 0-.85-1.353zm-5.146 14.861L10.826 12l7.178-5.448v10.896z"/>
                     </svg>
                 </div>
                 <div class="dock-dot" id="dot-window-vscode"></div>
@@ -1098,16 +1203,58 @@
                 </div>
                 <div class="dock-dot" id="dot-window-settings"></div>
             </div>
+            <div class="dock-item" data-app="window-snake" data-tip="Snake Game">
+                <div class="dock-icon-art snake-dock-art">🐍</div>
+                <div class="dock-dot" id="dot-window-snake"></div>
+            </div>
             <div class="dock-sep"></div>
             <div class="dock-item" data-app="trash" data-tip="Trash">
                 <div class="dock-icon-art trash-art">
                     <svg viewBox="0 0 448 512" width="22" height="22" fill="rgba(255,255,255,0.7)">
-                        <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/>
+                        <g class="trash-lid">
+                            <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3z"/>
+                        </g>
+                        <path class="trash-body" d="M32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/>
                     </svg>
                 </div>
             </div>
         </div>
     </div>
+
+        <!-- Trash Window -->
+        <div class="window" id="window-trash" style="width:560px;height:420px;top:90px;left:200px;display:none;">
+            <div class="window-header">
+                <div class="window-controls">
+                    <div class="ctrl close" onclick="closeWindow('window-trash')"></div>
+                    <div class="ctrl minimize" onclick="minimizeWindow('window-trash')"></div>
+                    <div class="ctrl maximize" onclick="maximizeWindow('window-trash')"></div>
+                </div>
+                <span class="header-title">🗑️ Trash</span>
+            </div>
+            <div class="window-body trash-body">
+                <div id="trash-items-list" class="trash-items-list">
+                    <div class="trash-item"><span class="ti-icon">📦</span><div class="ti-info"><span class="ti-name">node_modules</span><span class="ti-desc">47.3 GB · The only thing that survives a nuclear blast</span></div><span class="ti-sz">47.3 GB</span></div>
+                    <div class="trash-item"><span class="ti-icon">💀</span><div class="ti-info"><span class="ti-name">ie_support.js</span><span class="ti-desc">2 KB · Good riddance, finally</span></div><span class="ti-sz">2 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon">🎨</span><div class="ti-info"><span class="ti-name">design_v47_FINAL_FINAL.psd</span><span class="ti-desc">18 MB · This was definitely the final version</span></div><span class="ti-sz">18 MB</span></div>
+                    <div class="trash-item"><span class="ti-icon">☕</span><div class="ti-info"><span class="ti-name">3am_ideas.txt</span><span class="ti-desc">1 KB · Delete before anyone sees this</span></div><span class="ti-sz">1 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon">📊</span><div class="ti-info"><span class="ti-name">todo_never_done.xlsx</span><span class="ti-desc">512 KB · Items: 847 · Completed: 2</span></div><span class="ti-sz">512 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon">🍝</span><div class="ti-info"><span class="ti-name">spaghetti_code.js</span><span class="ti-desc">9 KB · It worked once, don't touch it</span></div><span class="ti-sz">9 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon">💔</span><div class="ti-info"><span class="ti-name">ex_frameworks.zip</span><span class="ti-desc">156 KB · jQuery, Backbone, CoffeeScript... RIP</span></div><span class="ti-sz">156 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon">🐛</span><div class="ti-info"><span class="ti-name">that_one_bug.txt</span><span class="ti-desc">0 bytes · Still not fixed</span></div><span class="ti-sz">0 B</span></div>
+                </div>
+                <div id="trash-empty-state" class="trash-empty-state" style="display:none;">
+                    <div class="trash-empty-icon">🗑️</div>
+                    <p class="trash-empty-title">Trash is Empty</p>
+                    <p class="trash-empty-sub">Unlike your commit history</p>
+                </div>
+                <div class="trash-footer">
+                    <span id="trash-count-label">8 items · 47.3 GB used</span>
+                    <button class="trash-empty-btn" id="trash-empty-btn" onclick="emptyTrash()">Empty Trash</button>
+                </div>
+            </div>
+            <div class="resize-handle" data-win="window-trash"></div>
+            <div class="resize-handle-left" data-win="window-trash"></div>
+        </div>
 
     <!-- Snap preview overlay -->
     <div id="snap-preview"></div>
@@ -1124,6 +1271,9 @@
     </div>
 
 </div><!-- /desktop -->
+
+<!-- Hidden YouTube IFrame player — must be in body, never inside display:none, never opacity:0 -->
+<div id="yt-iframe" style="position:fixed;width:200px;height:200px;left:-9999px;top:-9999px;pointer-events:none;"></div>
 
 <script src="script.js"></script>
 </body>
