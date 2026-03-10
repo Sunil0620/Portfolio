@@ -1568,41 +1568,13 @@ if (termInput) {
 const TERM_COMMANDS = {
     help:    () => {
         const isRoot = localStorage.getItem('mac-dev-mode') === '1';
-        return `<span class="g">Available commands</span>
-
-<span class="term-dim">— portfolio —</span>
-  <span class="term-cmd">about</span>      Who I am
-  <span class="term-cmd">skills</span>     Tech stack
-  <span class="term-cmd">projects</span>   What I've built
-  <span class="term-cmd">contact</span>    Get in touch
-
-<span class="term-dim">— links —</span>
-  <span class="term-cmd">linkedin</span>   Open LinkedIn
-  <span class="term-cmd">resume</span>     Download resume
-  <span class="term-cmd">hire</span>       Why hire me?
-
-<span class="term-dim">— fun —</span>
-  <span class="term-cmd">matrix</span>     Enter the Matrix
-  <span class="term-cmd">hack</span>       Totally hacking
-  <span class="term-cmd">snake</span>      Snake game
-  <span class="term-cmd">sl</span>         Steam locomotive
-  <span class="term-cmd">weather</span>    ASCII weather
-  <span class="term-cmd">cowsay</span>     Wisdom from a cow
-  <span class="term-cmd">stats</span>      Session stats
-
-<span class="term-dim">— misc —</span>
-  <span class="term-cmd">date</span>       Current UTC time
-  <span class="term-cmd">clear</span>      Clear terminal
-  <span style="color:#ff453a" class="term-cmd">sudo rm -rf /</span>  ⚠ Don't.
-${isRoot
-    ? `
-<span style="color:#00ff41;font-weight:600">— root —</span>
-  <span class="term-cmd" style="color:#00ff41">breach</span>     Full hack sequence
-  <span class="term-cmd" style="color:#ff6b6b">classified</span> Secret project list
-  <span class="term-cmd" style="color:#ff6b6b">devlog</span>     Raw build diary
-  <span class="term-cmd" style="color:#ff6b6b">secrets</span>    Things I shouldn't share
-  <span class="term-cmd" style="color:#636366">logout</span>     Exit developer mode`
-    : ''}`;
+        return `<span class="g">Commands</span>
+<span class="term-dim">─────────────────────────────────────────────────────────</span>
+  <span class="term-dim">portfolio</span>  <span class="term-cmd">about</span>  <span class="term-cmd">skills</span>  <span class="term-cmd">projects</span>  <span class="term-cmd">contact</span>
+  <span class="term-dim">links    </span>  <span class="term-cmd">linkedin</span>  <span class="term-cmd">resume</span>  <span class="term-cmd">hire</span>
+  <span class="term-dim">fun      </span>  <span class="term-cmd">matrix</span>  <span class="term-cmd">hack</span>  <span class="term-cmd">snake</span>  <span class="term-cmd">sl</span>  <span class="term-cmd">weather</span>  <span class="term-cmd">cowsay</span>  <span class="term-cmd">stats</span>
+  <span class="term-dim">misc     </span>  <span class="term-cmd">date</span>  <span class="term-cmd">clear</span>  <span style="color:#ff453a" class="term-cmd">sudo rm -rf /</span>${isRoot ? `
+  <span style="color:#00ff41">root     </span>  <span class="term-cmd" style="color:#00ff41">breach</span>  <span class="term-cmd" style="color:#ff6b6b">classified</span>  <span class="term-cmd" style="color:#ff6b6b">devlog</span>  <span class="term-cmd" style="color:#ff6b6b">secrets</span>  <span class="term-cmd" style="color:#636366">logout</span>` : ''}`;
     },
     about:   () => `<span class="g">Sunil Saini</span> — Developer &amp; ML Enthusiast
   Full-stack developer focused on <span class="term-cmd">Django</span> + <span class="term-cmd">React</span>
