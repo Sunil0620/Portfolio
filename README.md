@@ -29,7 +29,7 @@ A developer portfolio disguised as a fully functional OS. It boots, logs in, and
 - **Menu bar** — Apple menu, Spotlight, Control Center, live UTC clock
 - **Dock** — icon magnification, open-app dot indicators
 - **Mission Control** — `F3` tiles all open windows
-- **Screen saver** — activates after 90s idle, aurora animation with clock
+- **Screen saver** — activates after 90s idle, Sydney video screensaver with aurora fallback and live clock
 - **Right-click context menu**, desktop click ripple, custom animated cursor
 
 ### Windows
@@ -99,6 +99,7 @@ mac-portfolio/
 ├── script.js         # all JavaScript (~176 KB)
 ├── style.css         # all CSS (~109 KB)
 ├── img/              # 6 wallpaper photos
+├── screensaver/      # video screensaver assets
 ├── assets/           # resume PDF + robots.txt
 └── User/             # avatar + custom wallpaper slot
 ```
@@ -111,6 +112,7 @@ mac-portfolio/
 |------|-------|
 | Profile photo | `User/avatar.jpg` |
 | Custom wallpaper | `User/2.jpg` (slot 2 in Settings) |
+| Screensaver video | `screensaver/sydney-screensaver.mp4` |
 | Resume | `assets/Sunil-Saini-Resume.pdf` |
 | Projects | `#window-projects` section in `index.html` |
 | Music playlist | `TRACKS` array in `script.js` |
