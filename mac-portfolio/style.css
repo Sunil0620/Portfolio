@@ -2388,6 +2388,43 @@ html.light-mode .kbd-hint-text {
 .resume-btn:active {
     transform: translateY(0) scale(0.98);
 }
+.discord-icon {
+    color: #5865f2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.resume-btn-discord {
+    background: linear-gradient(135deg, #5865f2, #8ea1ff);
+    box-shadow: 0 4px 16px rgba(88, 101, 242, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.resume-btn-discord::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.28), transparent);
+    transform: translateX(-120%);
+    transition: transform 0.45s ease;
+    pointer-events: none;
+}
+
+.resume-btn-discord:hover::after {
+    transform: translateX(120%);
+}
+
+.mob-contact-discord {
+    transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.mob-contact-discord:hover {
+    transform: translateX(4px);
+    color: #8ea1ff;
+}
 
 /* =============== ENHANCED PROJECT CARDS HOVER =============== */
 .project-card::before {
