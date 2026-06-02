@@ -1,5 +1,5 @@
 /* ===================================================================
-   macOS Portfolio — script.js  (Fully Upgraded v2)
+   sunOS Portfolio — script.js  (Fully Upgraded v2)
    Boot · Login · Cursor · Screensaver · MusicPlayer · VSCode Clone
    Terminal Easter Eggs · ControlCenter · NotifCenter · DynamicWallpaper
    =================================================================== */
@@ -125,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
             playBootChime();
             setTimeout(() => {
                 bootScreen.classList.add('hidden');
+                setTimeout(() => {
+                    if (bootScreen) bootScreen.style.display = 'none';
+                }, 850);
                 loginScreen.classList.remove('hidden');
                 const pi = document.getElementById('password-input');
                 if (pi) pi.focus();
@@ -256,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('visibilitychange', () => {
         document.title = document.hidden
             ? '👀 Come back...'
-            : 'Portfolio — macOS Sonoma';
+            : 'Portfolio — sunOS';
     });
 
     /* Desktop click ripple */
@@ -978,7 +981,7 @@ function closeAllDropdowns() {
     document.querySelectorAll('.menu-btn.open').forEach(b => b.classList.remove('open'));
 }
 
-/* ==================== ABOUT MAC ==================== */
+/* ==================== About sunOS ==================== */
 function openAboutMac() {
     closeAllDropdowns();
     toggleWindow('window-about-mac');
@@ -1455,7 +1458,7 @@ function openGitignoreWindow() {
     win.querySelector('.textedit-content').innerHTML = `
         <h1 class="te-h1">⚙️ .gitignore</h1><br>
         <pre style="font-family:var(--mono);font-size:13px;color:#555;line-height:1.8">
-# macOS
+# sunOS
 .DS_Store
 .DS_Store?
 ._*
@@ -1574,7 +1577,7 @@ function switchFinderSection(section, rowEl) {
                         <strong>🖥️ Portfolio</strong>
                         <span style="font-size:11px;color:var(--text-tertiary)">★ Public</span>
                     </div>
-                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">macOS Sonoma-style portfolio — zero dependencies.</p>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">sunOS-style portfolio — zero dependencies.</p>
                     <div style="margin-top:6px;display:flex;gap:6px;">
                         <span style="font-size:11px;color:var(--text-tertiary)">HTML · CSS · JS</span>
                     </div>
@@ -1726,16 +1729,16 @@ const TERM_COMMANDS = {
   ╚═╝      ╚═════╝ ╚═╝  ╚═╝   ╚═╝</pre>
   <span class="term-cmd">guest</span>@<span class="g">portfolio</span>
   ──────────────────────
-  <span class="b">OS:</span>      macOS Portfolio 14.0 Sonoma
-  <span class="b">Host:</span>    MacBook Pro "Reality Distortion Field"
+  <span class="b">OS:</span>      sunOS Portfolio 1.0
+  <span class="b">Host:</span>    sunOS Pro "Reality Distortion Field"
   <span class="b">Kernel:</span>  CSS3 + ES2024
   <span class="b">Uptime:</span>  Since first coffee ☕
   <span class="b">Shell:</span>   zsh (this one's fake but impressive)
-  <span class="b">DE:</span>      macOS Sonoma (hand-crafted)
+  <span class="b">DE:</span>      sunOS (hand-crafted)
   <span class="b">WM:</span>      Portfolio WM (0 dependencies)
   <span class="b">Theme:</span>   Dracula [GTK3]
   <span class="b">Icons:</span>   Pure CSS Art
-  <span class="b">CPU:</span>     Apple M3 Ultra Max Pro Plus
+  <span class="b">CPU:</span>     Sun S3 Ultra Max Pro Plus
   <span class="b">Memory:</span>  128 GB / ∞ (Chrome using all of it)
   <span class="b">Disk:</span>    47.3 GB / 47.3 GB (all node_modules)`,
 
@@ -2442,7 +2445,7 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
 const TRACKS = [
     { ytId: 'UNjhqT_hlbg', name: 'Chala Jata Hoon',       artist: 'Kishore Kumar',      film: 'Mere Jeevan Saathi (1972)',     emoji: '🚶', duration: 265 },
     { ytId: 'RVeLrwoB_xw', name: 'Mere Sapno Ki Rani', artist: 'Kishore Kumar', film: 'Aradhana (1969)', emoji: '🚂', duration: 301 },
-    { ytId: '1GUXATqIkxs', name: 'Likhe Jo Khat Tujhe',   artist: 'Mohammed Rafi',      film: 'Kanyadaan (1968)',              emoji: '💌', duration: 271 },
+    { ytIds: ['7Ku7g4OPEk4', 'o5cqsFiC5ak', 'tDq9ts-9tI0'], name: 'Likhe Jo Khat Tujhe', artist: 'Mohammed Rafi', film: 'Kanyadaan (1968)', emoji: '💌', duration: 271 },
     { ytId: 'l7GR1S-HNGo', name: 'Ajeeb Dastan Hai Yeh',  artist: 'Lata Mangeshkar',    film: 'Dil Apna Preet Parayi (1960)', emoji: '✨', duration: 248 },
     { ytId: 'mfEQgoVi7P4', name: 'Abhi Na Jao Chhod Kar', artist: 'Mohammed Rafi & Asha Bhosle', film: 'Hum Dono (1961)',      emoji: '💫', duration: 272 },
     { ytId: '3wAnXhoCBXQ', name: 'Lag Ja Gale',           artist: 'Lata Mangeshkar',    film: 'Woh Kaun Thi (1964)',           emoji: '🌹', duration: 267 },
@@ -2459,9 +2462,30 @@ let musicTrackIdx = 0;
 let musicTimer   = null;
 let vizAnimId    = null;
 let skipCount    = 0;
+let musicSourceIdx = 0;
 let ytApiPromise = null;
 let ytPlayerInitRequested = false;
 let ytReadyResolvers = [];
+
+function getTrackVideoIds(track) {
+    if (Array.isArray(track?.ytIds) && track.ytIds.length) return track.ytIds.filter(Boolean);
+    return track?.ytId ? [track.ytId] : [];
+}
+
+function retryCurrentTrackSource() {
+    const track = TRACKS[musicTrackIdx];
+    const videoIds = getTrackVideoIds(track);
+    if (!track || musicSourceIdx >= videoIds.length - 1) return false;
+
+    musicSourceIdx++;
+    _consoleLog('music', 'warn', `Retrying "${track.name}" with fallback source ${musicSourceIdx + 1}/${videoIds.length}`);
+
+    const artist = document.getElementById('music-artist');
+    if (artist) artist.textContent = `${track.artist} · trying another source`;
+
+    setTimeout(() => loadTrackIntoPlayer(track), 350);
+    return true;
+}
 
 // ── Player factory — called by queue when YouTube API is ready ──
 function _createYtPlayer() {
@@ -2510,7 +2534,8 @@ function _createYtPlayer() {
                     clearInterval(musicTimer);
                 }
             },
-            onError: function() {
+            onError: function(e) {
+                if (retryCurrentTrackSource()) return;
                 skipCount++;
                 if (skipCount >= TRACKS.length) {
                     skipCount = 0;
@@ -2523,6 +2548,7 @@ function _createYtPlayer() {
                             : 'All tracks blocked by YouTube';
                     return;
                 }
+                _consoleLog('music', 'error', `YouTube rejected "${TRACKS[musicTrackIdx].name}"${e?.data ? ` (error ${e.data})` : ''}`);
                 setTimeout(nextTrack, 600);
             }
         }
@@ -2640,6 +2666,7 @@ function drawVisualizer() {
 
 function playTrack(idx) {
     musicTrackIdx = idx;
+    musicSourceIdx = 0;
     const track = TRACKS[idx];
     _trackVisitedTrack(track.name);
     _consoleLog('music','info',`Now playing: "${track.name}" — ${track.artist} · ${track.film}`);
@@ -2712,8 +2739,10 @@ function stopMusic() {
 function loadTrackIntoPlayer(track) {
     if (!ytPlayer || !ytReady) return;
 
-    if (track.ytId) {
-        ytPlayer.loadVideoById(track.ytId);
+    const videoId = getTrackVideoIds(track)[musicSourceIdx];
+
+    if (videoId) {
+        ytPlayer.loadVideoById(videoId);
     } else {
         setTimeout(nextTrack, 300);
         return;
@@ -2844,8 +2873,8 @@ function _vsRender(el, text, type) {
 }
 function _vsRenderFallback(el, type) {
     const fallbacks = {
-        js:  [['/* macOS Portfolio — script.js */','cmt'],["'use strict';",'str'],['',''],['let zIndex = 100;','var'],['let locked = true;','var'],['',''],['/* Boot Sequence */','cmt'],['document.addEventListener(','fn'],[" 'DOMContentLoaded', () => {",'str'],['  const boot = document.getElementById(','kw'],["    'boot-fill');",'str'],['  let progress = 0;','var'],['',''],['  const iv = setInterval(() => {','kw'],['    progress += Math.random() * 7 + 2;','num'],['    if (progress >= 100) clearInterval(iv);','kw'],['    bootFill.style.width = progress + \'%\';','var'],['  }, 130);','num'],['',''],['/* Zero Dependencies. Pure JS. */','cmt'],["// 'How did you make this?' — Everyone",'cmt']],
-        css: [['/* macOS Portfolio — style.css */','cmt'],['',''],['* { box-sizing: border-box; margin: 0; }','cls'],['',''],['body {','cls'],['  background: #1c1c1e;','num'],["  font-family: -apple-system, 'SF Pro Display';",'str'],['  color: rgba(255,255,255,0.85);','num'],['  overflow: hidden;','var'],['}','punc'],['',''],['/* Window system */','cmt'],['.window {','cls'],['  backdrop-filter: blur(40px) saturate(180%);','var'],['  border-radius: 12px;','num'],['  border: 0.5px solid rgba(255,255,255,0.1);','num'],['}','punc']],
+        js:  [['/* sunOS Portfolio — script.js */','cmt'],["'use strict';",'str'],['',''],['let zIndex = 100;','var'],['let locked = true;','var'],['',''],['/* Boot Sequence */','cmt'],['document.addEventListener(','fn'],[" 'DOMContentLoaded', () => {",'str'],['  const boot = document.getElementById(','kw'],["    'boot-fill');",'str'],['  let progress = 0;','var'],['',''],['  const iv = setInterval(() => {','kw'],['    progress += Math.random() * 7 + 2;','num'],['    if (progress >= 100) clearInterval(iv);','kw'],['    bootFill.style.width = progress + \'%\';','var'],['  }, 130);','num'],['',''],['/* Zero Dependencies. Pure JS. */','cmt'],["// 'How did you make this?' — Everyone",'cmt']],
+        css: [['/* sunOS Portfolio — style.css */','cmt'],['',''],['* { box-sizing: border-box; margin: 0; }','cls'],['',''],['body {','cls'],['  background: #1c1c1e;','num'],["  font-family: -apple-system, 'SF Pro Display';",'str'],['  color: rgba(255,255,255,0.85);','num'],['  overflow: hidden;','var'],['}','punc'],['',''],['/* Window system */','cmt'],['.window {','cls'],['  backdrop-filter: blur(40px) saturate(180%);','var'],['  border-radius: 12px;','num'],['  border: 0.5px solid rgba(255,255,255,0.1);','num'],['}','punc']],
         html:[['&lt;!DOCTYPE html&gt;','kw'],['&lt;html lang="en"&gt;','kw'],['&lt;head&gt;','kw'],["  &lt;meta charset='UTF-8'&gt;",'kw'],['  &lt;title&gt;Sunil Saini — Portfolio&lt;/title&gt;','kw'],['  &lt;link rel="stylesheet" href="style.css"&gt;','kw'],['&lt;/head&gt;','kw'],['&lt;body&gt;','kw'],['',''],['  &lt;!-- Boot Screen --&gt;','cmt'],['  &lt;div id="boot-screen"&gt;','kw'],['    &lt;div id="boot-fill"&gt;&lt;/div&gt;','kw'],['  &lt;/div&gt;','kw'],['',''],['  &lt;!-- Desktop --&gt;','cmt'],['  &lt;div id="desktop"&gt;','kw'],['    &lt;div id="windows-container"&gt;&lt;/div&gt;','kw'],['  &lt;/div&gt;','kw'],['&lt;/body&gt;','kw']],
     };
     const colorMap = {cmt:'syn-cmt',str:'syn-str',fn:'syn-fn',kw:'syn-kw',var:'syn-var',num:'syn-num',punc:'syn-punc',cls:'syn-cls'};
@@ -3058,7 +3087,7 @@ function _ghTimeAgo(date) {
     let _ac=null;
     function _gac(){ if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}} if(_ac&&_ac.state==='suspended')_ac.resume(); return _ac; }
 
-    // macOS window open: soft upward pop (warm, airy)
+    // sunOS window open: soft upward pop (warm, airy)
     window.playWindowOpenSound = function(){
         const ac=_gac(); if(!ac)return;
         try{
@@ -3073,7 +3102,7 @@ function _ghTimeAgo(date) {
         }catch(e){}
     };
 
-    // macOS window close: soft downward thud
+    // sunOS window close: soft downward thud
     window.playWindowCloseSound = function(){
         const ac=_gac(); if(!ac)return;
         try{
@@ -3087,7 +3116,7 @@ function _ghTimeAgo(date) {
         }catch(e){}
     };
 
-    // macOS minimize: genie whoosh — falling pitch sweep
+    // sunOS minimize: genie whoosh — falling pitch sweep
     window.playMinimizeSound = function(){
         const ac=_gac(); if(!ac)return;
         try{
@@ -3102,7 +3131,7 @@ function _ghTimeAgo(date) {
         }catch(e){}
     };
 
-    // macOS "Glass" notification — two-tone crystal chime (C5 → G5)
+    // sunOS "Glass" notification — two-tone crystal chime (C5 → G5)
     window.playNotifSound = function(){
         const ac=_gac(); if(!ac)return;
         try{
@@ -3128,7 +3157,7 @@ function _ghTimeAgo(date) {
         }catch(e){}
     };
 
-    // macOS keyboard click: very short dampened noise tap
+    // sunOS keyboard click: very short dampened noise tap
     window.playTypeClick = function(){
         const ac=_gac(); if(!ac)return;
         try{
@@ -3440,7 +3469,7 @@ function emptyTrash() {
     const btn = document.getElementById('trash-empty-btn');
     if (btn) btn.disabled = true;
 
-    // ── macOS paper crumple sound ──
+    // ── sunOS paper crumple sound ──
     try {
         const ac = new (window.AudioContext || window.webkitAudioContext)();
         if (ac.state === 'suspended') ac.resume();
@@ -3753,7 +3782,7 @@ function _triggerKernelPanic() {
         `frame #1: portfolio.js + 0x8042  _handleKeySequence + 0x60\n` +
         `frame #2: 0xffffff802b4f  konami_sequence_detected + 0x1a\n\n` +
         `Kernel slide: 0x206b39f9\nCaught by easter-egg trap at 0x0000dead\n\n` +
-        `BSD process name: Google Chrome\nMac OS Version: Portfolio 1.0`;
+        `BSD process name: Google Chrome\nsunOS Version: Portfolio 1.0`;
 
     overlay.classList.remove('hidden');
     _panicSound();

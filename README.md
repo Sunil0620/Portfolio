@@ -1,8 +1,8 @@
 <div align="center">
 
-# macOS Portfolio
+# sunOS Portfolio
 
-**A fully interactive macOS Sonoma desktop — running entirely in the browser.**
+**A fully interactive sunOS desktop — running entirely in the browser.**
 
 [**Live Demo →**](https://sunil0620.github.io/Portfolio/)
 
@@ -17,7 +17,7 @@
 
 ## What is this?
 
-A developer portfolio disguised as a fully functional OS. It boots, logs in, and drops you into a macOS-like desktop where every window is a section of my portfolio. No React, no Vue, no bundler — just vanilla HTML, CSS, and JavaScript.
+A developer portfolio disguised as a fully functional OS. It boots, logs in, and drops you into a sunOS-like desktop where every window is a section of my portfolio. No React, no Vue, no bundler — just vanilla HTML, CSS, and JavaScript.
 
 ---
 
@@ -42,7 +42,7 @@ A developer portfolio disguised as a fully functional OS. It boots, logs in, and
 | **Music** | Classic Bollywood playlist (YouTube IFrame API + Web Audio visualizer) |
 | **VS Code** | Syntax-highlighted view of the actual source files |
 | **System Settings** | Wallpaper picker, dark/light mode, accent colors, dock size |
-| **About This Mac** | Humorous hardware specs and session stats |
+| **About sunOS** | Humorous hardware specs and session stats |
 | **TextEdit** | This README (editable in-app) |
 | **Console** | Live filterable log viewer |
 | **Snake** | Playable canvas Snake game |

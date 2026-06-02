@@ -181,24 +181,26 @@ body {
 /* =============== CUSTOM CURSOR =============== */
 * { cursor: none !important; }
 #cursor-dot {
-    position: fixed; width: 8px; height: 8px;
-    background: rgba(255,255,255,0.95);
+    position: fixed; width: 7px; height: 7px;
+    background: rgba(255,255,255,0.92);
     border-radius: 50%;
     pointer-events: none; z-index: 99998;
     transform: translate(-50%,-50%);
-    transition: transform 0.1s ease, background 0.2s ease;
+    transition: transform 0.12s ease, background 0.2s ease, opacity 0.2s ease;
     mix-blend-mode: difference;
+    box-shadow: 0 0 12px rgba(255,255,255,0.22);
 }
 #cursor-ring {
-    position: fixed; width: 36px; height: 36px;
-    border: 1.5px solid rgba(255,255,255,0.4);
+    position: fixed; width: 32px; height: 32px;
+    border: 1px solid rgba(255,255,255,0.34);
     border-radius: 50%;
     pointer-events: none; z-index: 99997;
     transform: translate(-50%,-50%);
-    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.16s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 0 24px rgba(0,122,255,0.08);
 }
-#cursor-ring.hovering { width: 52px; height: 52px; border-color: rgba(255,255,255,0.6); }
-#cursor-ring.clicking { width: 24px; height: 24px; }
+#cursor-ring.hovering { width: 46px; height: 46px; border-color: color-mix(in srgb, var(--accent) 65%, white); }
+#cursor-ring.clicking { width: 22px; height: 22px; opacity: 0.8; }
 
 /* =============== BOOT SCREEN =============== */
 #boot-screen {
@@ -734,7 +736,7 @@ body {
     box-shadow: 0 0 0 3px var(--accent), var(--win-shadow);
 }
 
-/* =============== ABOUT MAC WINDOW =============== */
+/* =============== About sunOS WINDOW =============== */
 .about-mac-body {
     display: flex; flex-direction: column; align-items: center;
     padding: 28px 24px; gap: 6px; text-align: center;
@@ -1477,7 +1479,7 @@ html.light-mode .te-h2 { color: #222; }
 .dock-item:hover .settings-art svg { --rot-dur: 1.6s; }
 @keyframes settingsRotate { to { transform: rotate(360deg); } }
 
-/* Trash — silver-glass macOS style */
+/* Trash — silver-glass sunOS style */
 .trash-art {
     background: linear-gradient(160deg, rgba(180,180,190,0.18) 0%, rgba(100,100,115,0.22) 100%);
     backdrop-filter: blur(12px);
@@ -1553,9 +1555,9 @@ html.light-mode * { scrollbar-color: rgba(0,0,0,0.2) transparent; }
 
 /* ─── Cursor ring (dot uses mix-blend-mode:difference so it auto-inverts) ─── */
 html.light-mode #cursor-ring {
-    border-color: rgba(0,0,0,0.35);
+    border-color: rgba(0,0,0,0.28);
 }
-html.light-mode #cursor-ring.hovering { border-color: rgba(0,0,0,0.55); }
+html.light-mode #cursor-ring.hovering { border-color: color-mix(in srgb, var(--accent) 65%, black); }
 
 /* ─── Menu Bar ─── */
 html.light-mode #menu-bar {
@@ -1842,7 +1844,7 @@ html.light-mode .card-tags span {
 /* ─── Window header title ─── */
 html.light-mode .header-title { color: rgba(0,0,0,0.5); }
 
-/* ─── About Mac specs ─── */
+/* ─── About sunOS specs ─── */
 html.light-mode .specs p { color: rgba(0,0,0,0.55); }
 html.light-mode .specs strong { color: rgba(0,0,0,0.85); }
 
@@ -1870,7 +1872,7 @@ html.light-mode .cc-slider-row {
 }
 html.light-mode .cc-slider-icon { color: rgba(0,0,0,0.6); }
 
-/* ─── Notes bar (keep yellowish tint in light mode too — matches macOS Notes) ─── */
+/* ─── Notes bar (keep yellowish tint in light mode too — matches sunOS Notes) ─── */
 html.light-mode .window-header.notes-bar {
     background: linear-gradient(180deg, rgba(255,196,0,0.18), rgba(200,150,0,0.10));
     border-bottom-color: rgba(200,150,0,0.15);
@@ -3037,6 +3039,209 @@ html.light-mode .card-badge {
     background: rgba(255,255,255,0.85);
     border-color: rgba(0,0,0,0.08);
     color: rgba(0,0,0,0.62);
+}
+
+/* Hard light-mode pass for newer app surfaces */
+html.light-mode .about-lead,
+html.light-mode .note-lead {
+    color: rgba(0,0,0,0.66) !important;
+}
+html.light-mode .window.focused {
+    box-shadow: 0 34px 90px rgba(0,0,0,0.14), 0 8px 28px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.1);
+}
+html.light-mode .trash-body {
+    background: rgba(248,248,252,0.72);
+}
+html.light-mode .trash-item:hover {
+    background: rgba(0,0,0,0.05);
+}
+html.light-mode .trash-empty-title {
+    color: rgba(0,0,0,0.72);
+}
+html.light-mode .trash-empty-sub,
+html.light-mode .trash-footer {
+    color: rgba(0,0,0,0.4);
+}
+html.light-mode .trash-footer {
+    background: rgba(0,0,0,0.035);
+    border-top-color: rgba(0,0,0,0.08);
+}
+
+html.light-mode .console-body {
+    background: #f7f7fa;
+}
+html.light-mode .console-toolbar,
+html.light-mode .console-col-header {
+    background: #ececf1;
+    border-color: rgba(0,0,0,0.08);
+}
+html.light-mode .con-filter {
+    border-color: rgba(0,0,0,0.12);
+    color: rgba(0,0,0,0.52);
+}
+html.light-mode .con-filter.active,
+html.light-mode .con-filter:hover {
+    background: rgba(0,0,0,0.07);
+    color: rgba(0,0,0,0.82);
+}
+html.light-mode .console-search {
+    background: rgba(255,255,255,0.8);
+    border-color: rgba(0,0,0,0.12);
+    color: rgba(0,0,0,0.82);
+}
+html.light-mode .console-search::placeholder,
+html.light-mode .console-col-header,
+html.light-mode .con-col-time {
+    color: rgba(0,0,0,0.38);
+}
+html.light-mode .con-row {
+    border-bottom-color: rgba(0,0,0,0.04);
+}
+html.light-mode .con-row:hover {
+    background: rgba(0,0,0,0.035);
+}
+html.light-mode .con-col-msg {
+    color: rgba(0,0,0,0.7);
+}
+
+html.light-mode .vscode-bar {
+    background: #eeeeef !important;
+    border-bottom-color: rgba(0,0,0,0.1) !important;
+}
+html.light-mode .vscode-title {
+    color: rgba(0,0,0,0.55) !important;
+}
+html.light-mode .vscode-body,
+html.light-mode .vscode-code,
+html.light-mode .vscode-debug-log {
+    background: #ffffff;
+    color: rgba(0,0,0,0.82);
+}
+html.light-mode .vscode-sidebar {
+    background: #f1f1f4;
+    border-right-color: rgba(0,0,0,0.08);
+}
+html.light-mode .vscode-explorer,
+html.light-mode .vscode-tabs,
+html.light-mode .vscode-debug-panel {
+    background: #f8f8fb;
+    border-color: rgba(0,0,0,0.08);
+}
+html.light-mode .vscode-exp-header,
+html.light-mode .vscode-sidebar-icon,
+html.light-mode .vscode-tab,
+html.light-mode .vscode-debug-tab,
+html.light-mode .vscode-debug-toggle,
+html.light-mode .vscode-exp-item,
+html.light-mode .vscode-exp-file,
+html.light-mode .vscode-ext-item,
+html.light-mode .vscode-search-match {
+    color: rgba(0,0,0,0.58);
+}
+html.light-mode .vscode-exp-item.open,
+html.light-mode .vscode-exp-file.active,
+html.light-mode .vscode-tab.active,
+html.light-mode .vscode-sidebar-icon.active,
+html.light-mode .vscode-debug-tab.active {
+    color: rgba(0,0,0,0.86);
+}
+html.light-mode .vscode-exp-file:hover,
+html.light-mode .vscode-exp-item:hover,
+html.light-mode .vscode-sidebar-icon:hover,
+html.light-mode .vscode-search-match:hover,
+html.light-mode .vscode-ext-item:hover,
+html.light-mode .vscode-tab:hover {
+    background: rgba(0,0,0,0.055);
+}
+html.light-mode .vscode-tab.active {
+    background: #ffffff;
+}
+html.light-mode .vscode-panel-input {
+    background: #fff;
+    border-color: rgba(0,0,0,0.12);
+    color: rgba(0,0,0,0.82);
+}
+html.light-mode .vscode-code-line {
+    color: rgba(0,0,0,0.78);
+}
+html.light-mode .vscode-ln {
+    color: rgba(0,0,0,0.28);
+}
+html.light-mode .vscode-explorer [style*="rgba(255,255,255"],
+html.light-mode .vscode-debug-log [style*="rgba(255,255,255"] {
+    color: rgba(0,0,0,0.62) !important;
+}
+
+html.light-mode #mobile-companion {
+    background: linear-gradient(160deg, #f4f7fb 0%, #e7ecf4 42%, #f7f9fc 100%);
+    color: rgba(0,0,0,0.88);
+}
+html.light-mode .mob-status-bar {
+    background: linear-gradient(180deg, rgba(246,248,252,0.96) 60%, transparent);
+}
+html.light-mode .mob-icons,
+html.light-mode .mob-role,
+html.light-mode .mob-summary,
+html.light-mode .mob-card p,
+html.light-mode .mob-project-info p,
+html.light-mode .mob-contact-link small,
+html.light-mode .mob-footer,
+html.light-mode .mob-kicker,
+html.light-mode .mob-stat-card span,
+html.light-mode .mob-cta-copy {
+    color: rgba(0,0,0,0.52) !important;
+}
+html.light-mode .mob-name {
+    background: none;
+    -webkit-text-fill-color: rgba(0,0,0,0.9);
+}
+html.light-mode .mob-section-title,
+html.light-mode .mob-project-info h3,
+html.light-mode .mob-card strong,
+html.light-mode .mob-contact-link strong,
+html.light-mode .mob-stat-card strong {
+    color: rgba(0,0,0,0.86);
+}
+html.light-mode .mob-avatar,
+html.light-mode .mob-avatar-fallback {
+    border-color: #eef2f8;
+}
+html.light-mode .mob-card,
+html.light-mode .mob-stat-card,
+html.light-mode .mob-project-card {
+    background: rgba(255,255,255,0.72);
+    border-color: rgba(0,0,0,0.08);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+}
+html.light-mode .mob-tag,
+html.light-mode .mob-project-tags span {
+    background: rgba(0,0,0,0.055);
+    border-color: rgba(0,0,0,0.08);
+    color: rgba(0,0,0,0.56);
+}
+html.light-mode #mobile-companion .mob-project-card {
+    background-color: rgba(255,255,255,0.72) !important;
+    background-image: none !important;
+    border-color: rgba(0,0,0,0.08) !important;
+}
+html.light-mode #mobile-companion .mob-tag,
+html.light-mode #mobile-companion .mob-project-tags span {
+    background-color: rgba(0,0,0,0.055) !important;
+    background-image: none !important;
+    border-color: rgba(0,0,0,0.08) !important;
+    color: rgba(0,0,0,0.56) !important;
+}
+html.light-mode .mob-contact-link {
+    border-bottom-color: rgba(0,0,0,0.08);
+}
+html.light-mode .mob-quick-action {
+    background: rgba(255,255,255,0.7);
+    border-color: rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.82);
+}
+html.light-mode .mob-quick-action-primary {
+    background: linear-gradient(135deg, var(--accent), #30d158);
+    color: #fff;
 }
 
 /* ======================================================
