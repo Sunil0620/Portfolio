@@ -55,42 +55,6 @@ body {
 ::selection { background: var(--accent); color: #fff; }
 ::-moz-selection { background: var(--accent); color: #fff; }
 
-/* =============== MOBILE FALLBACK =============== */
-#mobile-fallback {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    align-items: center;
-    justify-content: center;
-}
-.mobile-dialog {
-    background: rgba(40,40,60,0.92);
-    backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 20px;
-    padding: 48px 40px;
-    text-align: center;
-    max-width: 380px;
-    width: 90%;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
-}
-.mobile-dialog svg { margin-bottom: 20px; opacity: 0.9; }
-.mobile-dialog h2 { color: #fff; font-size: 22px; font-weight: 600; margin-bottom: 12px; }
-.mobile-dialog p { color: rgba(255,255,255,0.65); font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
-.mobile-sub { color: rgba(255,255,255,0.4) !important; font-size: 13px !important; }
-.mobile-hint {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: 20px; padding: 10px 18px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 10px; font-size: 13px; color: rgba(255,255,255,0.5);
-}
-@media (max-width: 1023px) {
-    #mobile-fallback { display: flex; }
-    #boot-screen, #login-screen, #desktop { display: none !important; }
-}
-
 /* =============== SCREEN SAVER =============== */
 #screen-saver {
     position: fixed; inset: 0; z-index: 9000;
@@ -1884,11 +1848,19 @@ html.light-mode .window-header.notes-bar {
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
-    background: linear-gradient(160deg, #0a0a1a 0%, #0f0c29 30%, #1a1040 60%, #0a0a1a 100%);
+    background: transparent;
     color: rgba(255,255,255,0.92);
     font-family: var(--sans);
     overflow: hidden;
     position: relative;
+    z-index: 10000;
+}
+#mobile-companion::before {
+    content: '';
+    position: absolute; inset: 0; z-index: -1;
+    background: rgba(15, 12, 41, 0.45);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
 }
 
 @media (max-width: 1023px) {
@@ -1898,12 +1870,12 @@ html.light-mode .window-header.notes-bar {
 
 .mob-status-bar {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 24px 8px;
+    padding: 12px 24px 10px;
     font-size: 14px; font-weight: 600;
     position: sticky; top: 0; z-index: 100;
-    background: linear-gradient(180deg, rgba(10,10,26,0.95) 60%, transparent);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 .mob-notch {
     width: 120px; height: 32px;
@@ -1991,13 +1963,13 @@ html.light-mode .window-header.notes-bar {
     padding-left: 4px;
 }
 .mob-card {
-    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.035));
-    border: 0.5px solid rgba(255,255,255,0.1);
-    border-radius: 18px;
-    padding: 18px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    background: rgba(255,255,255,0.08);
+    border: 0.5px solid rgba(255,255,255,0.15);
+    border-radius: 24px;
+    padding: 20px;
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 .mob-card p {
     font-size: 14px; line-height: 1.6;
@@ -2029,14 +2001,21 @@ html.light-mode .window-header.notes-bar {
 /* Project Cards */
 .mob-project-card {
     display: flex; gap: 14px;
-    padding: 16px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.035));
-    border: 0.5px solid rgba(255,255,255,0.09);
-    border-radius: 18px;
-    margin-bottom: 12px;
+    padding: 18px;
+    background: rgba(255,255,255,0.06);
+    border: 0.5px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    margin-bottom: 14px;
     text-decoration: none;
     color: inherit;
-    transition: background 0.2s, transform 0.15s, border-color 0.15s;
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    transition: background 0.2s, transform 0.15s, border-color 0.15s, box-shadow 0.2s;
+}
+.mob-project-card:hover {
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.25);
 }
 .mob-project-card:active {
     background: rgba(255,255,255,0.08);
