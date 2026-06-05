@@ -65,6 +65,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const arcFill     = document.getElementById('boot-arc-fill');
     let progress = 0;
 
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('autologin') || urlParams.get('login') === 'true') {
+        if (bootScreen) { bootScreen.style.display = 'none'; bootScreen.classList.add('hidden'); }
+        if (loginScreen) { loginScreen.style.display = 'none'; loginScreen.classList.add('hidden'); }
+        const desktop = document.getElementById('desktop');
+        if (desktop) desktop.classList.remove('hidden');
+        locked = false;
+        onDesktopReady();
+        updateLoginClock();
+        updateMenuClock();
+        updateNCDate();
+        setInterval(updateLoginClock, 1000);
+        setInterval(updateMenuClock, 1000);
+        setInterval(updateNCDate, 60000);
+        return;
+    }
+
     /* ---- Aurora canvas ---- */
     initAuroraCanvas();
 
@@ -843,10 +860,11 @@ const _npmData = {
     'assert-never': { desc:'TypeScript exhaustiveness checking helper.', dep:'none', size:'1 KB' },
 };
 function showNpmInfo(el) {
-    const pkg = el.textContent.replace('📦 ', '').trim();
+    const nameEl = el.querySelector('.nm-item-name');
+    const pkg = nameEl ? nameEl.textContent.trim() : el.textContent.replace('📦 ', '').trim();
     const name = pkg.split('@')[0];
     const info = _npmData[name] || { desc: 'A dependency of a dependency of a dependency.', dep: 'unknown', size: '???' };
-    showNotification(`📦 ${pkg}: ${info.desc}`);
+    showNotification(`${pkg}: ${info.desc}`);
 }
 
 /* ==================== NOTIFICATION CENTER ==================== */
@@ -1204,6 +1222,7 @@ function makeDraggable(header, el) {
         bringFront(el);
         const ox = el.offsetLeft, oy = el.offsetTop;
         const sx = e.clientX, sy = e.clientY;
+        let lastX = e.clientX;
         document.addEventListener('mousemove', move);
         document.addEventListener('mouseup', stop);
         function move(ev) {
@@ -1212,10 +1231,19 @@ function makeDraggable(header, el) {
             if (ny < 0) ny = 0;
             el.style.left = nx + 'px';
             el.style.top  = ny + 'px';
+            
+            // Apply beautiful physical tilt based on drag speed/direction
+            const dx = ev.clientX - lastX;
+            lastX = ev.clientX;
+            const tilt = Math.min(Math.max(dx * 0.15, -4), 4);
+            el.style.transform = `scale(1.008) rotate(${tilt}deg)`;
+            el.style.transition = 'transform 0.05s ease-out';
         }
         function stop() {
             document.removeEventListener('mousemove', move);
             document.removeEventListener('mouseup', stop);
+            el.style.transform = '';
+            el.style.transition = 'transform 0.2s ease-out';
         }
     }
 }
@@ -1292,6 +1320,13 @@ function initDock() {
     });
     items.forEach(item => {
         item.addEventListener('click', () => {
+            const art = item.querySelector('.dock-icon-art');
+            if (art) {
+                art.classList.remove('bouncing');
+                void art.offsetWidth; // trigger reflow
+                art.classList.add('bouncing');
+                setTimeout(() => art.classList.remove('bouncing'), 600);
+            }
             const app = item.getAttribute('data-app');
             if (app === 'trash') {
                 const tw = document.getElementById('window-trash');
@@ -1357,16 +1392,16 @@ function setAppearanceMode(mode, btn, save = true) {
     const root = document.documentElement;
     if (mode === 'light') {
         root.classList.add('light-mode');
-        root.style.setProperty('--win-bg',           'rgba(248,248,255,0.55)');
+        root.style.setProperty('--win-bg',           'rgba(248,248,255,0.85)');
         root.style.setProperty('--win-shadow',       '0 22px 70px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.05)');
-        root.style.setProperty('--text-primary',     'rgba(0,0,0,0.85)');
-        root.style.setProperty('--text-secondary',   'rgba(0,0,0,0.55)');
-        root.style.setProperty('--text-tertiary',    'rgba(0,0,0,0.35)');
-        root.style.setProperty('--surface',          'rgba(0,0,0,0.04)');
-        root.style.setProperty('--surface-hover',    'rgba(0,0,0,0.06)');
-        root.style.setProperty('--border-subtle',    'rgba(0,0,0,0.08)');
-        root.style.setProperty('--glass-bg',         'rgba(0,0,0,0.04)');
-        root.style.setProperty('--glass-border',     'rgba(0,0,0,0.1)');
+        root.style.setProperty('--text-primary',     'rgba(0,0,0,0.92)');
+        root.style.setProperty('--text-secondary',   'rgba(0,0,0,0.68)');
+        root.style.setProperty('--text-tertiary',    'rgba(0,0,0,0.48)');
+        root.style.setProperty('--surface',          'rgba(0,0,0,0.05)');
+        root.style.setProperty('--surface-hover',    'rgba(0,0,0,0.08)');
+        root.style.setProperty('--border-subtle',    'rgba(0,0,0,0.12)');
+        root.style.setProperty('--glass-bg',         'rgba(255,255,255,0.85)');
+        root.style.setProperty('--glass-border',     'rgba(0,0,0,0.12)');
     } else {
         root.classList.remove('light-mode');
         root.style.setProperty('--win-bg',           'rgba(28,28,38,0.45)');
@@ -2442,6 +2477,10 @@ __/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
 
 /* ==================== MUSIC PLAYER (YouTube IFrame API) ==================== */
 
+const MUSIC_PLAY_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const MUSIC_PAUSE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+const MUSIC_LOADING_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="animation: ringRotate 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor"/></svg>';
+
 const TRACKS = [
     { ytId: 'UNjhqT_hlbg', name: 'Chala Jata Hoon',       artist: 'Kishore Kumar',      film: 'Mere Jeevan Saathi (1972)',     emoji: '🚶', duration: 265 },
     { ytId: 'RVeLrwoB_xw', name: 'Mere Sapno Ki Rani', artist: 'Kishore Kumar', film: 'Aradhana (1969)', emoji: '🚂', duration: 301 },
@@ -2517,7 +2556,7 @@ function _createYtPlayer() {
                         return; /* Don't update progress bar / play state yet */
                     }
                     musicPlaying = true;
-                    document.getElementById('music-play-btn').textContent = '⏸';
+                    document.getElementById('music-play-btn').innerHTML = MUSIC_PAUSE_SVG;
                     const dur = Math.floor(ytPlayer.getDuration() || 0);
                     if (dur > 0) {
                         TRACKS[musicTrackIdx].duration = dur;
@@ -2530,7 +2569,7 @@ function _createYtPlayer() {
                     musicTimer = setInterval(updateMusicProgress, 250);
                 } else if (e.data === YT.PlayerState.PAUSED) {
                     musicPlaying = false;
-                    document.getElementById('music-play-btn').textContent = '▶';
+                    document.getElementById('music-play-btn').innerHTML = MUSIC_PLAY_SVG;
                     clearInterval(musicTimer);
                 }
             },
@@ -2540,7 +2579,7 @@ function _createYtPlayer() {
                 if (skipCount >= TRACKS.length) {
                     skipCount = 0;
                     musicPlaying = false;
-                    document.getElementById('music-play-btn').textContent = '▶';
+                    document.getElementById('music-play-btn').innerHTML = MUSIC_PLAY_SVG;
                     document.getElementById('music-track').textContent  = 'Cannot load music';
                     document.getElementById('music-artist').textContent =
                         window.location.protocol === 'file:'
@@ -2607,7 +2646,7 @@ function handleMusicLoadFailure() {
     musicPlaying = false;
     clearInterval(musicTimer);
     const btn = document.getElementById('music-play-btn');
-    if (btn) btn.textContent = '▶';
+    if (btn) btn.innerHTML = MUSIC_PLAY_SVG;
     _consoleLog('music', 'error', 'YouTube player failed to load');
 
     const track = document.getElementById('music-track');
@@ -2683,7 +2722,7 @@ function playTrack(idx) {
 
     if (!ytReady || !ytPlayer) {
         const btn = document.getElementById('music-play-btn');
-        if (btn) btn.textContent = '⏳';
+        if (btn) btn.innerHTML = MUSIC_LOADING_SVG;
         ensureMusicPlayerReady()
             .then(() => {
                 if (musicTrackIdx === idx) loadTrackIntoPlayer(TRACKS[musicTrackIdx]);
@@ -2698,7 +2737,7 @@ function playTrack(idx) {
 function toggleMusic() {
     if (!ytReady || !ytPlayer) {
         const btn = document.getElementById('music-play-btn');
-        if (btn) btn.textContent = '⏳';
+        if (btn) btn.innerHTML = MUSIC_LOADING_SVG;
         ensureMusicPlayerReady()
             .then(() => playTrack(musicTrackIdx))
             .catch(handleMusicLoadFailure);
@@ -2722,14 +2761,14 @@ function startMusic() {
 function pauseMusic() {
     if (ytPlayer && ytReady) ytPlayer.pauseVideo();
     musicPlaying = false;
-    document.getElementById('music-play-btn').textContent = '▶';
+    document.getElementById('music-play-btn').innerHTML = MUSIC_PLAY_SVG;
     clearInterval(musicTimer);
 }
 
 function stopMusic() {
     if (ytPlayer && ytReady) ytPlayer.stopVideo();
     musicPlaying = false;
-    document.getElementById('music-play-btn').textContent = '▶';
+    document.getElementById('music-play-btn').innerHTML = MUSIC_PLAY_SVG;
     clearInterval(musicTimer);
     updateMusicProgressUI(0);
     document.getElementById('music-elapsed').textContent = '0:00';
@@ -2749,7 +2788,7 @@ function loadTrackIntoPlayer(track) {
     }
 
     const btn = document.getElementById('music-play-btn');
-    if (btn) btn.textContent = '⏸';
+    if (btn) btn.innerHTML = MUSIC_PAUSE_SVG;
 }
 
 function updateMusicProgress() {
@@ -2969,48 +3008,268 @@ function _ghTimeAgo(date) {
 
 /* ==================== MOBILE COMPANION ==================== */
 (function initMobileCompanion() {
-    const isMobile = window.innerWidth < 1024;
-    if (!isMobile) return;
-
-    /* Update mobile status bar time */
+    /* 1. Time Display */
     function updateMobTime() {
-        const el = document.getElementById('mob-time');
+        const el = document.getElementById('mob-time-display');
         if (el) {
             const now = new Date();
             el.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
         }
     }
     updateMobTime();
-    setInterval(updateMobTime, 30000);
+    setInterval(updateMobTime, 1000);
 
-    /* Add smooth entrance animations */
-    const sections = document.querySelectorAll('.mob-section');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
+    /* 2. Audio Synthesis Engine */
+    let mobSoundEnabled = false;
+    const soundToggleBtn = document.getElementById('mob-sound-toggle');
+    if (soundToggleBtn) {
+        soundToggleBtn.addEventListener('click', () => {
+            mobSoundEnabled = !mobSoundEnabled;
+            soundToggleBtn.textContent = `SOUND: ${mobSoundEnabled ? 'ON' : 'OFF'}`;
+            soundToggleBtn.classList.toggle('active', mobSoundEnabled);
+            playSynthSound(440, 'sine', 0.1);
+        });
+    }
+
+    function playSynthSound(freq, type = 'sine', duration = 0.1, delay = 0) {
+        if (!mobSoundEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+            
+            gain.gain.setValueAtTime(0.05, ctx.currentTime + delay);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.start(ctx.currentTime + delay);
+            osc.stop(ctx.currentTime + delay + duration + 0.05);
+        } catch (e) {}
+    }
+
+    function playDecryptionChime() {
+        if (!mobSoundEnabled) return;
+        playSynthSound(523.25, 'triangle', 0.15, 0);
+        playSynthSound(659.25, 'triangle', 0.15, 0.08);
+        playSynthSound(783.99, 'triangle', 0.15, 0.16);
+        playSynthSound(1046.50, 'sine', 0.3, 0.24);
+    }
+
+    /* 3. Decryption Lock Screen */
+    const decryptBtn = document.getElementById('mob-decrypt-btn');
+    const progressBar = document.getElementById('decrypt-progress-bar');
+    const decryptScreen = document.getElementById('mob-decrypt-screen');
+    const mainContent = document.getElementById('mob-main-content');
+
+    if (decryptBtn && progressBar && decryptScreen && mainContent) {
+        decryptBtn.addEventListener('click', () => {
+            decryptBtn.disabled = true;
+            decryptBtn.textContent = 'DECRYPTING...';
+            playSynthSound(220, 'sawtooth', 0.25);
+            
+            let pct = 0;
+            const interval = setInterval(() => {
+                pct += Math.random() * 15 + 5;
+                if (pct >= 100) {
+                    pct = 100;
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    
+                    playDecryptionChime();
+                    
+                    setTimeout(() => {
+                        decryptScreen.classList.add('hidden');
+                        mainContent.classList.remove('hidden');
+                    }, 400);
+                } else {
+                    progressBar.style.width = pct + '%';
+                    playSynthSound(300 + pct * 5, 'sine', 0.04);
+                }
+            }, 80);
+        });
+    }
+
+    /* 4. Tab Navigation */
+    const tabs = document.querySelectorAll('.mob-nav-tab');
+    const panes = document.querySelectorAll('.mob-pane');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetId = tab.getAttribute('data-target');
+            playSynthSound(600, 'sine', 0.05);
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            panes.forEach(p => p.classList.remove('active'));
+            
+            tab.classList.add('active');
+            const targetPane = document.getElementById(targetId);
+            if (targetPane) {
+                targetPane.classList.add('active');
             }
         });
-    }, { threshold: 0.1 });
-
-    sections.forEach((section, i) => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(24px)';
-        section.style.transition = `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`;
-        observer.observe(section);
     });
 
-    /* Animate hero on load */
-    const hero = document.querySelector('.mob-hero');
-    if (hero) {
-        hero.style.opacity = '0';
-        hero.style.transform = 'translateY(20px)';
-        hero.style.transition = 'opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s';
-        setTimeout(() => {
-            hero.style.opacity = '1';
-            hero.style.transform = 'translateY(0)';
-        }, 100);
+    /* 5. Theme Invert Toggle */
+    const themeToggle = document.getElementById('mob-theme-toggle');
+    const mobileCompanion = document.getElementById('mobile-companion');
+    if (themeToggle && mobileCompanion) {
+        themeToggle.addEventListener('click', () => {
+            playSynthSound(350, 'triangle', 0.08);
+            mobileCompanion.classList.toggle('mob-inverted');
+        });
+    }
+
+    /* 6. Accordion Cards (Works) */
+    const workCards = document.querySelectorAll('.mob-work-card');
+    workCards.forEach(card => {
+        const trigger = card.querySelector('.work-card-trigger');
+        const content = card.querySelector('.work-card-content');
+        const arrow = card.querySelector('.work-arrow');
+        
+        if (trigger && content && arrow) {
+            trigger.addEventListener('click', () => {
+                playSynthSound(500, 'sine', 0.05);
+                const isActive = card.classList.contains('active');
+                
+                workCards.forEach(c => {
+                    c.classList.remove('active');
+                    const cnt = c.querySelector('.work-card-content');
+                    const arr = c.querySelector('.work-arrow');
+                    if (cnt) cnt.style.maxHeight = '0px';
+                    if (arr) arr.textContent = '▼';
+                });
+                
+                if (!isActive) {
+                    card.classList.add('active');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    arrow.textContent = '▲';
+                }
+            });
+        }
+    });
+
+    /* 7. Draggable Stickers Logic (Touch and Mouse) */
+    const stickers = document.querySelectorAll('.mob-sticker');
+    stickers.forEach(sticker => {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+        
+        sticker.addEventListener('dragstart', e => e.preventDefault());
+        
+        const startDrag = (clientX, clientY) => {
+            isDragging = true;
+            sticker.style.cursor = 'grabbing';
+            sticker.style.zIndex = '10';
+            
+            const rect = sticker.getBoundingClientRect();
+            const parentRect = sticker.parentElement.getBoundingClientRect();
+            
+            startX = clientX;
+            startY = clientY;
+            
+            initialLeft = rect.left - parentRect.left;
+            initialTop = rect.top - parentRect.top;
+            
+            playSynthSound(700, 'sine', 0.04);
+        };
+        
+        const moveDrag = (clientX, clientY) => {
+            if (!isDragging) return;
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+            sticker.style.left = (initialLeft + dx) + 'px';
+            sticker.style.top = (initialTop + dy) + 'px';
+        };
+        
+        const endDrag = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            sticker.style.cursor = 'grab';
+            sticker.style.zIndex = '5';
+            playSynthSound(550, 'sine', 0.04);
+        };
+        
+        sticker.addEventListener('mousedown', e => {
+            startDrag(e.clientX, e.clientY);
+            
+            const onMouseMove = ev => moveDrag(ev.clientX, ev.clientY);
+            const onMouseUp = () => {
+                endDrag();
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        
+        sticker.addEventListener('touchstart', e => {
+            const touch = e.touches[0];
+            startDrag(touch.clientX, touch.clientY);
+        }, { passive: true });
+        
+        sticker.addEventListener('touchmove', e => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            moveDrag(touch.clientX, touch.clientY);
+        }, { passive: true });
+        
+        sticker.addEventListener('touchend', () => {
+            endDrag();
+        });
+    });
+
+    /* 8. Contact Form Transmission */
+    const contactForm = document.getElementById('mob-contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', e => {
+            e.preventDefault();
+            playSynthSound(880, 'sine', 0.15);
+            playSynthSound(1320, 'sine', 0.25, 0.1);
+            
+            const name = document.getElementById('mob-name-in')?.value || '';
+            const email = document.getElementById('mob-email-in')?.value || '';
+            const brief = document.getElementById('mob-brief-in')?.value || '';
+            
+            const activePills = Array.from(contactForm.querySelectorAll('.mob-form-pill.active'))
+                                     .map(p => p.textContent.trim());
+            const domain = activePills.length > 0 ? activePills.join(', ') : 'GENERAL';
+            
+            const parentCard = contactForm.closest('.mob-brutalist-card');
+            if (parentCard) {
+                const body = parentCard.querySelector('.card-body-brutalist');
+                if (body) {
+                    body.innerHTML = `
+                        <div class="mob-transmission-success" style="text-align: center; padding: 20px 10px;">
+                            <div class="mob-success-icon" style="font-size: 48px; margin-bottom: 15px; animation: statusPulse 1s infinite;">📡</div>
+                            <h3 class="brutalist-title-medium" style="margin-bottom: 10px; color: var(--green);">TRANSMISSION SENT</h3>
+                            <p class="brutalist-mono-code" style="margin-bottom: 20px; line-height: 1.5; text-align: left;">
+                                > DEST: sunilsaini5652@gmail.com<br>
+                                > ALIAS: ${name}<br>
+                                > EMAIL: ${email}<br>
+                                > DOMAIN: ${domain}<br>
+                                > SIZE: ${brief.length} bytes<br>
+                                > STATUS: SUCCESSFUL
+                            </p>
+                            <button id="mob-new-message-btn" class="brutalist-btn-block green" style="margin-top: 15px;">
+                                SEND ANOTHER WAVE
+                            </button>
+                        </div>
+                    `;
+                    
+                    const newMsgBtn = document.getElementById('mob-new-message-btn');
+                    if (newMsgBtn) {
+                        newMsgBtn.addEventListener('click', () => {
+                            window.location.reload();
+                        });
+                    }
+                }
+            }
+        });
     }
 })();
 

@@ -17,7 +17,7 @@
     <meta name="theme-color" content="#0f0c29">
     <!-- Inline SVG favicon — the <S/> hex badge -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236e56cf'/%3E%3Cstop offset='1' stop-color='%2300d2ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,4 93,27 93,73 50,96 7,73 7,27' fill='%230d0d1a' stroke='url(%23g)' stroke-width='3'/%3E%3Ctext x='50' y='56' text-anchor='middle' font-family='monospace' font-size='28' font-weight='700' fill='url(%23g)'%3ES%3C/text%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='monospace' font-size='11' fill='rgba(255,255,255,0.4)'%3E%3C/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- YouTube IFrame API bootstrap — the script itself is injected only when Music opens -->
@@ -34,157 +34,247 @@
 
 <!-- ===================== MOBILE COMPANION ===================== -->
 <div id="mobile-companion">
+    <!-- Status Bar (Monospace / Brutalist) -->
     <div class="mob-status-bar">
-        <span class="mob-time" id="mob-time">12:00</span>
-        <span class="mob-notch"></span>
-        <span class="mob-icons">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/></svg>
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg>
+        <span class="mob-time" id="mob-time-display">12:00</span>
+        <span class="mob-logo">sunOS.mob</span>
+        <span class="mob-indicators">
+            <span class="indicator-dot blink"></span> ONLINE
         </span>
     </div>
-    <div class="mob-scroll">
-        <!-- Hero -->
-        <section class="mob-hero">
-            <div class="mob-avatar-wrap">
-                <img src="User/avatar.jpg" alt="Sunil Saini" class="mob-avatar"
-                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-                <div class="mob-avatar-fallback" style="display:none;">S</div>
-            </div>
-            <p class="mob-kicker">Portfolio OS · Mobile Companion</p>
-            <h1 class="mob-name">Sunil Saini</h1>
-            <p class="mob-role">Full-Stack Developer</p>
-            <p class="mob-summary">I build clean browser products with careful UI, practical backends, and a little operating-system drama.</p>
-            <div class="mob-status-badge">
-                <span class="mob-status-dot"></span>
-                Available for work
-            </div>
-            <div class="mob-quick-actions">
-                <a href="assets/Sunil-Saini-Resume.pdf" target="_blank" download="Sunil-Saini-Resume.pdf" class="mob-quick-action mob-quick-action-primary">Resume</a>
-                <a href="https://github.com/Sunil0620" target="_blank" class="mob-quick-action">GitHub</a>
-            </div>
-            <div class="mob-hero-stats">
-                <div class="mob-stat-card">
-                    <strong>Portfolio OS</strong>
-                    <span>sunOS-style desktop in the browser</span>
-                </div>
-                <div class="mob-stat-card">
-                    <strong>Django + React</strong>
-                    <span>current full-stack focus</span>
-                </div>
-            </div>
-        </section>
 
-        <!-- About -->
-        <section class="mob-section">
-            <h2 class="mob-section-title">About</h2>
-            <div class="mob-card">
-                <p>I care about interfaces that are calm, fast, and easy to trust.</p>
-                <p>This portfolio is a hand-built sunOS-inspired desktop using <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JavaScript</strong>.</p>
-            </div>
-        </section>
-
-        <!-- Skills -->
-        <section class="mob-section">
-            <h2 class="mob-section-title">Skills</h2>
-            <div class="mob-tags">
-                <span class="mob-tag">JavaScript</span>
-                <span class="mob-tag">TypeScript</span>
-                <span class="mob-tag">Python</span>
-                <span class="mob-tag">React</span>
-                <span class="mob-tag">Next.js</span>
-                <span class="mob-tag">Django</span>
-                <span class="mob-tag">Node.js</span>
-                <span class="mob-tag">Docker</span>
-                <span class="mob-tag">PostgreSQL</span>
-                <span class="mob-tag">MongoDB</span>
-                <span class="mob-tag">AWS</span>
-                <span class="mob-tag">Git</span>
-                <span class="mob-tag">ML / AI</span>
-            </div>
-        </section>
-
-        <!-- Projects -->
-        <section class="mob-section">
-            <h2 class="mob-section-title">Projects</h2>
-            <a href="https://github.com/Sunil0620" target="_blank" class="mob-project-card">
-                <div class="mob-project-icon mob-project-icon-ai"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/></svg></div>
-                <div class="mob-project-info">
-                    <h3>AI Dev Assistant</h3>
-                    <p>Repo-reading experiments for debugging, fixes, and clearer developer feedback.</p>
-                    <div class="mob-project-tags"><span>Python</span><span>LLM</span><span>Tools</span></div>
+    <!-- 1. DECRYPT LOCK SCREEN -->
+    <div id="mob-decrypt-screen" class="mob-screen">
+        <div class="mob-brutalist-card warning-card">
+            <div class="card-header-brutalist">⚠️ SECURITY WARN</div>
+            <div class="card-body-brutalist">
+                <h2 class="brutalist-title-large">SYSTEM LOCKED</h2>
+                <p class="brutalist-mono-code">> sunOS mobile core v14.0</p>
+                <p class="brutalist-mono-code">> loading environment...</p>
+                <p class="brutalist-mono-code">> status: restricted</p>
+                
+                <div class="decrypt-progress-container">
+                    <div id="decrypt-progress-bar" style="width: 0%;"></div>
                 </div>
-            </a>
-            <a href="https://github.com/Sunil0620" target="_blank" class="mob-project-card">
-                <div class="mob-project-icon mob-project-icon-commerce"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
-                <div class="mob-project-info">
-                    <h3>Commerce Flow</h3>
-                    <p>A checkout and catalog concept focused on trust, speed, and clear buying paths.</p>
-                    <div class="mob-project-tags"><span>Next.js</span><span>UX</span><span>API</span></div>
-                </div>
-            </a>
-            <a href="https://github.com/Sunil0620/Portfolio" target="_blank" class="mob-project-card">
-                <div class="mob-project-icon mob-project-icon-portfolio"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-                <div class="mob-project-info">
-                    <h3>Portfolio OS</h3>
-                    <p>A browser desktop with boot flow, app windows, terminal, music, and screensaver.</p>
-                    <div class="mob-project-tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
-                </div>
-            </a>
-            <a href="https://github.com/Sunil0620" target="_blank" class="mob-project-card">
-                <div class="mob-project-icon mob-project-icon-analytics"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-                <div class="mob-project-info">
-                    <h3>Ops Dashboard</h3>
-                    <p>A metrics UI concept for teams that need signal, not noise.</p>
-                    <div class="mob-project-tags"><span>React</span><span>Charts</span><span>Data</span></div>
-                </div>
-            </a>
-        </section>
 
-        <!-- Contact -->
-        <section class="mob-section">
-            <h2 class="mob-section-title">Contact</h2>
-            <div class="mob-card">
-                <a href="mailto:sunilsaini5652@gmail.com" class="mob-contact-link">
-                    <span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-                    <div><strong>Email</strong><small>sunilsaini5652@gmail.com</small></div>
-                </a>
-                <a href="https://github.com/Sunil0620" target="_blank" class="mob-contact-link">
-                    <span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span>
-                    <div><strong>GitHub</strong><small>github.com/Sunil0620</small></div>
-                </a>
-                <a href="https://www.linkedin.com/in/sunil-saini-6190ba255/" target="_blank" class="mob-contact-link">
-                    <span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></span>
-                    <div><strong>LinkedIn</strong><small>linkedin.com/in/sunil-saini-6190ba255</small></div>
-                </a>
-                <a href="https://discord.com/invite/Mk5z9vMA" target="_blank" rel="noopener noreferrer" class="mob-contact-link mob-contact-discord">
-    <span class="discord-icon" aria-hidden="true">
-        <svg viewBox="0 0 127.14 96.36" width="20" height="20" fill="currentColor">
-            <path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21A105.73 105.73 0 0 0 32.71 96.36a77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.35 2.66-2.05a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2.05a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"/>
-        </svg>
-    </span>
-    <div><strong>Discord</strong><small>Join my Discord</small></div>
-</a>
-                <a href="assets/Sunil-Saini-Resume.pdf" target="_blank" download="Sunil-Saini-Resume.pdf" class="mob-contact-link">
-                    <span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
-                    <div><strong>Resume</strong><small>Download PDF</small></div>
-                </a>
+                <button id="mob-decrypt-btn" class="brutalist-btn-block green">
+                    RUN DECRYPTION
+                </button>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <!-- Desktop CTA -->
-        <section class="mob-section mob-cta">
-            <div class="mob-card mob-cta-card">
-                <p class="mob-cta-icon"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg></p>
-                <p><strong>Full Desktop Experience</strong></p>
-                <p class="mob-cta-copy">Boot, windows, music, terminal, Spotlight, and screensaver. Open on desktop for the full OS.</p>
+    <!-- 2. MAIN MOBILE CONTAINER (hidden until decrypted) -->
+    <div id="mob-main-content" class="mob-screen hidden">
+        <!-- Floating stickers layer for mobile -->
+        <div class="mob-stickers-layer">
+            <div class="mob-sticker" style="top: 80px; left: 10px; transform: rotate(-5deg);">⚡ MONO ⚡</div>
+            <div class="mob-sticker" style="top: 250px; right: 10px; transform: rotate(8deg);">EST. 2026</div>
+            <div class="mob-sticker" style="top: 480px; left: 15px; transform: rotate(-10deg);">RAW DEV</div>
+        </div>
+
+        <!-- Monospace Running Ticker -->
+        <div class="mob-ticker-wrap">
+            <div class="mob-ticker">
+                <span>SUNIL SAINI // FULL STACK // ACCESSIBLE // ZERO DEPS // COFFEE DRIVEN // </span>
+                <span>SUNIL SAINI // FULL STACK // ACCESSIBLE // ZERO DEPS // COFFEE DRIVEN // </span>
             </div>
-        </section>
+        </div>
 
-        <footer class="mob-footer">
-            <p>Built with zero dependencies</p>
-            <p>HTML + CSS + JS</p>
-        </footer>
+        <!-- Controls panel (Theme Invert, Sound) -->
+        <div class="mob-controls-row">
+            <button id="mob-sound-toggle" class="mob-ctrl-btn">SOUND: OFF</button>
+            <button id="mob-theme-toggle" class="mob-ctrl-btn">INVERT COLOR</button>
+        </div>
+
+        <!-- 2x2 Interactive Navigation Grid -->
+        <div class="mob-nav-grid">
+            <button class="mob-nav-tab active" data-target="pane-about">
+                <span class="tab-num">01/</span> ABOUT
+            </button>
+            <button class="mob-nav-tab" data-target="pane-stack">
+                <span class="tab-num">02/</span> STACK
+            </button>
+            <button class="mob-nav-tab" data-target="pane-works">
+                <span class="tab-num">03/</span> WORKS
+            </button>
+            <button class="mob-nav-tab" data-target="pane-contact">
+                <span class="tab-num">04/</span> CONNECT
+            </button>
+        </div>
+
+        <div class="mob-scroll-pane">
+            <!-- PANE 1: ABOUT -->
+            <div id="pane-about" class="mob-pane active">
+                <div class="mob-brutalist-card">
+                    <div class="card-header-brutalist">PROFILE // IDENTIFIER</div>
+                    <div class="card-body-brutalist align-center">
+                        <div class="mob-avatar-brutalist-wrap">
+                            <img src="User/avatar.jpg" alt="Sunil Saini" class="mob-avatar-brutalist" onerror="this.src='User/avatar.png'">
+                        </div>
+                        <h2 class="brutalist-title-medium">SUNIL SAINI</h2>
+                        <div class="mob-status-pill blink-green">AVAILABLE FOR HIRE</div>
+                        <p class="brutalist-text-p">
+                            Full-Stack Engineer & ML Enthusiast. I craft digital artifacts that are fast, dependable, and visually uncompromised.
+                        </p>
+                        <div class="mob-btn-row">
+                            <a href="assets/Sunil-Saini-Resume.pdf" target="_blank" download="Sunil-Saini-Resume.pdf" class="mob-brutalist-action primary">RESUME.PDF</a>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="mob-brutalist-action">GITHUB</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANE 2: STACK -->
+            <div id="pane-stack" class="mob-pane">
+                <div class="mob-brutalist-card">
+                    <div class="card-header-brutalist">CAPABILITIES // CORE</div>
+                    <div class="card-body-brutalist">
+                        <h3 class="pane-subheader">ENGINEERING POWER</h3>
+                        <div class="mob-skill-bar-block">
+                            <span class="bar-label">JAVASCRIPT / TS <span class="bar-val">95%</span></span>
+                            <div class="mob-bar-track"><div class="mob-bar-fill fill-cyan" style="width: 95%"></div></div>
+                        </div>
+                        <div class="mob-skill-bar-block">
+                            <span class="bar-label">PYTHON / ML <span class="bar-val">90%</span></span>
+                            <div class="mob-bar-track"><div class="mob-bar-fill fill-magenta" style="width: 90%"></div></div>
+                        </div>
+                        <div class="mob-skill-bar-block">
+                            <span class="bar-label">REACT / NEXT.JS <span class="bar-val">88%</span></span>
+                            <div class="mob-bar-track"><div class="mob-bar-fill fill-yellow" style="width: 88%"></div></div>
+                        </div>
+                        <div class="mob-skill-bar-block">
+                            <span class="bar-label">DJANGO / BACKEND <span class="bar-val">85%</span></span>
+                            <div class="mob-bar-track"><div class="mob-bar-fill fill-green" style="width: 85%"></div></div>
+                        </div>
+                        <div class="mob-skill-bar-block">
+                            <span class="bar-label">DOCKER / DEVOPS <span class="bar-val">80%</span></span>
+                            <div class="mob-bar-track"><div class="mob-bar-fill fill-white" style="width: 80%"></div></div>
+                        </div>
+
+                        <h3 class="pane-subheader" style="margin-top: 25px;">ADDITIONAL TECH</h3>
+                        <div class="mob-tag-cloud">
+                            <span class="mob-tag-brutalist">Node.js</span>
+                            <span class="mob-tag-brutalist">PostgreSQL</span>
+                            <span class="mob-tag-brutalist">MongoDB</span>
+                            <span class="mob-tag-brutalist">AWS</span>
+                            <span class="mob-tag-brutalist">Git</span>
+                            <span class="mob-tag-brutalist">TailwindCSS</span>
+                            <span class="mob-tag-brutalist">Web Audio API</span>
+                            <span class="mob-tag-brutalist">WebGL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANE 3: WORKS -->
+            <div id="pane-works" class="mob-pane">
+                <div class="mob-works-list">
+                    <div class="mob-work-card active">
+                        <div class="work-card-trigger">
+                            <span class="work-title">AI DEV ASSISTANT</span>
+                            <span class="work-arrow">▲</span>
+                        </div>
+                        <div class="work-card-content" style="max-height: 250px;">
+                            <p class="work-desc">Repo-reading experiments for debugging, fixes, and clearer developer feedback.</p>
+                            <div class="work-kpis">
+                                <span class="work-kpi-item">⚡ 85% Code accuracy</span>
+                                <span class="work-kpi-item">⚡ Zero dependencies</span>
+                            </div>
+                            <div class="work-tags-row">
+                                <span class="work-tag">PYTHON</span>
+                                <span class="work-tag">LLM</span>
+                                <span class="work-tag">TOOLS</span>
+                            </div>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="work-code-btn">SOURCE CODE →</a>
+                        </div>
+                    </div>
+
+                    <div class="mob-work-card">
+                        <div class="work-card-trigger">
+                            <span class="work-title">COMMERCE FLOW</span>
+                            <span class="work-arrow">▼</span>
+                        </div>
+                        <div class="work-card-content" style="max-height: 0px;">
+                            <p class="work-desc">A checkout and catalog concept focused on trust, speed, and clear buying paths.</p>
+                            <div class="work-kpis">
+                                <span class="work-kpi-item">⚡ 0.2s load speed</span>
+                                <span class="work-kpi-item">⚡ Stripe payment flow</span>
+                            </div>
+                            <div class="work-tags-row">
+                                <span class="work-tag">NEXT.JS</span>
+                                <span class="work-tag">UX</span>
+                                <span class="work-tag">API</span>
+                            </div>
+                            <a href="https://github.com/Sunil0620" target="_blank" class="work-code-btn">SOURCE CODE →</a>
+                        </div>
+                    </div>
+
+                    <div class="mob-work-card">
+                        <div class="work-card-trigger">
+                            <span class="work-title">PORTFOLIO OS</span>
+                            <span class="work-arrow">▼</span>
+                        </div>
+                        <div class="work-card-content" style="max-height: 0px;">
+                            <p class="work-desc">A browser desktop with boot flow, app windows, terminal, music, and screensaver.</p>
+                            <div class="work-kpis">
+                                <span class="work-kpi-item">⚡ Zero libraries</span>
+                                <span class="work-kpi-item">⚡ HTML5 Audio Engine</span>
+                            </div>
+                            <div class="work-tags-row">
+                                <span class="work-tag">HTML5</span>
+                                <span class="work-tag">CSS3</span>
+                                <span class="work-tag">JS</span>
+                            </div>
+                            <a href="https://github.com/Sunil0620/Portfolio" target="_blank" class="work-code-btn">SOURCE CODE →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANE 4: CONTACT -->
+            <div id="pane-contact" class="mob-pane">
+                <div class="mob-brutalist-card">
+                    <div class="card-header-brutalist">TRANSMIT // SIGNAL</div>
+                    <div class="card-body-brutalist">
+                        <form id="mob-contact-form">
+                            <div class="mob-form-group">
+                                <label class="mob-form-label">YOUR ALIAS / NAME</label>
+                                <input type="text" id="mob-name-in" class="mob-brutalist-input" placeholder="e.g. Vance Vector" required>
+                            </div>
+                            <div class="mob-form-group">
+                                <label class="mob-form-label">RETURN EMAIL ADDRESS</label>
+                                <input type="email" id="mob-email-in" class="mob-brutalist-input" placeholder="e.g. vance@vector.net" required>
+                            </div>
+                            <div class="mob-form-group">
+                                <label class="mob-form-label">CHOOSE DOMAIN</label>
+                                <div class="mob-form-pills">
+                                    <span class="mob-form-pill" onclick="this.classList.toggle('active')">CONTRACT</span>
+                                    <span class="mob-form-pill" onclick="this.classList.toggle('active')">FULL-TIME</span>
+                                    <span class="mob-form-pill" onclick="this.classList.toggle('active')">COFFEE</span>
+                                    <span class="mob-form-pill" onclick="this.classList.toggle('active')">JOKE</span>
+                                </div>
+                            </div>
+                            <div class="mob-form-group">
+                                <label class="mob-form-label">TRANSMISSION DATA / BRIEF</label>
+                                <textarea id="mob-brief-in" class="mob-brutalist-textarea" placeholder="Describe the chaos we are going to build..." required></textarea>
+                            </div>
+                            <button type="submit" class="brutalist-btn-block magenta" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> SEND WAVE SIGNAL
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Quick social coordinates -->
+                <div class="mob-coordinates-grid">
+                    <a href="mailto:sunilsaini5652@gmail.com" class="mob-coordinate-item"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> EMAIL</a>
+                    <a href="https://github.com/Sunil0620" target="_blank" class="mob-coordinate-item"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg> GITHUB</a>
+                    <a href="https://www.linkedin.com/in/sunil-saini-6190ba255/" target="_blank" class="mob-coordinate-item"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LINKEDIN</a>
+                    <a href="https://discord.com/invite/Mk5z9vMA" target="_blank" class="mob-coordinate-item"><svg viewBox="0 0 127.14 96.36" width="13" height="13" fill="currentColor" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21A105.73 105.73 0 0 0 32.71 96.36a77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.35 2.66-2.05a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2.05a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"/></svg> DISCORD</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -387,31 +477,31 @@
                 </div>
             </div>
             <div class="cc-tile" id="cc-dark-tile" onclick="ccToggleDark()">
-                <div class="cc-tile-icon">🌙</div>
+                <div class="cc-tile-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="cc-tile-icon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></div>
                 <span class="cc-tile-label">Dark Mode</span>
             </div>
         </div>
         <div class="cc-section">
             <div class="cc-slider-row">
-                <span class="cc-slider-icon">☀️</span>
+                <span class="cc-slider-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="cc-slider-icon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span>
                 <input type="range" min="20" max="100" value="100" class="cc-slider" id="cc-brightness" oninput="ccBrightness(this.value)">
             </div>
             <div class="cc-slider-row">
-                <span class="cc-slider-icon">🔊</span>
+                <span class="cc-slider-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="cc-slider-icon"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
                 <input type="range" min="0" max="100" value="70" class="cc-slider" id="cc-volume" oninput="ccVolume(this.value)">
             </div>
         </div>
         <div class="cc-section cc-bottom-row">
             <div class="cc-tile" onclick="lockScreen()">
-                <div class="cc-tile-icon">🔒</div>
+                <div class="cc-tile-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="cc-tile-icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
                 <span class="cc-tile-label">Lock</span>
             </div>
             <div class="cc-tile" onclick="toggleWindow('window-music'); hideControlCenter()">
-                <div class="cc-tile-icon">🎵</div>
+                <div class="cc-tile-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="cc-tile-icon"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
                 <span class="cc-tile-label">Music</span>
             </div>
             <div class="cc-tile" id="cc-focus-tile" onclick="ccToggleFocus()">
-                <div class="cc-tile-icon">🎯</div>
+                <div class="cc-tile-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="cc-tile-icon"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
                 <span class="cc-tile-label">Focus</span>
             </div>
         </div>
@@ -427,7 +517,7 @@
         <div class="nc-section-label">Recent</div>
         <div class="nc-card">
             <div class="nc-card-header">
-                <span class="nc-app-icon">💼</span>
+                <span class="nc-app-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
                 <span class="nc-app-name">Portfolio</span>
                 <span class="nc-time">now</span>
             </div>
@@ -436,7 +526,7 @@
         <div id="nc-github-list">
             <div class="nc-card nc-github-loading">
                 <div class="nc-card-header">
-                    <span class="nc-app-icon">🐙</span>
+                    <span class="nc-app-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span>
                     <span class="nc-app-name">GitHub</span>
                     <span class="nc-time" id="nc-github-time">loading…</span>
                 </div>
@@ -445,7 +535,7 @@
         </div>
         <div class="nc-card">
             <div class="nc-card-header">
-                <span class="nc-app-icon">💻</span>
+                <span class="nc-app-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
                 <span class="nc-app-name">Terminal</span>
                 <span class="nc-time">5m ago</span>
             </div>
@@ -453,7 +543,7 @@
         </div>
         <div class="nc-card">
             <div class="nc-card-header">
-                <span class="nc-app-icon">🎵</span>
+                <span class="nc-app-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
                 <span class="nc-app-name">Music</span>
                 <span class="nc-time">10m ago</span>
             </div>
@@ -487,19 +577,42 @@
     <!-- ===== DESKTOP ICONS ===== -->
     <div id="desktop-icons">
         <div class="desktop-icon" ondblclick="openDesktopFile('readme')">
-            <div class="dsk-ico readme-dsk">📄</div>
+            <div class="dsk-ico readme-dsk">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                </svg>
+            </div>
             <span>README.md</span>
         </div>
         <div class="desktop-icon" ondblclick="openDesktopFile('gitignore')">
-            <div class="dsk-ico git-dsk">⚙️</div>
+            <div class="dsk-ico git-dsk">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+            </div>
             <span>.gitignore</span>
         </div>
         <div class="desktop-icon" ondblclick="openDesktopFile('nodemodules')">
-            <div class="dsk-ico folder-dsk">📁</div>
+            <div class="dsk-ico folder-dsk">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                </svg>
+            </div>
             <span>node_modules</span>
         </div>
         <div class="desktop-icon" ondblclick="openDesktopFile('todo')">
-            <div class="dsk-ico coffee-dsk">☕</div>
+            <div class="dsk-ico coffee-dsk">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                    <path d="M9 14l2 2 4-4" />
+                </svg>
+            </div>
             <span>todo.txt</span>
         </div>
     </div>
@@ -566,9 +679,9 @@
             </div>
             <div class="window-body settings-body">
                 <aside class="settings-sidebar">
-                    <div class="settings-item active" data-pane="wallpaper" onclick="switchSettingsPane('wallpaper')"><span class="si-icon">🖼️</span> Wallpaper</div>
-                    <div class="settings-item" data-pane="appearance" onclick="switchSettingsPane('appearance')"><span class="si-icon">🎨</span> Appearance</div>
-                    <div class="settings-item" data-pane="general" onclick="switchSettingsPane('general')"><span class="si-icon">⚙️</span> General</div>
+                    <div class="settings-item active" data-pane="wallpaper" onclick="switchSettingsPane('wallpaper')"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> Wallpaper</div>
+                    <div class="settings-item" data-pane="appearance" onclick="switchSettingsPane('appearance')"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M12 22C17.52 22 22 17.52 22 12S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zm1-14a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-4 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg></span> Appearance</div>
+                    <div class="settings-item" data-pane="general" onclick="switchSettingsPane('general')"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> General</div>
                 </aside>
                 <main class="settings-main">
                     <div class="settings-pane" id="pane-wallpaper">
@@ -652,9 +765,9 @@
             <div class="window-body finder-body">
                 <aside class="finder-sidebar">
                     <p class="sidebar-label">Favourites</p>
-                    <div class="sidebar-item active" onclick="switchFinderSection('home', this)"><span class="si-icon">🏠</span> Home</div>
-                    <div class="sidebar-item" onclick="switchFinderSection('documents', this)"><span class="si-icon">📄</span> Documents</div>
-                    <div class="sidebar-item" onclick="switchFinderSection('downloads', this)"><span class="si-icon">📥</span> Downloads</div>
+                    <div class="sidebar-item active" onclick="switchFinderSection('home', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Home</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('documents', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span> Documents</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('downloads', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg></span> Downloads</div>
                     <p class="sidebar-label sidebar-label-spaced">Tags</p>
                     <div class="sidebar-item" onclick="switchFinderSection('work', this)"><span class="tag-dot tag-dot-work"></span> Work</div>
                     <div class="sidebar-item" onclick="switchFinderSection('opensource', this)"><span class="tag-dot tag-dot-open"></span> Open Source</div>
@@ -709,9 +822,9 @@
                     </div>
 
                     <div class="about-actions">
-                        <a href="assets/Sunil-Saini-Resume.pdf" target="_blank" download="Sunil-Saini-Resume.pdf" class="resume-btn">📄 Download Resume</a>
-                        <a href="https://github.com/Sunil0620" target="_blank" class="resume-btn resume-btn-secondary">🐙 GitHub</a>
-                        <a href="https://www.linkedin.com/in/sunil-saini-6190ba255/" target="_blank" class="resume-btn resume-btn-tertiary">💼 LinkedIn</a>
+                        <a href="assets/Sunil-Saini-Resume.pdf" target="_blank" download="Sunil-Saini-Resume.pdf" class="resume-btn" style="display: inline-flex; align-items: center; gap: 6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download Resume</a>
+                        <a href="https://github.com/Sunil0620" target="_blank" class="resume-btn resume-btn-secondary" style="display: inline-flex; align-items: center; gap: 6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align: middle;"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg> GitHub</a>
+                        <a href="https://www.linkedin.com/in/sunil-saini-6190ba255/" target="_blank" class="resume-btn resume-btn-tertiary" style="display: inline-flex; align-items: center; gap: 6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align: middle;"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>
                         <a href="https://discord.com/invite/Mk5z9vMA" target="_blank" rel="noopener noreferrer" class="resume-btn resume-btn-discord">
                             <span class="discord-icon" aria-hidden="true">
                                 <svg viewBox="0 0 127.14 96.36" width="18" height="18" fill="currentColor">
@@ -879,7 +992,7 @@
                                 <input type="text" name="name" class="form-input" placeholder="Your name" required>
                                 <input type="email" name="email" class="form-input" placeholder="Your email" required>
                                 <textarea name="message" class="form-textarea" placeholder="Your message..." required></textarea>
-                                <button type="submit" class="form-submit">Send Message ✉️</button>
+                                <button type="submit" class="form-submit" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Send Message</button>
                             </form>
                         </div>
                     </div>
@@ -908,7 +1021,7 @@
                     <div class="ctrl minimize" onclick="minimizeWindow('window-music')"></div>
                     <div class="ctrl maximize" onclick="maximizeWindow('window-music')"></div>
                 </div>
-                <span class="header-title">🎵 Classics</span>
+                <span class="header-title">Classics Player</span>
             </div>
             <div class="window-body music-body">
                 <div class="music-art" id="music-art">
@@ -929,10 +1042,10 @@
                     </div>
                     <span class="music-time" id="music-duration">4:25</span>
                 </div>
-                <div class="music-controls">
-                    <button class="music-btn" onclick="prevTrack()" title="Previous">⏮</button>
-                    <button class="music-btn music-play" id="music-play-btn" onclick="toggleMusic()">▶</button>
-                    <button class="music-btn" onclick="nextTrack()" title="Next">⏭</button>
+                <div class="music-controls" style="display: flex; align-items: center; justify-content: center; gap: 16px;">
+                    <button class="music-btn" onclick="prevTrack()" title="Previous" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 20L9 12l10-8v16zM5 19V5h2v14H5z"/></svg></button>
+                    <button class="music-btn music-play" id="music-play-btn" onclick="toggleMusic()" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; border-radius: 50%;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+                    <button class="music-btn" onclick="nextTrack()" title="Next" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M5 4l10 8-10 8V4zm12 1h2v14h-2V5z"/></svg></button>
                 </div>
                 <div class="music-playlist">
                     <div class="playlist-item active" id="pl-0" onclick="playTrack(0)">
@@ -1139,27 +1252,27 @@
             </div>
             <div class="window-body finder-body" style="flex-direction:column;padding:20px;">
                 <div class="nm-header">
-                    <span class="nm-icon">📁</span>
+                    <span class="nm-icon" style="color: #0a84ff; display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 12px;"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z"/></svg></span>
                     <div>
                         <h3>node_modules</h3>
                         <p style="color:var(--text-secondary);font-size:13px;">2,847,293 items — 47.3 GB on disk</p>
                     </div>
                 </div>
-                <div class="nm-warning">
-                    ⚠️ <strong>Warning:</strong> Opening this folder may collapse a nearby star. Proceed with caution.
+                <div class="nm-warning" style="display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <span><strong>Warning:</strong> Opening this folder may collapse a nearby star. Proceed with caution.</span>
                 </div>
                 <div class="nm-grid">
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 react@18.2.0</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 webpack@5.91.0</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 babel-core@7.x</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 lodash@4.17.21</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 express@4.18.3</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 left-pad@1.3.0</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-odd@3.0.1</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-even@1.0.0</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-string@1.0.7</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 is-boolean@1.0.1</div>
-                    <div class="nm-item" onclick="showNpmInfo(this)">📦 assert-never@1.2.1</div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">react@18.2.0</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">webpack@5.91.0</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">babel-core@7.x</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">lodash@4.17.21</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">express@4.18.3</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">left-pad@1.3.0</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">is-odd@3.0.1</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">is-even@1.0.0</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">is-string@1.0.7</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">is-boolean@1.0.1</span></div>
+                    <div class="nm-item" onclick="showNpmInfo(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; opacity: 0.8;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span class="nm-item-name">assert-never@1.2.1</span></div>
                     <div class="nm-item nm-item-more">+ 2,847,282 more…</div>
                 </div>
                 <p style="font-size:11px;color:var(--text-tertiary);margin-top:auto;text-align:center;">
@@ -1208,22 +1321,22 @@
                     <div class="ctrl minimize" onclick="minimizeWindow('window-snake')"></div>
                     <div class="ctrl maximize" onclick="maximizeWindow('window-snake')"></div>
                 </div>
-                <span class="header-title">🐍 Snake — Arcade</span>
+                <span class="header-title">Snake Arcade</span>
             </div>
             <div class="window-body snake-window-body">
                 <div class="snake-hud">
                     <span>Score: <strong id="snake-score">0</strong></span>
                     <span>Best: <strong id="snake-best">0</strong></span>
                     <span>Speed: <strong id="snake-speed-label">1</strong></span>
-                    <button id="snake-pause-btn" class="snake-pause-btn" onclick="if(window.snakeGame) snakeGame.togglePause()">⏸</button>
+                    <button id="snake-pause-btn" class="snake-pause-btn" onclick="if(window.snakeGame) snakeGame.togglePause()" style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0;"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
                 </div>
                 <canvas id="snake-canvas" width="520" height="520" onclick="if(window.snakeGame) snakeGame.handleClick(event)"></canvas>
                 <div id="snake-overlay" class="snake-overlay" onclick="if(window.snakeGame) snakeGame.start()">
                     <div class="snake-overlay-content">
-                        <div id="snake-title" class="snake-ol-title">🐍 SNAKE</div>
+                        <div id="snake-title" class="snake-ol-title" style="letter-spacing: 0.15em;">SNAKE ARCADE</div>
                         <div id="snake-msg" class="snake-ol-msg">Click or press Space to start</div>
                         <div id="snake-final" class="snake-ol-final" style="display:none;"></div>
-                        <button id="snake-start-btn" class="snake-start-btn" onclick="event.stopPropagation(); if(window.snakeGame) snakeGame.start()">▶ START</button>
+                        <button id="snake-start-btn" class="snake-start-btn" onclick="event.stopPropagation(); if(window.snakeGame) snakeGame.start()" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> START</button>
                     </div>
                 </div>
                 <div class="snake-hint">Click canvas to steer &nbsp;•&nbsp; WASD / ↑↓←→ to move &nbsp;•&nbsp; Space to start &nbsp;•&nbsp; P / Esc to pause</div>
@@ -1270,7 +1383,13 @@
                 <div class="dock-dot" id="dot-window-contact"></div>
             </div>
             <div class="dock-item" data-app="window-music" data-tip="Music">
-                <div class="dock-icon-art music-dock-art">🎵</div>
+                <div class="dock-icon-art music-dock-art">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;">
+                        <path d="M9 18V5l12-2v13" />
+                        <circle cx="6" cy="18" r="3" fill="rgba(255,255,255,0.2)" />
+                        <circle cx="18" cy="16" r="3" fill="rgba(255,255,255,0.2)" />
+                    </svg>
+                </div>
                 <div class="dock-dot" id="dot-window-music"></div>
             </div>
             <div class="dock-item" data-app="window-vscode" data-tip="VS Code">
@@ -1290,7 +1409,12 @@
                 <div class="dock-dot" id="dot-window-settings"></div>
             </div>
             <div class="dock-item" data-app="window-snake" data-tip="Snake Game">
-                <div class="dock-icon-art snake-dock-art">🐍</div>
+                <div class="dock-icon-art snake-dock-art">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:relative;z-index:1;">
+                        <rect x="2" y="6" width="20" height="12" rx="3" fill="rgba(255,255,255,0.15)" />
+                        <path d="M6 12h4m-2-2v4m10-2h.01M14 12h.01" />
+                    </svg>
+                </div>
                 <div class="dock-dot" id="dot-window-snake"></div>
             </div>
             <div class="dock-item" data-app="window-console" data-tip="Console">
@@ -1306,7 +1430,7 @@
                 <div class="dock-dot" id="dot-window-console"></div>
             </div>
             <div class="dock-sep"></div>
-            <div class="dock-item dev-mode-item" data-app="window-devnotes" data-tip="Classified 🔐">
+            <div class="dock-item dev-mode-item" data-app="window-devnotes" data-tip="Classified">
                 <div class="dock-icon-art devnotes-art">
                     <svg viewBox="0 0 448 512" width="20" height="20" fill="rgba(255,80,80,0.9)">
                         <path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
@@ -1335,21 +1459,21 @@
                     <div class="ctrl minimize" onclick="minimizeWindow('window-trash')"></div>
                     <div class="ctrl maximize" onclick="maximizeWindow('window-trash')"></div>
                 </div>
-                <span class="header-title">🗑️ Trash</span>
+                <span class="header-title">Trash</span>
             </div>
             <div class="window-body trash-body">
                 <div id="trash-items-list" class="trash-items-list">
-                    <div class="trash-item"><span class="ti-icon">📦</span><div class="ti-info"><span class="ti-name">node_modules</span><span class="ti-desc">47.3 GB · The only thing that survives a nuclear blast</span></div><span class="ti-sz">47.3 GB</span></div>
-                    <div class="trash-item"><span class="ti-icon">💀</span><div class="ti-info"><span class="ti-name">ie_support.js</span><span class="ti-desc">2 KB · Good riddance, finally</span></div><span class="ti-sz">2 KB</span></div>
-                    <div class="trash-item"><span class="ti-icon">🎨</span><div class="ti-info"><span class="ti-name">design_v47_FINAL_FINAL.psd</span><span class="ti-desc">18 MB · This was definitely the final version</span></div><span class="ti-sz">18 MB</span></div>
-                    <div class="trash-item"><span class="ti-icon">☕</span><div class="ti-info"><span class="ti-name">3am_ideas.txt</span><span class="ti-desc">1 KB · Delete before anyone sees this</span></div><span class="ti-sz">1 KB</span></div>
-                    <div class="trash-item"><span class="ti-icon">📊</span><div class="ti-info"><span class="ti-name">todo_never_done.xlsx</span><span class="ti-desc">512 KB · Items: 847 · Completed: 2</span></div><span class="ti-sz">512 KB</span></div>
-                    <div class="trash-item"><span class="ti-icon">🍝</span><div class="ti-info"><span class="ti-name">spaghetti_code.js</span><span class="ti-desc">9 KB · It worked once, don't touch it</span></div><span class="ti-sz">9 KB</span></div>
-                    <div class="trash-item"><span class="ti-icon">💔</span><div class="ti-info"><span class="ti-name">ex_frameworks.zip</span><span class="ti-desc">156 KB · jQuery, Backbone, CoffeeScript... RIP</span></div><span class="ti-sz">156 KB</span></div>
-                    <div class="trash-item"><span class="ti-icon">🐛</span><div class="ti-info"><span class="ti-name">that_one_bug.txt</span><span class="ti-desc">0 bytes · Still not fixed</span></div><span class="ti-sz">0 B</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><div class="ti-info"><span class="ti-name">node_modules</span><span class="ti-desc">47.3 GB · The only thing that survives a nuclear blast</span></div><span class="ti-sz">47.3 GB</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M12 2a8 8 0 0 0-8 8v1a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-1a8 8 0 0 0-8-8z"/><path d="M10 17v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3"/></svg></span><div class="ti-info"><span class="ti-name">ie_support.js</span><span class="ti-desc">2 KB · Good riddance, finally</span></div><span class="ti-sz">2 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M12 22C17.52 22 22 17.52 22 12S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zm1-14a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-4 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg></span><div class="ti-info"><span class="ti-name">design_v47_FINAL_FINAL.psd</span><span class="ti-desc">18 MB · This was definitely the final version</span></div><span class="ti-sz">18 MB</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span><div class="ti-info"><span class="ti-name">3am_ideas.txt</span><span class="ti-desc">1 KB · Delete before anyone sees this</span></div><span class="ti-sz">1 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg></span><div class="ti-info"><span class="ti-name">todo_never_done.xlsx</span><span class="ti-desc">512 KB · Items: 847 · Completed: 2</span></div><span class="ti-sz">512 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><div class="ti-info"><span class="ti-name">spaghetti_code.js</span><span class="ti-desc">9 KB · It worked once, don't touch it</span></div><span class="ti-sz">9 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M10 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2A2 2 0 0 0 12.1 6H20a2 2 0 0 1 2 2v2"/><path d="M16 14h6"/><path d="M16 18h6"/><path d="M16 22h6"/><rect x="18" y="10" width="4" height="12" rx="1"/></svg></span><div class="ti-info"><span class="ti-name">ex_frameworks.zip</span><span class="ti-desc">156 KB · jQuery, Backbone, CoffeeScript... RIP</span></div><span class="ti-sz">156 KB</span></div>
+                    <div class="trash-item"><span class="ti-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect width="8" height="14" x="8" y="6" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="m19 19-3-2"/><path d="m5 19 3-2"/><path d="M20 13h-4"/><path d="M4 13h4"/><path d="m10 4 1 2"/><path d="m14 4-1 2"/></svg></span><div class="ti-info"><span class="ti-name">that_one_bug.txt</span><span class="ti-desc">0 bytes · Still not fixed</span></div><span class="ti-sz">0 B</span></div>
                 </div>
                 <div id="trash-empty-state" class="trash-empty-state" style="display:none;">
-                    <div class="trash-empty-icon">🗑️</div>
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="trash-empty-icon" style="opacity:0.25; margin-bottom:12px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                     <p class="trash-empty-title">Trash is Empty</p>
                     <p class="trash-empty-sub">Unlike your commit history</p>
                 </div>
@@ -1370,7 +1494,7 @@
                 <div class="ctrl minimize" onclick="minimizeWindow('window-devnotes')"></div>
                 <div class="ctrl maximize" onclick="maximizeWindow('window-devnotes')"></div>
             </div>
-            <span class="header-title" style="color:#ff6b6b;">🔐 classified — developer_notes.txt</span>
+            <span class="header-title" style="color:#ff6b6b;">classified — developer_notes.txt</span>
         </div>
         <div class="window-body textedit-body devnotes-body">
             <div class="textedit-content devnotes-content">
@@ -1442,7 +1566,7 @@
     <!-- Kernel Panic Overlay -->
     <div id="kernel-panic" class="hidden">
         <div class="panic-content">
-            <div class="panic-icon">💻</div>
+            <div class="panic-icon" style="color: #ff3b30; display: inline-flex; justify-content: center; margin-bottom: 20px;"><svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <h2>Your computer restarted because of a problem.</h2>
             <p class="panic-sub">Press any key or wait to continue.</p>
             <div class="panic-detail"><pre id="panic-trace"></pre></div>
@@ -1470,11 +1594,11 @@
 <!-- Hidden YouTube IFrame player — must be in body, never inside display:none, never opacity:0 -->
 <div id="yt-iframe"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 <noscript>
     <style>body{margin:0;background:#0f0c29;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui,sans-serif;}</style>
-    <div style="text-align:center;color:rgba(255,255,255,0.85);padding:40px;">
-        <div style="font-size:48px;margin-bottom:16px;">🖥️</div>
+    <div style="text-align:center;color:rgba(255,255,255,0.85);padding:40px;display:flex;flex-direction:column;align-items:center;">
+        <div style="color:rgba(255,255,255,0.75);margin-bottom:16px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
         <h2 style="margin:0 0 8px;font-weight:600;">JavaScript Required</h2>
         <p style="margin:0;opacity:0.6;font-size:14px;">This portfolio is an interactive sunOS experience — please enable JavaScript to continue.</p>
     </div>
