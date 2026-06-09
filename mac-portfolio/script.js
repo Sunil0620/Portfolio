@@ -65,22 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const arcFill     = document.getElementById('boot-arc-fill');
     let progress = 0;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('autologin') || urlParams.get('login') === 'true') {
-        if (bootScreen) { bootScreen.style.display = 'none'; bootScreen.classList.add('hidden'); }
-        if (loginScreen) { loginScreen.style.display = 'none'; loginScreen.classList.add('hidden'); }
-        const desktop = document.getElementById('desktop');
-        if (desktop) desktop.classList.remove('hidden');
-        locked = false;
-        onDesktopReady();
-        updateLoginClock();
-        updateMenuClock();
-        updateNCDate();
-        setInterval(updateLoginClock, 1000);
-        setInterval(updateMenuClock, 1000);
-        setInterval(updateNCDate, 60000);
-        return;
-    }
+
 
     /* ---- Aurora canvas ---- */
     initAuroraCanvas();
