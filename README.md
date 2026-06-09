@@ -82,7 +82,7 @@ A few are hidden in plain sight. One involves a classic cheat code. One involves
 
 ```bash
 git clone https://github.com/Sunil0620/Portfolio.git
-cd Portfolio/mac-portfolio
+cd Portfolio/sunOS
 # open index.html in any modern browser
 open index.html
 ```
@@ -94,7 +94,7 @@ No install step. No build step.
 ## Project Structure
 
 ```
-mac-portfolio/
+sunOS/
 ├── index.html        # entire UI markup
 ├── script.js         # all JavaScript (~176 KB)
 ├── style.css         # all CSS (~109 KB)
