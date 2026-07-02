@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const dirtyDots = document.querySelectorAll('.vsc-dirty');
             let hadDirty = false;
             dirtyDots.forEach(d => { if (d.style.display !== 'none') hadDirty = true; d.style.display = 'none'; });
-            showNotification(hadDirty ? '💾 script.js — saved' : '💾 All files up to date');
+            showNotification(hadDirty ? 'Files saved' : 'Up to date');
             return;
         }
         if (isMeta && e.key === 'q') { e.preventDefault(); lockScreen(); return; }
@@ -278,22 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-/* ==================== KONAMI CODE EASTER EGG ==================== */
-(function initKonami() {
-    const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-    let idx = 0;
-    document.addEventListener('keydown', e => {
-        if (e.key === seq[idx]) { idx++; } else { idx = e.key === seq[0] ? 1 : 0; }
-        if (idx === seq.length) {
-            idx = 0;
-            toggleWindow('window-skills');
-            setTimeout(() => {
-                const ti = document.getElementById('terminal-input');
-                if (ti) { ti.value = 'fortune'; ti.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); }
-            }, 400);
-        }
-    });
-})();
+/* Note: The Konami Code easter egg is handled by _initKernelPanic at the end of the file. */
 
 /* ==================== AURORA CANVAS (Boot) ==================== */
 function initAuroraCanvas() {
@@ -705,7 +690,7 @@ function doLogin() {
 
 function onDesktopReady() {
     setTimeout(() => toggleWindow('window-about'), 500);
-    setTimeout(() => showNotification('Welcome! Explore via dock or Space for Spotlight'), 1200);
+    setTimeout(() => showNotification('Welcome to sunOS'), 1200);
     resetIdleTimer();
     initVisitorMemory();
     _initConsole();
@@ -749,7 +734,7 @@ function updateCCState() {
 }
 function ccToggleDark() {
     if (localStorage.getItem('mac-dev-mode') === '1') {
-        showNotification('🔒 Appearance is locked in developer mode');
+        showNotification('Settings locked');
         return;
     }
     const mode = localStorage.getItem('mac-appearance') || 'dark';
@@ -765,7 +750,7 @@ function ccToggleDark() {
 function ccToggleFocus() {
     focusModeOn = !focusModeOn;
     updateCCState();
-    showNotification(focusModeOn ? 'Focus mode ON — notifications silenced' : 'Focus mode OFF');
+    showNotification(focusModeOn ? 'Focus mode ON' : 'Focus mode OFF');
 }
 function ccBrightness(val) {
     brightnessLevel = val / 100;
@@ -784,13 +769,20 @@ function ccToggleWifi() {
     const sub  = tile?.querySelector('.cc-tile-sub');
     if (tile)  tile.classList.toggle('active', wifiOn);
     if (sub)   sub.textContent = wifiOn ? 'Connected' : 'Off';
-    showNotification(wifiOn ? 'Wi-Fi: Connected to Portfolio_Network' : 'Wi-Fi: Turned off');
+    showNotification(wifiOn ? 'Wi-Fi connected' : 'Wi-Fi disconnected');
 }
 
 /* ==================== TEXTEDIT TOOLBAR ==================== */
 function teSetFont(font) {
     const el = document.querySelector('.textedit-content');
-    if (el) el.style.fontFamily = font === 'Menlo' ? "'Menlo','Monaco',monospace" : "'Inter',system-ui,sans-serif";
+    if (!el) return;
+    if (font === 'Menlo') {
+        el.style.fontFamily = "'IBM Plex Mono', 'Menlo', 'Monaco', monospace";
+    } else if (font === 'Syne') {
+        el.style.fontFamily = "var(--heading)";
+    } else {
+        el.style.fontFamily = "var(--sans)";
+    }
 }
 function teSetSize(size) {
     const el = document.querySelector('.textedit-content');
@@ -867,18 +859,55 @@ function hideNotifCenter() {
     setTimeout(() => { el.classList.add('hidden'); el.style.animation = ''; }, 150);
 }
 
-/* ==================== NOTIFICATION TOAST ==================== */
+let lastNotificationMsg = '';
+let lastNotificationTime = 0;
+
 function showNotification(msg) {
-    if (focusModeOn) return;
+    if (focusModeOn || !msg) return;
+    
+    // Prevent duplicate spam within 2 seconds
+    const now = Date.now();
+    if (msg === lastNotificationMsg && now - lastNotificationTime < 2000) {
+        return;
+    }
+    lastNotificationMsg = msg;
+    lastNotificationTime = now;
+    
     const n = document.getElementById('notification');
     if (!n) return;
-    n.querySelector('.notif-body p').textContent = msg;
-    n.classList.remove('hidden', 'hiding');
-    clearTimeout(n._t);
-    n._t = setTimeout(() => {
+    
+    const p = n.querySelector('p');
+    if (!p) return;
+
+    // Make toast clickable to dismiss
+    n.style.cursor = 'pointer';
+    n.onclick = () => {
         n.classList.add('hiding');
         setTimeout(() => n.classList.add('hidden'), 300);
-    }, 3500);
+    };
+
+    clearTimeout(n._t);
+    clearTimeout(n._tFade);
+    
+    const updateContent = () => {
+        p.textContent = msg;
+        n.classList.remove('hiding', 'hidden');
+        
+        n._t = setTimeout(() => {
+            n.classList.add('hiding');
+            n._tFade = setTimeout(() => n.classList.add('hidden'), 300);
+        }, 3000);
+    };
+
+    // Smooth transition if already visible and text changes
+    if (!n.classList.contains('hidden') && p.textContent !== msg) {
+        n.classList.add('hiding');
+        n._tFade = setTimeout(() => {
+            updateContent();
+        }, 150);
+    } else {
+        updateContent();
+    }
 }
 
 /* ==================== SPOTLIGHT ==================== */
@@ -1205,6 +1234,7 @@ function makeDraggable(header, el) {
         if (e.target.closest('.window-controls') || e.target.closest('.url-bar')) return;
         e.preventDefault();
         bringFront(el);
+        el.classList.add('active-drag');
         const ox = el.offsetLeft, oy = el.offsetTop;
         const sx = e.clientX, sy = e.clientY;
         let lastX = e.clientX;
@@ -1227,6 +1257,7 @@ function makeDraggable(header, el) {
         function stop() {
             document.removeEventListener('mousemove', move);
             document.removeEventListener('mouseup', stop);
+            el.classList.remove('active-drag');
             el.style.transform = '';
             el.style.transition = 'transform 0.2s ease-out';
         }
@@ -1239,13 +1270,18 @@ function makeResizable(handle) {
     if (!win) return;
     handle.addEventListener('mousedown', e => {
         e.preventDefault(); e.stopPropagation(); bringFront(win);
+        win.classList.add('active-resize');
         const sx = e.clientX, sy = e.clientY;
         const sw = win.offsetWidth, sh = win.offsetHeight;
         const onMove = ev => {
             win.style.width  = Math.max(300, sw + (ev.clientX - sx)) + 'px';
             win.style.height = Math.max(200, sh + (ev.clientY - sy)) + 'px';
         };
-        const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+        const onUp = () => { 
+            win.classList.remove('active-resize');
+            document.removeEventListener('mousemove', onMove); 
+            document.removeEventListener('mouseup', onUp); 
+        };
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onUp);
     });
@@ -1255,6 +1291,7 @@ function makeResizableLeft(handle) {
     if (!win) return;
     handle.addEventListener('mousedown', e => {
         e.preventDefault(); e.stopPropagation(); bringFront(win);
+        win.classList.add('active-resize');
         const sx = e.clientX, sy = e.clientY;
         const sw = win.offsetWidth, sh = win.offsetHeight, sl = win.offsetLeft;
         const onMove = ev => {
@@ -1264,7 +1301,11 @@ function makeResizableLeft(handle) {
             win.style.height = Math.max(200, sh + (ev.clientY - sy)) + 'px';
             win.style.left   = (sl + (sw - nw)) + 'px';
         };
-        const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+        const onUp = () => { 
+            win.classList.remove('active-resize');
+            document.removeEventListener('mousemove', onMove); 
+            document.removeEventListener('mouseup', onUp); 
+        };
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onUp);
     });
@@ -1343,7 +1384,7 @@ function applyDockSize(size) {
 /* ==================== WALLPAPER ==================== */
 function setWallpaper(name, save = true) {
     if (save && localStorage.getItem('mac-dev-mode') === '1') {
-        showNotification('🔒 Wallpaper is locked in developer mode');
+        showNotification('Settings locked');
         return;
     }
     const num = name.replace('img', '');
@@ -1364,7 +1405,7 @@ function switchSettingsPane(pane) {
 
 function setAppearanceMode(mode, btn, save = true) {
     if (save && localStorage.getItem('mac-dev-mode') === '1') {
-        showNotification('🔒 Appearance is locked in developer mode');
+        showNotification('Settings locked');
         return;
     }
     if (btn) {
@@ -1404,7 +1445,7 @@ function setAppearanceMode(mode, btn, save = true) {
 
 function setAccentColor(color, dot, save = true) {
     if (save && localStorage.getItem('mac-dev-mode') === '1') {
-        showNotification('🔒 Accent color is locked in developer mode');
+        showNotification('Settings locked');
         return;
     }
     document.documentElement.style.setProperty('--accent', color);
@@ -1415,7 +1456,7 @@ function setAccentColor(color, dot, save = true) {
 
 function setDockSize(size, save = true) {
     if (save && localStorage.getItem('mac-dev-mode') === '1') {
-        showNotification('🔒 Dock size is locked in developer mode');
+        showNotification('Settings locked');
         return;
     }
     dockBase = parseInt(size);
@@ -1432,7 +1473,7 @@ function updateDevName(name) {
 function restoreSettings() {
     const wall    = localStorage.getItem('mac-wall');
     const mode    = localStorage.getItem('mac-appearance') || 'dark';
-    const accent  = localStorage.getItem('mac-accent')     || '#007aff';
+    const accent  = localStorage.getItem('mac-accent')     || '#6e56cf';
     const dockSz  = parseInt(localStorage.getItem('mac-dock-size')  || '48');
     const devName = localStorage.getItem('mac-dev-name')   || 'SUN 🌗 :ツ';
 
@@ -3292,7 +3333,7 @@ function _ghTimeAgo(date) {
         if (_batt > 5) _batt--;
         if (_batt === 20 && !sessionStorage.getItem('batt-warned')) {
             sessionStorage.setItem('batt-warned','1');
-            if (window.showNotification) window.showNotification('Battery Low','20% remaining — plug in soon.');
+            if (window.showNotification) window.showNotification('Battery Low (20%)');
         }
         localStorage.setItem('mac-battery', _batt);
         _battDraw();
@@ -3670,9 +3711,9 @@ window.snakeGame = (function(){
 /* ==================== COPY EMAIL ==================== */
 function copyEmail(e) {
     navigator.clipboard?.writeText('sunilsaini5652@gmail.com').then(() => {
-        showNotification('📋 Email copied to clipboard!');
+        showNotification('Email copied');
     }).catch(() => {
-        showNotification('📧 sunilsaini5652@gmail.com');
+        showNotification('sunilsaini5652@gmail.com');
     });
 }
 
@@ -3823,10 +3864,7 @@ function initVisitorMemory() {
         const explored = (prev.sessionWindows || []).length
             ? (prev.sessionWindows).slice(0,3).map(nice).join(', ')
             : 'the portfolio';
-        setTimeout(() => {
-            showNotification(`👋 Welcome back! Last visit: ${ago}. You explored: ${explored}.`);
-            _consoleLog('portfolio','info',`Returning visitor detected — visit #${data.count}, last seen ${ago}`);
-        }, 3800);
+            showNotification('Welcome back!');
     }
 }
 function _trackVisitedWindow(winId) {
@@ -4063,7 +4101,7 @@ function _applyDevMode(isNew) {
     if (ps) ps.textContent = '#';
     if (tt) tt.textContent = 'root@portfolio — bash';
     if (isNew) {
-        setTimeout(() => showNotification('🔧 Root access granted — check the new dock icon'), 800);
+        setTimeout(() => showNotification('Root access granted'), 800);
         setTimeout(() => _consoleLog('kernel','warn','System recovered — developer mode enabled. Welcome, root.'), 900);
         setTimeout(() => {
             const win = document.getElementById('window-devnotes');
@@ -4151,4 +4189,37 @@ function _panicSound() {
         og.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
         osc.connect(og); og.connect(ac.destination); osc.start(t); osc.stop(t + 0.6);
     } catch(e) {}
+}
+
+/* ==================== SYSTEM INTERACTIVE TWEAKS ==================== */
+function adjustDevBlur(val) {
+    document.documentElement.style.setProperty('--glass-blur', `blur(${val}px)`);
+    const label = document.getElementById('dev-blur-val');
+    if (label) label.textContent = val + 'px';
+}
+
+function adjustDevScanlines(val) {
+    document.documentElement.style.setProperty('--scanline-opacity', val / 100);
+    const label = document.getElementById('dev-scan-val');
+    if (label) label.textContent = val + '%';
+}
+
+function adjustDevWallpaperHue(val) {
+    document.body.style.filter = `hue-rotate(${val}deg)`;
+    const label = document.getElementById('dev-hue-val');
+    if (label) label.textContent = val + '°';
+}
+
+function triggerMatrixRain() {
+    const term = document.getElementById('window-skills');
+    if (term && (term.style.display === 'none' || !term.style.display)) {
+        toggleWindow('window-skills');
+    }
+    if (typeof startMatrix === 'function' && typeof stopMatrix === 'function') {
+        if (matrixActive) {
+            stopMatrix();
+        } else {
+            startMatrix();
+        }
+    }
 }

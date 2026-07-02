@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236e56cf'/%3E%3Cstop offset='1' stop-color='%2300d2ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='50,4 93,27 93,73 50,96 7,73 7,27' fill='%230d0d1a' stroke='url(%23g)' stroke-width='3'/%3E%3Ctext x='50' y='56' text-anchor='middle' font-family='monospace' font-size='28' font-weight='700' fill='url(%23g)'%3ES%3C/text%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='monospace' font-size='11' fill='rgba(255,255,255,0.4)'%3E%3C/%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- YouTube IFrame API bootstrap — the script itself is injected only when Music opens -->
     <script>
         window._ytQueue = [];
@@ -68,9 +68,9 @@
     <div id="mob-main-content" class="mob-screen hidden">
         <!-- Floating stickers layer for mobile -->
         <div class="mob-stickers-layer">
-            <div class="mob-sticker" style="top: 80px; left: 10px; transform: rotate(-5deg);">⚡ MONO ⚡</div>
-            <div class="mob-sticker" style="top: 250px; right: 10px; transform: rotate(8deg);">EST. 2026</div>
-            <div class="mob-sticker" style="top: 480px; left: 15px; transform: rotate(-10deg);">RAW DEV</div>
+            <div class="mob-sticker" style="top: 75px; left: 10px; transform: rotate(-5deg);">⚡ MONO ⚡ <span onmousedown="event.stopPropagation(); this.parentElement.remove();" ontouchstart="event.stopPropagation(); this.parentElement.remove();" style="margin-left: 8px; cursor: pointer; color: #ff375f; font-weight: bold;">×</span></div>
+            <div class="mob-sticker" style="top: 220px; right: 10px; transform: rotate(8deg);">EST. 2026 <span onmousedown="event.stopPropagation(); this.parentElement.remove();" ontouchstart="event.stopPropagation(); this.parentElement.remove();" style="margin-left: 8px; cursor: pointer; color: #ff375f; font-weight: bold;">×</span></div>
+            <div class="mob-sticker" style="top: 440px; left: 15px; transform: rotate(-10deg);">RAW DEV <span onmousedown="event.stopPropagation(); this.parentElement.remove();" ontouchstart="event.stopPropagation(); this.parentElement.remove();" style="margin-left: 8px; cursor: pointer; color: #ff375f; font-weight: bold;">×</span></div>
         </div>
 
         <!-- Monospace Running Ticker -->
@@ -176,17 +176,19 @@
                             <span class="work-arrow">▲</span>
                         </div>
                         <div class="work-card-content" style="max-height: 250px;">
-                            <p class="work-desc">Real-time team messaging service built from scratch with Channels, Redis, and React.</p>
-                            <div class="work-kpis">
-                                <span class="work-kpi-item">⚡ Sub-100ms latency</span>
-                                <span class="work-kpi-item">⚡ Persistent WebSockets</span>
+                            <div class="work-card-inner">
+                                <p class="work-desc">Real-time team messaging service built from scratch with Channels, Redis, and React.</p>
+                                <div class="work-kpis">
+                                    <span class="work-kpi-item">⚡ Sub-100ms latency</span>
+                                    <span class="work-kpi-item">⚡ Persistent WebSockets</span>
+                                </div>
+                                <div class="work-tags-row">
+                                    <span class="work-tag">DJANGO</span>
+                                    <span class="work-tag">REDIS</span>
+                                    <span class="work-tag">REACT</span>
+                                </div>
+                                <a href="https://github.com/Sunil0620/orbit" target="_blank" class="work-code-btn">SOURCE CODE →</a>
                             </div>
-                            <div class="work-tags-row">
-                                <span class="work-tag">DJANGO</span>
-                                <span class="work-tag">REDIS</span>
-                                <span class="work-tag">REACT</span>
-                            </div>
-                            <a href="https://github.com/Sunil0620/orbit" target="_blank" class="work-code-btn">SOURCE CODE →</a>
                         </div>
                     </div>
 
@@ -196,17 +198,19 @@
                             <span class="work-arrow">▼</span>
                         </div>
                         <div class="work-card-content" style="max-height: 0px;">
-                            <p class="work-desc">A modular blogging engine featuring secure role-based authentication and custom markdown rendering.</p>
-                            <div class="work-kpis">
-                                <span class="work-kpi-item">⚡ Optimized queries</span>
-                                <span class="work-kpi-item">⚡ SEO-friendly routes</span>
+                            <div class="work-card-inner">
+                                <p class="work-desc">A modular blogging engine featuring secure role-based authentication and custom markdown rendering.</p>
+                                <div class="work-kpis">
+                                    <span class="work-kpi-item">⚡ Optimized queries</span>
+                                    <span class="work-kpi-item">⚡ SEO-friendly routes</span>
+                                </div>
+                                <div class="work-tags-row">
+                                    <span class="work-tag">PYTHON</span>
+                                    <span class="work-tag">DJANGO</span>
+                                    <span class="work-tag">SQLITE</span>
+                                </div>
+                                <a href="https://github.com/Sunil0620/django-blog" target="_blank" class="work-code-btn">SOURCE CODE →</a>
                             </div>
-                            <div class="work-tags-row">
-                                <span class="work-tag">PYTHON</span>
-                                <span class="work-tag">DJANGO</span>
-                                <span class="work-tag">SQLITE</span>
-                            </div>
-                            <a href="https://github.com/Sunil0620/django-blog" target="_blank" class="work-code-btn">SOURCE CODE →</a>
                         </div>
                     </div>
 
@@ -216,17 +220,19 @@
                             <span class="work-arrow">▼</span>
                         </div>
                         <div class="work-card-content" style="max-height: 0px;">
-                            <p class="work-desc">A browser desktop with boot flow, app windows, Spotlight, terminal, music, and screensaver.</p>
-                            <div class="work-kpis">
-                                <span class="work-kpi-item">⚡ Zero libraries</span>
-                                <span class="work-kpi-item">⚡ Custom Audio Engine</span>
+                            <div class="work-card-inner">
+                                <p class="work-desc">A browser desktop with boot flow, app windows, Spotlight, terminal, music, and screensaver.</p>
+                                <div class="work-kpis">
+                                    <span class="work-kpi-item">⚡ Zero libraries</span>
+                                    <span class="work-kpi-item">⚡ Custom Audio Engine</span>
+                                </div>
+                                <div class="work-tags-row">
+                                    <span class="work-tag">HTML5</span>
+                                    <span class="work-tag">CSS3</span>
+                                    <span class="work-tag">VANILLA JS</span>
+                                </div>
+                                <a href="https://github.com/Sunil0620/Portfolio" target="_blank" class="work-code-btn">SOURCE CODE →</a>
                             </div>
-                            <div class="work-tags-row">
-                                <span class="work-tag">HTML5</span>
-                                <span class="work-tag">CSS3</span>
-                                <span class="work-tag">VANILLA JS</span>
-                            </div>
-                            <a href="https://github.com/Sunil0620/Portfolio" target="_blank" class="work-code-btn">SOURCE CODE →</a>
                         </div>
                     </div>
                 </div>
@@ -321,7 +327,7 @@
                 <!-- S letter path -->
                 <text class="boot-s-text" x="60" y="68"
                     text-anchor="middle"
-                    font-family="'Inter', system-ui, sans-serif"
+                    font-family="'Syne', sans-serif"
                     font-size="52" font-weight="700"
                     fill="none"
                     stroke="url(#logoGrad)"
@@ -619,14 +625,7 @@
 
     <!-- ===== NOTIFICATION TOAST ===== -->
     <div id="notification" class="notification hidden">
-        <div class="notif-header">
-            <span class="notif-app">Portfolio</span>
-            <span class="notif-time">now</span>
-        </div>
-        <div class="notif-body">
-            <strong>Welcome!</strong>
-            <p>Explore my work — open the dock apps or use Spotlight (Space)</p>
-        </div>
+        <p>Welcome!</p>
     </div>
 
     <!-- ===== WINDOWS ===== -->
@@ -709,7 +708,7 @@
                         <div class="setting-row">
                             <label>Accent Color</label>
                             <div class="accent-colors">
-                                <div class="accent-dot active" style="background:#007aff" onclick="setAccentColor('#007aff',this)"></div>
+                                <div class="accent-dot active" style="background:#6e56cf" onclick="setAccentColor('#6e56cf',this)"></div>
                                 <div class="accent-dot" style="background:#ff375f" onclick="setAccentColor('#ff375f',this)"></div>
                                 <div class="accent-dot" style="background:#ff9f0a" onclick="setAccentColor('#ff9f0a',this)"></div>
                                 <div class="accent-dot" style="background:#30d158" onclick="setAccentColor('#30d158',this)"></div>
@@ -769,8 +768,8 @@
                     <div class="sidebar-item" onclick="switchFinderSection('documents', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span> Documents</div>
                     <div class="sidebar-item" onclick="switchFinderSection('downloads', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg></span> Downloads</div>
                     <p class="sidebar-label sidebar-label-spaced">Tags</p>
-                    <div class="sidebar-item" onclick="switchFinderSection('work', this)"><span class="tag-dot tag-dot-work"></span> Work</div>
-                    <div class="sidebar-item" onclick="switchFinderSection('opensource', this)"><span class="tag-dot tag-dot-open"></span> Open Source</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('work', this)"><span class="si-icon"><span class="tag-dot tag-dot-work"></span></span> Work</div>
+                    <div class="sidebar-item" onclick="switchFinderSection('opensource', this)"><span class="si-icon"><span class="tag-dot tag-dot-open"></span></span> Open Source</div>
                 </aside>
                 <main class="finder-main">
                     <div class="about-status-indicator">
@@ -778,10 +777,9 @@
                         Available for work
                     </div>
                     <p class="about-kicker">AI & Systems Engineering · High-Throughput APIs · Product Craft</p>
-                    <h2 class="gradient-text about-hero-title">I build functional, high-performance backends and step into cognitive AI systems.</h2>
+                    <h2 class="gradient-text about-hero-title">I build high-performance backends and cognitive AI systems.</h2>
                     <p class="about-lead">Bridging the gap between heavy AI models and production-ready architectures, while focusing on clean interface implementation.</p>
-                    <p>Right now I am focused on mastering <strong>LLM orchestrators</strong>, event-driven <strong>WebSockets</strong>, and reliable database optimization (PostgreSQL/Redis).</p>
-                    <p>I don't build wrappers. I build functional, high-speed applications that solve real-world problems.</p>
+                    <p>Right now I am focused on mastering <strong>LLM orchestrators</strong>, event-driven <strong>WebSockets</strong>, and reliable database optimization.</p>
 
                     <div class="about-highlight-grid">
                         <div class="about-highlight-card">
@@ -1232,7 +1230,7 @@
             </div>
             <div class="window-body textedit-body">
                 <div class="textedit-toolbar">
-                    <select class="te-font-select" onchange="teSetFont(this.value)"><option>Inter</option><option>Menlo</option></select>
+                    <select class="te-font-select" onchange="teSetFont(this.value)"><option value="Manrope">Manrope</option><option value="Syne">Syne</option><option value="Menlo">Menlo</option></select>
                     <select class="te-size-select" onchange="teSetSize(this.value)"><option>14</option><option>16</option><option>18</option></select>
                     <div class="te-divider"></div>
                     <button class="te-btn" onclick="document.execCommand('bold')" title="Bold"><strong>B</strong></button>
@@ -1379,34 +1377,64 @@
     <div id="dock-wrapper">
         <div id="dock">
             <div class="dock-item" data-app="window-about" data-tip="About Me">
-                <div class="dock-icon-art finder-art">
-                    <div class="finder-top"></div>
-                    <div class="finder-bot"></div>
-                    <div class="finder-face">
-                        <div class="f-eye l"></div>
-                        <div class="f-eye r"></div>
-                        <div class="f-nose"></div>
-                        <div class="f-mouth"></div>
-                    </div>
+                <div class="dock-icon-art finder-art" style="box-shadow: none;">
+                    <svg viewBox="0 0 64 64" width="42" height="42" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));">
+                        <rect width="64" height="64" rx="14" fill="url(#finder-grad)"/>
+                        <path d="M0 16C0 7.16 7.16 0 16 0h16v64H16C7.16 64 0 56.84 0 48V16z" fill="#4B90E2"/>
+                        <path d="M32 0h16c8.84 0 16 7.16 16 16v32c0 8.84-7.16 16-16 16H32V0z" fill="#D2E4F9"/>
+                        <path d="M32 0v24c3 0 5 2 5 5s-2 5-5 5v30" stroke="#1D2A44" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="18" cy="24" r="3.8" fill="#1D2A44"/>
+                        <circle cx="46" cy="24" r="3.8" fill="#1D2A44"/>
+                        <path d="M18 41c4 5.5 12 7 14 7s10-1.5 14-7" stroke="#1D2A44" stroke-width="3.8" stroke-linecap="round" fill="none"/>
+                        <defs>
+                            <linearGradient id="finder-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#7BB0F9"/>
+                                <stop offset="1" stop-color="#216ED4"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
                 </div>
                 <div class="dock-dot" id="dot-window-about"></div>
             </div>
             <div class="dock-item" data-app="window-skills" data-tip="Terminal">
-                <div class="dock-icon-art terminal-art">&gt;_</div>
+                <div class="dock-icon-art terminal-art">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#50fa7b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(80,250,123,0.5));">
+                        <polyline points="4 17 10 11 4 5"/>
+                        <line x1="12" y1="19" x2="20" y2="19"/>
+                    </svg>
+                </div>
                 <div class="dock-dot" id="dot-window-skills"></div>
             </div>
             <div class="dock-item" data-app="window-projects" data-tip="Projects">
                 <div class="dock-icon-art safari-art">
-                    <div class="compass"><div class="needle"></div></div>
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.8"/>
+                        <circle cx="12" cy="12" r="7" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-dasharray="2 2"/>
+                        <path d="M12 12l2.5-5.5L12 9l-2.5-2.5L12 12z" fill="#FF3B30"/>
+                        <path d="M12 12l-2.5 5.5 2.5-2.5 2.5 2.5-2.5-5.5z" fill="#E5E5EA"/>
+                        <circle cx="12" cy="12" r="1.2" fill="white"/>
+                    </svg>
                 </div>
                 <div class="dock-dot" id="dot-window-projects"></div>
             </div>
             <div class="dock-item" data-app="window-contact" data-tip="Contact">
-                <div class="dock-icon-art notes-art">
-                    <div class="notes-top-bar"></div>
-                    <div class="notes-line"></div>
-                    <div class="notes-line"></div>
-                    <div class="notes-line"></div>
+                <div class="dock-icon-art notes-art" style="box-shadow: none;">
+                    <svg viewBox="0 0 64 64" width="42" height="42" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));">
+                        <!-- Main yellow page sheet -->
+                        <rect x="10" y="8" width="44" height="48" rx="5" fill="#FFFBE5" stroke="#E5B800" stroke-width="2.5"/>
+                        <!-- Orange top binder strip -->
+                        <path d="M10 13c0-2.76 2.24-5 5-5h34c2.76 0 5 2.24 5 5v5H10v-5z" fill="#FFA500"/>
+                        <!-- Ring binder elements at top -->
+                        <rect x="16" y="4" width="4" height="8" rx="2" fill="#E5E5EA" stroke="#8E8E93" stroke-width="1"/>
+                        <rect x="30" y="4" width="4" height="8" rx="2" fill="#E5E5EA" stroke="#8E8E93" stroke-width="1"/>
+                        <rect x="44" y="4" width="4" height="8" rx="2" fill="#E5E5EA" stroke="#8E8E93" stroke-width="1"/>
+                        <!-- Horizontal lines on notepad -->
+                        <line x1="18" y1="26" x2="46" y2="26" stroke="#FFE0B2" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="18" y1="34" x2="46" y2="34" stroke="#FFE0B2" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="18" y1="42" x2="40" y2="42" stroke="#FFE0B2" stroke-width="2" stroke-linecap="round"/>
+                        <!-- Red margin line on the left side -->
+                        <line x1="22" y1="20" x2="22" y2="50" stroke="#FF8A80" stroke-width="1.5"/>
+                    </svg>
                 </div>
                 <div class="dock-dot" id="dot-window-contact"></div>
             </div>
@@ -1515,44 +1543,164 @@
         </div>
 
     <!-- Developer Notes Window (dev mode only) -->
-    <div class="window" id="window-devnotes" style="width:620px;height:500px;top:70px;left:180px;display:none;">
-        <div class="window-header" style="background:linear-gradient(135deg,#1a0000,#2d0a0a);">
+    <div class="window" id="window-devnotes" style="width:820px;height:520px;top:60px;left:120px;display:none;">
+        <div class="window-header" style="background:#050508; border-bottom: 1.5px solid rgba(48,209,88,0.3);">
             <div class="window-controls">
                 <div class="ctrl close" onclick="closeWindow('window-devnotes')"></div>
                 <div class="ctrl minimize" onclick="minimizeWindow('window-devnotes')"></div>
                 <div class="ctrl maximize" onclick="maximizeWindow('window-devnotes')"></div>
             </div>
-            <span class="header-title" style="color:#ff6b6b;">classified — developer_notes.txt</span>
+            <span class="header-title" style="color:#30d158; font-family:var(--mono); text-transform:uppercase; letter-spacing:1px; animation:glowGreen 2s infinite alternate;">ROOT@PORTFOLIO // BREACH_LOG // PORT_1337_ACTIVE</span>
         </div>
-        <div class="window-body textedit-body devnotes-body">
-            <div class="textedit-content devnotes-content">
-                <p class="devnotes-stamp">⚠ TOP SECRET — AUTHORIZED PERSONNEL ONLY ⚠</p>
-                <h1 class="te-h1">Developer Notes</h1>
-                <p class="te-p" style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:20px;">Access granted via Konami sequence. Welcome, fellow dev.</p>
+        <div class="window-body textedit-body devnotes-body" style="padding: 20px !important;">
+            <div class="textedit-content devnotes-content" style="height:100%; display:flex; flex-direction:column; padding:0 !important; overflow:hidden;">
+                
+                <p class="devnotes-stamp" style="margin-bottom:16px;">⚠ EXPLOIT GRANTED — SYSTEM LEVEL INFILTRATION COMPLETE ⚠</p>
+                
+                <div class="devnotes-grid" style="display:grid; grid-template-columns: 330px 1fr; gap: 24px; height: calc(100% - 45px); box-sizing: border-box; font-family:var(--mono); overflow:hidden;">
+                    
+                    <!-- Left Column: System Control & Diagnostics Dashboard -->
+                    <div class="devnotes-panel-left" style="border-right: 1px solid rgba(48,209,88,0.18); padding-right: 20px; display:flex; flex-direction:column; gap:16px; height:100%; box-sizing:border-box;">
+                        <div style="border-bottom:1px solid rgba(48,209,88,0.2); padding-bottom:8px;">
+                            <p style="color:#30d158; font-size:11px; margin:0; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:6px;">
+                                <span style="display:inline-block; width:6px; height:6px; background:#30d158; border-radius:50%; box-shadow:0 0 8px #30d158; animation:pulse 1s infinite alternate;"></span>
+                                Exploits Active
+                            </p>
+                            <h3 style="color:#fff; font-size:14px; font-weight:700; margin:4px 0 0 0; text-transform:uppercase;">System Tweaker</h3>
+                        </div>
+                        
+                        <!-- Window Blur Slider -->
+                        <div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:11px;">
+                                <span style="color:rgba(255,255,255,0.65);">Backdrop Blur</span>
+                                <span id="dev-blur-val" style="color:#30d158; font-weight:bold;">30px</span>
+                            </div>
+                            <input type="range" min="0" max="40" value="30" style="width:100%; accent-color:#30d158; cursor:pointer;" oninput="adjustDevBlur(this.value)">
+                        </div>
+                        
+                        <!-- Scanline Slider -->
+                        <div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:11px;">
+                                <span style="color:rgba(255,255,255,0.65);">CRT Scanlines</span>
+                                <span id="dev-scan-val" style="color:#30d158; font-weight:bold;">4%</span>
+                            </div>
+                            <input type="range" min="0" max="40" value="4" style="width:100%; accent-color:#30d158; cursor:pointer;" oninput="adjustDevScanlines(this.value)">
+                        </div>
 
-                <h2 class="te-h2">📅 Build Diary</h2>
-                <p class="te-p"><strong>Day 1</strong> — "It's just gonna be a simple portfolio page." — me, a fool</p>
-                <p class="te-p"><strong>Day 3</strong> — Added a boot screen. It now takes 3 seconds to load. Justified it as "authentic sunOS feel."</p>
-                <p class="te-p"><strong>Day 7</strong> — Someone suggested dark mode. There is only dark mode. This IS the dark mode.</p>
-                <p class="te-p"><strong>Day 12</strong> — Added a Kishore Kumar music player. Works 70% of the time. Every time.</p>
-                <p class="te-p"><strong>Day 16</strong> — Rewrote the entire CSS. Twice. The first rewrite was to "clean it up." The second was to undo the first.</p>
-                <p class="te-p"><strong>Day 18</strong> — Implemented a kernel panic easter egg. Spent 4 hours on a feature 99% of visitors will never find. You did though. Respect.</p>
-                <p class="te-p"><strong>Day 21</strong> — Portfolio is now ~3000 lines of vanilla JS. Zero dependencies. Mom thinks I'm studying.</p>
-                <br>
-                <h2 class="te-h2">🐛 Known Bugs (honest edition)</h2>
-                <p class="te-p">— YouTube ads play sometimes. YouTube controls that, not me. Sorry.</p>
-                <p class="te-p">— Snake game difficulty "Impossible" is actually impossible. That's intentional.</p>
-                <p class="te-p">— The screensaver aurora looks different every browser. That's a feature.</p>
-                <p class="te-p">— Console CPU % is fake. It's a vibe, not telemetry.</p>
-                <br>
-                <h2 class="te-h2">🔓 Unlocked Terminal Commands</h2>
-                <p class="te-p">Type these in the Terminal app:</p>
-                <p class="te-p"><code style="color:#30d158;">classified</code> — view the real project list</p>
-                <p class="te-p"><code style="color:#30d158;">devlog</code> &nbsp;&nbsp;&nbsp;— full raw build diary</p>
-                <p class="te-p"><code style="color:#30d158;">secrets</code> &nbsp;&nbsp;— things I probably shouldn't share</p>
-                <p class="te-p"><code style="color:#ff453a;">sudo rm -rf /</code> — please don't</p>
-                <br>
-                <p class="te-p" style="color:rgba(255,255,255,0.25);font-size:11px;font-style:italic;">Built with ☕, existential dread, and an unhealthy obsession with sunOS UI details.</p>
+                        <!-- Wallpaper Hue Slider -->
+                        <div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:11px;">
+                                <span style="color:rgba(255,255,255,0.65);">Desktop Wallpaper Hue</span>
+                                <span id="dev-hue-val" style="color:#30d158; font-weight:bold;">0°</span>
+                            </div>
+                            <input type="range" min="0" max="360" value="0" style="width:100%; accent-color:#30d158; cursor:pointer;" oninput="adjustDevWallpaperHue(this.value)">
+                        </div>
+                        
+                        <!-- Exploit Overlay Button -->
+                        <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(48,209,88,0.05); padding:10px; border-radius:6px; border:0.5px solid rgba(48,209,88,0.25);">
+                            <span style="font-size:11px; color:#30d158; font-weight:600;">Matrix Terminal Rain</span>
+                            <button onclick="triggerMatrixRain()" style="background:#30d158; color:#000; border:none; padding:4px 10px; border-radius:4px; font-size:10px; font-weight:700; cursor:pointer; font-family:var(--mono); transition:transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='none'">TRIGGER</button>
+                        </div>
+                        
+                        <!-- Diagnostics panel -->
+                        <div style="background:rgba(255,255,255,0.015); border:0.5px solid rgba(255,255,255,0.06); border-radius:6px; padding:10px; font-size:10px; color:rgba(255,255,255,0.45); line-height:1.6; margin-top:auto; font-family:var(--mono);">
+                            <div style="color:#30d158; font-weight:bold; margin-bottom:6px; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;">📋 Kernel Diagnostics</div>
+                            <div>HOST: <span style="color:#fff;">localhost:8080</span></div>
+                            <div>TARGET: <span style="color:#fff;">sunOS_v1.0.4</span></div>
+                            <div>PRIVILEGES: <span style="color:#ff453a; font-weight:bold;">root (level 0)</span></div>
+                            <div>TELEMETRY: <span style="color:#30d158; font-weight:bold;">ENCRYPTED_OK</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Scrollable Payload log list, Build Diary & Known Bugs -->
+                    <div class="devnotes-panel-right" style="display:flex; flex-direction:column; gap:20px; overflow-y:auto; height:100%; padding-right:8px; box-sizing:border-box;">
+                        
+                        <!-- Section A: Terminal Commands -->
+                        <div>
+                            <div style="border-bottom:1px solid rgba(48,209,88,0.2); padding-bottom:6px; margin-bottom:10px;">
+                                <p style="color:#bf5af2; font-size:11px; margin:0; text-transform:uppercase; letter-spacing:1px;">📁 CLI PAYLOADS</p>
+                                <h3 style="color:#fff; font-size:14px; font-weight:700; margin:4px 0 0 0; text-transform:uppercase;">Shell Commands</h3>
+                            </div>
+                            
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <div style="background:rgba(255,255,255,0.02); border:0.5px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                        <code style="color:#30d158; font-size:11px; font-weight:bold;">classified</code>
+                                        <span style="font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase;">Real projects</span>
+                                    </div>
+                                    <p style="margin:0; font-size:10px; color:rgba(255,255,255,0.5);">Uncovers the hidden repository list with active bot servers.</p>
+                                </div>
+                                
+                                <div style="background:rgba(255,255,255,0.02); border:0.5px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                        <code style="color:#30d158; font-size:11px; font-weight:bold;">devlog</code>
+                                        <span style="font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase;">Raw commits</span>
+                                    </div>
+                                    <p style="margin:0; font-size:10px; color:rgba(255,255,255,0.5);">Dumps the original commit dates and hours logged on this build.</p>
+                                </div>
+                                
+                                <div style="background:rgba(255,255,255,0.02); border:0.5px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                        <code style="color:#30d158; font-size:11px; font-weight:bold;">secrets</code>
+                                        <span style="font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase;">Decrypted truths</span>
+                                    </div>
+                                    <p style="margin:0; font-size:10px; color:rgba(255,255,255,0.5);">Reveals private design decisions and hidden exploit buffers.</p>
+                                </div>
+
+                                <div style="background:rgba(255,255,255,0.02); border:0.5px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                        <code style="color:#30d158; font-size:11px; font-weight:bold;">breach</code>
+                                        <span style="font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase;">Intrusion scan</span>
+                                    </div>
+                                    <p style="margin:0; font-size:10px; color:rgba(255,255,255,0.5);">Simulates full system infiltration logs and proxy routing chain.</p>
+                                </div>
+                                
+                                <div style="background:rgba(255,255,255,0.02); border:0.5px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px 10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                        <code style="color:#ff9f0a; font-size:11px; font-weight:bold;">logout</code>
+                                        <span style="font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase;">System Lock</span>
+                                    </div>
+                                    <p style="margin:0; font-size:10px; color:rgba(255,255,255,0.5);">Terminates developer session, locking this panel and settings.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section B: Build Diary -->
+                        <div>
+                            <div style="border-bottom:1px solid rgba(48,209,88,0.2); padding-bottom:6px; margin-bottom:10px;">
+                                <p style="color:#ffd60a; font-size:11px; margin:0; text-transform:uppercase; letter-spacing:1px;">📅 build_diary.txt</p>
+                                <h3 style="color:#fff; font-size:14px; font-weight:700; margin:4px 0 0 0; text-transform:uppercase;">Project Commits</h3>
+                            </div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.65); line-height:1.7; display:flex; flex-direction:column; gap:6px;">
+                                <div><span style="color:#30d158;">[Day 01]</span> "It's just gonna be a simple portfolio page." — me, a fool.</div>
+                                <div><span style="color:#30d158;">[Day 03]</span> Added a boot screen. Takes 3s to load. Justified as "authentic feel".</div>
+                                <div><span style="color:#30d158;">[Day 07]</span> Someone suggested dark mode. There is only dark mode. This IS dark mode.</div>
+                                <div><span style="color:#30d158;">[Day 12]</span> Added a music player. Works 70% of the time. Every time.</div>
+                                <div><span style="color:#30d158;">[Day 16]</span> Rewrote the entire CSS twice. First to "clean up", second to undo the first.</div>
+                                <div><span style="color:#30d158;">[Day 18]</span> Coded simulated kernel panic easter egg. Spent 4 hours. No regrets.</div>
+                                <div><span style="color:#30d158;">[Day 21]</span> Portfolio is now ~4000 lines of vanilla JS. Mom thinks I'm studying.</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section C: Known Bugs -->
+                        <div>
+                            <div style="border-bottom:1px solid rgba(48,209,88,0.2); padding-bottom:6px; margin-bottom:10px;">
+                                <p style="color:#ff453a; font-size:11px; margin:0; text-transform:uppercase; letter-spacing:1px;">🐛 system_telemetry.log</p>
+                                <h3 style="color:#fff; font-size:14px; font-weight:700; margin:4px 0 0 0; text-transform:uppercase;">Known System Bugs</h3>
+                            </div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.65); line-height:1.7; display:flex; flex-direction:column; gap:6px;">
+                                <div>— YouTube ads block playback sometimes. YouTube control, not mine.</div>
+                                <div>— Snake game difficulty "Impossible" is actually impossible. Intentional.</div>
+                                <div>— Aurora canvas rendering behaves differently by GPU model. (Feature).</div>
+                                <div>— Control Center telemetry CPU % is fake. It's a drift function.</div>
+                            </div>
+                        </div>
+                        
+                        <p style="font-size:10px; color:rgba(255,255,255,0.25); text-align:center; margin-top:20px; font-style:italic;">
+                            💡 Type Konami sequence (↑ ↑ ↓ ↓ ← → ← → B A) on your desktop to trigger the exploit bypass again.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="resize-handle" data-win="window-devnotes"></div>

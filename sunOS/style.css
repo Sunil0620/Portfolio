@@ -10,15 +10,29 @@
     --close: #ff5f57;
     --minimize: #febc2e;
     --maximize: #28c840;
-    --sans: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --heading: 'Syne', sans-serif;
     --mono: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    --accent: #007aff;
+    --accent: #6e56cf;
     --text-primary: rgba(255,255,255,0.92);
     --text-secondary: rgba(255,255,255,0.55);
     --text-tertiary: rgba(255,255,255,0.35);
     --surface: rgba(255,255,255,0.08);
     --surface-hover: rgba(255,255,255,0.14);
     --border-subtle: rgba(255,255,255,0.1);
+}
+
+/* Unique headings styling */
+h1, h2, h3, h4, h5, h6,
+.about-hero-title,
+.gradient-text,
+.window-header .header-title,
+.menu-app-name,
+.menu-btn,
+.login-title,
+.login-avatar-wrap + h2 {
+    font-family: var(--heading);
+    font-weight: 700;
 }
 
 /* =============== RESET =============== */
@@ -621,24 +635,26 @@ body, .window, .window-header, .settings-sidebar, .finder-sidebar, #menu-bar, .m
 
 /* =============== NOTIFICATION TOAST =============== */
 .notification {
-    position: fixed; top: 40px; right: 20px; z-index: 6200;
-    width: 320px;
-    background: rgba(40,40,44,0.92);
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 6200;
+    width: max-content; max-width: 90vw;
+    background: rgba(15,15,20,0.88);
     backdrop-filter: var(--glass-blur);
-    border: 0.5px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 14px 16px;
-    box-shadow: 0 16px 50px rgba(0,0,0,0.4);
-    animation: notifSlide 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: 0.5px solid rgba(255,255,255,0.12);
+    border-radius: 999px; padding: 8px 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: notifSlideCenter 0.35s cubic-bezier(0.34,1.56,0.64,1);
 }
+.notification.hiding { opacity: 0; transform: translate(-50%, -20px) scale(0.95); }
 .notification.hidden { display: none; }
-.notification.hiding { opacity: 0; transform: translateX(100%); }
-@keyframes notifSlide { from { opacity:0; transform:translateX(100%) } to { opacity:1; transform:none } }
-.notif-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
-.notif-app { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
-.notif-time { font-size: 11px; color: var(--text-tertiary); }
-.notif-body strong { font-size: 13px; color: var(--text-primary); }
-.notif-body p { font-size: 12px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+
+@keyframes notifSlideCenter {
+    from { opacity: 0; transform: translate(-50%, -20px) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.notification p { font-size: 13px; color: var(--text-primary); font-weight: 500; text-align: center; }
 
 /* =============== WINDOW BASE =============== */
 .window {
@@ -746,7 +762,18 @@ body, .window, .window-header, .settings-sidebar, .finder-sidebar, #menu-bar, .m
 }
 .settings-item:hover { background: var(--surface-hover); color: var(--text-primary); }
 .settings-item.active { background: var(--accent); color: #fff; }
-.si-icon { font-size: 16px; }
+.si-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+.si-icon .tag-dot {
+    margin-right: 0;
+}
 
 .settings-main { flex: 1; padding: 18px 20px; overflow-y: auto; }
 .settings-pane h3 { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
@@ -890,7 +917,7 @@ body, .window, .window-header, .settings-sidebar, .finder-sidebar, #menu-bar, .m
 .terminal-body::after {
     content: '';
     position: absolute; inset: 0; pointer-events: none;
-    background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+    background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,var(--scanline-opacity, 0.04)) 3px, rgba(0,0,0,var(--scanline-opacity, 0.04)) 4px);
     z-index: 1;
 }
 #terminal-output { user-select: text; -webkit-user-select: text; }
@@ -1382,23 +1409,13 @@ html.light-mode .te-h2 { color: #222; }
 
 /* Dock icon arts */
 .finder-art {
-    background: linear-gradient(180deg, #a8caff 0%, #3478f6 100%);
-    position: relative; overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+    position: relative;
 }
-.finder-top { position:absolute;top:0;left:0;right:50%;bottom:0;background:linear-gradient(180deg,#a0c4ff,#5b9cf6); }
-.finder-bot { position:absolute;top:0;left:50%;right:0;bottom:0;background:linear-gradient(180deg,#e8e8e8,#bdbdbd); }
-.finder-face { position:absolute;inset:0;display:flex;align-items:center;justify-content:center; }
-.f-eye { width:5px;height:5px;border-radius:50%;background:#334;position:absolute;top:38%; }
-.f-eye.l { left:30%; }
-.f-eye.r { right:30%; }
-.f-nose { width:2px;height:3px;background:#556;position:absolute;top:52%;left:50%;transform:translateX(-50%); }
-.f-mouth { width:12px;height:4px;border-bottom:2px solid #334;border-radius:0 0 7px 7px;position:absolute;bottom:28%;left:50%;transform:translateX(-50%); }
 
 .terminal-art {
     background: linear-gradient(135deg, #1a2744, #0d1f3c);
-    color: #50fa7b; font-family: var(--mono); font-size: 16px; font-weight: 700;
-    letter-spacing: -1px;
-    text-shadow: 0 0 10px rgba(80,250,123,0.8);
     box-shadow: inset 0 0 12px rgba(80,250,123,0.1);
 }
 
@@ -1406,26 +1423,11 @@ html.light-mode .te-h2 { color: #222; }
     background: linear-gradient(135deg, #a8d8f0, #0076c8);
     position: relative; overflow: hidden;
 }
-.compass {
-    width: 28px; height: 28px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.7);
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-}
-.needle {
-    width: 2px; height: 20px; border-radius: 1px;
-    background: linear-gradient(to bottom, #ff3b30 50%, #fff 50%);
-    position: absolute; transform-origin: center;
-    transform: rotate(45deg);
-}
 
 .notes-art {
-    background: linear-gradient(180deg, #fffde7, #fff9c4);
-    flex-direction: column; gap: 2px; padding: 6px 5px;
-    justify-content: flex-start;
+    background: transparent;
+    box-shadow: none;
 }
-.notes-top-bar { width: 100%; height: 8px; background: #ffb300; border-radius: 2px; margin-bottom: 3px; }
-.notes-line { width: 100%; height: 2px; background: rgba(180,140,0,0.3); border-radius: 1px; }
 
 /* Dock-icon-only music (renamed from music-art to avoid collision with player .music-art) */
 .music-dock-art {
@@ -1619,14 +1621,11 @@ html.light-mode .nc-card-body { color: rgba(0,0,0,0.75); }
 
 /* ─── Notification Toast ─── */
 html.light-mode .notification {
-    background: rgba(248,248,252,0.97);
-    border-color: rgba(0,0,0,0.08);
-    box-shadow: 0 16px 50px rgba(0,0,0,0.12);
+    background: rgba(245,245,248,0.92);
+    border-color: rgba(0,0,0,0.12);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
-html.light-mode .notif-app { color: rgba(0,0,0,0.5); }
-html.light-mode .notif-body strong { color: rgba(0,0,0,0.85); }
-html.light-mode .notif-body p { color: rgba(0,0,0,0.55); }
-html.light-mode .notif-time { color: rgba(0,0,0,0.38); }
+html.light-mode .notification p { color: rgba(0,0,0,0.85); }
 
 /* ─── Spotlight ─── */
 html.light-mode .spotlight-box {
@@ -2330,12 +2329,10 @@ html.light-mode .window-header.notes-bar {
 
 .work-card-content {
     overflow: hidden;
-    transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), padding 0.25s ease;
-    padding: 0 15px;
+    transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     background: #fff;
 }
-
-.mob-work-card.active .work-card-content {
+.work-card-inner {
     padding: 15px;
 }
 
@@ -3182,7 +3179,7 @@ html.light-mode .snake-hud  { color: rgba(0,0,0,0.6); }
     font-size: clamp(24px, 3vw, 30px);
     line-height: 1.14;
     margin-bottom: 14px;
-    max-width: 12ch;
+    max-width: 38ch;
 }
 .about-lead {
     color: rgba(255,255,255,0.72) !important;
@@ -3919,4 +3916,28 @@ html.dev-mode #terminal-body { border-top: 1px solid rgba(255,60,60,0.15); }
         cursor: auto !important;
     }
 }
+
+/* Hacker / Developer console animations */
+@keyframes glowGreen {
+    from { text-shadow: 0 0 3px rgba(48,209,88,0.45), 0 0 8px rgba(48,209,88,0.2); }
+    to { text-shadow: 0 0 8px rgba(48,209,88,0.85), 0 0 16px rgba(48,209,88,0.4); }
+}
+@keyframes pulse {
+    from { opacity: 0.3; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1.1); }
+}
+
+/* Performance Optimizations during drag/resize (drops backdrop-filter blur for buttery smooth drag) */
+.window.active-drag, .window.active-resize {
+    will-change: left, top, width, height, transform;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(30, 30, 35, 0.97) !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6) !important;
+}
+html.light-mode .window.active-drag, html.light-mode .window.active-resize {
+    background: rgba(240, 240, 245, 0.98) !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.18) !important;
+}
+
 
