@@ -168,6 +168,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.resize-handle').forEach(makeResizable);
     document.querySelectorAll('.resize-handle-left').forEach(makeResizableLeft);
 
+    /* Dynamically inject and init top resize handles for all windows */
+    document.querySelectorAll('.window').forEach(win => {
+        const id = win.id;
+        
+        const tr = document.createElement('div');
+        tr.className = 'resize-handle-top';
+        tr.dataset.win = id;
+        win.appendChild(tr);
+        makeResizableTopRight(tr);
+        
+        const tl = document.createElement('div');
+        tl.className = 'resize-handle-top-left';
+        tl.dataset.win = id;
+        win.appendChild(tl);
+        makeResizableTopLeft(tl);
+    });
+
     /* Right-click context menu */
     document.getElementById('desktop').addEventListener('contextmenu', e => {
         if (e.target.closest('.window') || e.target.closest('#dock-wrapper') || e.target.closest('#menu-bar')) return;
@@ -754,7 +771,7 @@ function ccToggleFocus() {
 }
 function ccBrightness(val) {
     brightnessLevel = val / 100;
-    document.getElementById('desktop').style.filter = `brightness(${brightnessLevel})`;
+    document.body.style.filter = `brightness(${brightnessLevel})`;
 }
 function ccVolume(val) {
     masterVolume = val / 100;
@@ -922,8 +939,8 @@ const SPOTLIGHT_INDEX = [
     { label:'Lock Screen',      type:'System',  icon:'🔒',  action:() => lockScreen() },
     { label:'Python',           type:'Skill',   icon:'🐍',  action:() => toggleWindow('window-skills') },
     { label:'JavaScript',       type:'Skill',   icon:'🟨',  action:() => toggleWindow('window-skills') },
-    { label:'Django',           type:'Skill',   icon:'🟢',  action:() => toggleWindow('window-skills') },
-    { label:'React',            type:'Skill',   icon:'⚛️',  action:() => toggleWindow('window-skills') },
+    { label:'Next.js',          type:'Skill',   icon:'▲',  action:() => toggleWindow('window-skills') },
+    { label:'FastAPI',          type:'Skill',   icon:'⚡',  action:() => toggleWindow('window-skills') },
     { label:'Docker',           type:'Skill',   icon:'🐳',  action:() => toggleWindow('window-skills') },
     { label:'AI Code Agent',    type:'Project', icon:'🤖',  action:() => { toggleWindow('window-projects'); } },
     { label:'Email: sunilsaini5652@gmail.com', type:'Contact', icon:'📧', action:() => window.open('mailto:sunilsaini5652@gmail.com') },
@@ -1179,47 +1196,74 @@ function showAllWindows() {
 function triggerMissionControl() {
     const desktop = document.getElementById('desktop');
     missionControlActive = !missionControlActive;
+    
     if (missionControlActive) {
-        const wins = document.querySelectorAll('.window');
-        const total = wins.length;
-        const cols  = Math.ceil(Math.sqrt(total));
-        const rows  = Math.ceil(total / cols);
-        const W = window.innerWidth, H = window.innerHeight - 28;
-        const padX = 60, padY = 60;
+        desktop.classList.add('mission-control');
+        const openWins = Array.from(document.querySelectorAll('.window')).filter(win => win.style.display !== 'none' && !win.classList.contains('minimized'));
+        const total = openWins.length;
+        if (total === 0) return;
+        
+        const cols = Math.ceil(Math.sqrt(total));
+        const rows = Math.ceil(total / cols);
+        const W = window.innerWidth;
+        const H = window.innerHeight - 28;
+        const padX = 50, padY = 50;
         const cellW = (W - padX * 2) / cols;
         const cellH = (H - padY * 2) / rows;
-        wins.forEach((win, i) => {
-            if (win.style.display === 'none') return;
-            const col = i % cols, row = Math.floor(i / cols);
-            win._mc = { l: win.style.left, t: win.style.top, w: win.style.width, h: win.style.height, z: win.style.zIndex };
-            const scale = 0.46;
-            const tw = cellW * scale, th = cellH * scale;
-            win.style.transition = 'width 0.4s, height 0.4s, left 0.4s, top 0.4s, opacity 0.4s cubic-bezier(0.4,0,0.2,1)';
-            win.style.left   = (padX + col * cellW + (cellW - tw)/2) + 'px';
-            win.style.top    = (padY + 28 + row * cellH + (cellH - th)/2) + 'px';
-            win.style.width  = tw + 'px';
-            win.style.height = th + 'px';
+        
+        openWins.forEach((win, i) => {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            
+            const cellCenterX = padX + col * cellW + cellW / 2;
+            const cellCenterY = padY + 28 + row * cellH + cellH / 2;
+            
+            const winCenterX = win.offsetLeft + win.offsetWidth / 2;
+            const winCenterY = win.offsetTop + win.offsetHeight / 2;
+            
+            const tx = cellCenterX - winCenterX;
+            const ty = cellCenterY - winCenterY;
+            
+            const s = Math.min(0.8, (cellW * 0.82) / win.offsetWidth, (cellH * 0.82) / win.offsetHeight);
+            
+            win.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease';
+            win.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
             win.style.zIndex = 3000 + i;
-        });
-        document.getElementById('menu-app-name').textContent = 'Mission Control';
-        wins.forEach(win => {
-            if (win.style.display === 'none') return;
-            win.onclick = function() {
-                if (missionControlActive) { triggerMissionControl(); bringFront(win); }
+            
+            win._mcOnClick = win.onclick;
+            win.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                triggerMissionControl();
+                bringFront(win);
             };
         });
+        document.getElementById('menu-app-name').textContent = 'Mission Control';
     } else {
+        desktop.classList.remove('mission-control');
         document.querySelectorAll('.window').forEach(win => {
-            if (!win._mc) return;
-            win.style.transition = 'width 0.4s, height 0.4s, left 0.4s, top 0.4s, opacity 0.4s cubic-bezier(0.4,0,0.2,1)';
-            win.style.left   = win._mc.l;
-            win.style.top    = win._mc.t;
-            win.style.width  = win._mc.w;
-            win.style.height = win._mc.h;
-            win.style.zIndex = win._mc.z;
-            setTimeout(() => { win.style.transition = ''; win.onclick = null; }, 400);
-            delete win._mc;
+            if (win.style.display === 'none') return;
+            win.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease';
+            win.style.transform = '';
+            
+            if (win.hasOwnProperty('_mcOnClick')) {
+                win.onclick = win._mcOnClick;
+                delete win._mcOnClick;
+            } else {
+                win.onclick = null;
+            }
+            setTimeout(() => {
+                win.style.transition = '';
+            }, 400);
         });
+        
+        const openWins = Array.from(document.querySelectorAll('.window')).filter(win => win.style.display !== 'none' && !win.classList.contains('minimized'));
+        if (openWins.length > 0) {
+            const sorted = openWins.sort((a,b) => parseInt(b.style.zIndex || 0) - parseInt(a.style.zIndex || 0));
+            bringFront(sorted[0]);
+        } else {
+            document.getElementById('menu-app-name').textContent = 'Finder';
+        }
     }
 }
 
@@ -1231,6 +1275,7 @@ function makeDraggable(header, el) {
         minimizeWindow(el.id);
     });
     function start(e) {
+        if (missionControlActive) return;
         if (e.target.closest('.window-controls') || e.target.closest('.url-bar')) return;
         e.preventDefault();
         bringFront(el);
@@ -1300,6 +1345,61 @@ function makeResizableLeft(handle) {
             win.style.width  = nw + 'px';
             win.style.height = Math.max(200, sh + (ev.clientY - sy)) + 'px';
             win.style.left   = (sl + (sw - nw)) + 'px';
+        };
+        const onUp = () => { 
+            win.classList.remove('active-resize');
+            document.removeEventListener('mousemove', onMove); 
+            document.removeEventListener('mouseup', onUp); 
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    });
+}
+function makeResizableTopRight(handle) {
+    const win = document.getElementById(handle.dataset.win);
+    if (!win) return;
+    handle.addEventListener('mousedown', e => {
+        e.preventDefault(); e.stopPropagation(); bringFront(win);
+        win.classList.add('active-resize');
+        const sx = e.clientX, sy = e.clientY;
+        const sw = win.offsetWidth, sh = win.offsetHeight;
+        const sl = win.offsetLeft, st = win.offsetTop;
+        const onMove = ev => {
+            const dx = ev.clientX - sx;
+            const dy = ev.clientY - sy;
+            const nw = Math.max(300, sw + dx);
+            const nh = Math.max(200, sh - dy);
+            win.style.width  = nw + 'px';
+            win.style.height = nh + 'px';
+            win.style.top    = (st + (sh - nh)) + 'px';
+        };
+        const onUp = () => { 
+            win.classList.remove('active-resize');
+            document.removeEventListener('mousemove', onMove); 
+            document.removeEventListener('mouseup', onUp); 
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    });
+}
+function makeResizableTopLeft(handle) {
+    const win = document.getElementById(handle.dataset.win);
+    if (!win) return;
+    handle.addEventListener('mousedown', e => {
+        e.preventDefault(); e.stopPropagation(); bringFront(win);
+        win.classList.add('active-resize');
+        const sx = e.clientX, sy = e.clientY;
+        const sw = win.offsetWidth, sh = win.offsetHeight;
+        const sl = win.offsetLeft, st = win.offsetTop;
+        const onMove = ev => {
+            const dx = ev.clientX - sx;
+            const dy = ev.clientY - sy;
+            const nw = Math.max(300, sw - dx);
+            const nh = Math.max(200, sh - dy);
+            win.style.width  = nw + 'px';
+            win.style.height = nh + 'px';
+            win.style.left   = (sl + (sw - nw)) + 'px';
+            win.style.top    = (st + (sh - nh)) + 'px';
         };
         const onUp = () => { 
             win.classList.remove('active-resize');
@@ -1388,7 +1488,7 @@ function setWallpaper(name, save = true) {
         return;
     }
     const num = name.replace('img', '');
-    document.body.style.background = `url('img/${num}.jpg') center/cover no-repeat`;
+    document.body.style.backgroundImage = `url('img/${num}.jpg')`;
     document.body.style.animation  = 'none';
     if (save) localStorage.setItem('mac-wall', name);
     document.querySelectorAll('.wallpaper-opt').forEach(opt =>
@@ -1593,39 +1693,23 @@ function switchFinderSection(section, rowEl) {
                     <div><strong>portfolio-notes.md</strong><br><small style="color:var(--text-secondary)">Markdown · 6 KB</small></div>
                 </div>
             </div>`,
-        downloads: `
-            <p class="notes-date">Downloads</p>
-            <h2 style="font-size:18px;margin-bottom:16px;">📥 ~/Downloads</h2>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
-                    <span style="font-size:28px;">🗜️</span>
-                    <div><strong>portfolio-source.zip</strong><br><small style="color:var(--text-secondary)">ZIP · 1.2 MB · Today</small></div>
-                </div>
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
-                    <span style="font-size:28px;">🖼️</span>
-                    <div><strong>screenshots.tar.gz</strong><br><small style="color:var(--text-secondary)">Archive · 4.8 MB · Yesterday</small></div>
-                </div>
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
-                    <span style="font-size:28px;">📦</span>
-                    <div><strong>node_modules-backup.tar</strong><br><small style="color:var(--text-secondary)">Archive · 47.3 GB · (Please delete)</small></div>
-                </div>
-            </div>`,
         work: `
             <p class="notes-date">Work Experience</p>
             <h2 style="font-size:18px;margin-bottom:16px;">💼 Experience</h2>
             <div style="display:flex;flex-direction:column;gap:14px;">
                 <div style="padding:14px;background:var(--surface);border-radius:10px;border-left:3px solid var(--accent);">
-                    <strong>Full-Stack Developer</strong> <span style="color:var(--text-tertiary);font-size:12px;float:right">2023 — present</span>
-                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">Building Django + React applications. ML/AI integrations with GPT-4.</p>
+                    <strong>AI & Systems Engineer</strong> <span style="color:var(--text-tertiary);font-size:12px;float:right">2023 — present</span>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">Designing high-performance backend systems, LLM agent workflows, and reactive web applications.</p>
                     <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
-                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">Django</span>
-                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">React</span>
                         <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">Python</span>
+                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">Next.js</span>
+                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">Node.js</span>
+                        <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">FastAPI</span>
                     </div>
                 </div>
                 <div style="padding:14px;background:var(--surface);border-radius:10px;border-left:3px solid #30d158;">
-                    <strong>Open to Work</strong>
-                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">Actively seeking freelance, internship and full-time opportunities.</p>
+                    <strong>Open to Opportunities</strong>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">Available for freelance projects, contract roles, and specialized AI integrations.</p>
                     <a href="mailto:sunilsaini5652@gmail.com" style="color:var(--accent);font-size:13px;text-decoration:none;display:block;margin-top:8px;">📧 sunilsaini5652@gmail.com</a>
                 </div>
             </div>`,
@@ -1638,7 +1722,7 @@ function switchFinderSection(section, rowEl) {
                         <strong>🖥️ Portfolio</strong>
                         <span style="font-size:11px;color:var(--text-tertiary)">★ Public</span>
                     </div>
-                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">sunOS-style portfolio — zero dependencies.</p>
+                    <p style="color:var(--text-secondary);font-size:13px;margin-top:4px;">sunOS-style portfolio — client-side simulation.</p>
                     <div style="margin-top:6px;display:flex;gap:6px;">
                         <span style="font-size:11px;color:var(--text-tertiary)">HTML · CSS · JS</span>
                     </div>
@@ -1748,10 +1832,10 @@ const TERM_COMMANDS = {
   <span class="term-dim">misc     </span>  <span class="term-cmd">date</span>  <span class="term-cmd">clear</span>  <span style="color:#ff453a" class="term-cmd">sudo rm -rf /</span>${isRoot ? `
   <span style="color:#00ff41">root     </span>  <span class="term-cmd" style="color:#00ff41">breach</span>  <span class="term-cmd" style="color:#ff6b6b">classified</span>  <span class="term-cmd" style="color:#ff6b6b">devlog</span>  <span class="term-cmd" style="color:#ff6b6b">secrets</span>  <span class="term-cmd" style="color:#636366">logout</span>` : ''}`;
     },
-    about:   () => `<span class="g">Sunil Saini</span> — Developer &amp; ML Enthusiast
-  Full-stack developer focused on <span class="term-cmd">Django</span> + <span class="term-cmd">React</span>
-  Building AI-powered tools and beautiful UIs
-  Open to: freelance, internships, open source
+    about:   () => `<span class="g">Sunil Saini</span> — AI &amp; Systems Engineer
+  Full-stack developer focused on <span class="term-cmd">Python</span> + <span class="term-cmd">Next.js</span> + <span class="term-cmd">Node.js</span>
+  Building high-performance backends and cognitive agent systems
+  Open to: freelance projects, contract roles, open source
   \"The best code is the code that never needed to be written\"`,
 
     skills:  () => `<pre>{
@@ -1766,7 +1850,7 @@ const TERM_COMMANDS = {
     projects: () => `<span class="g">My Projects:</span>
   🤖  <span class="term-cmd">AI Code Agent</span>       — Python, LLM, GPT-4
   🛒  <span class="term-cmd">E-Commerce Platform</span> — Next.js, Stripe, Prisma
-  🖥️  <span class="term-cmd">This Portfolio</span>      — HTML, CSS, JS (Zero deps)
+  🖥️  <span class="term-cmd">This Portfolio</span>      — vanilla browser engine
   📊  <span class="term-cmd">Analytics Dashboard</span> — React, D3.js, WebSockets
 
   → <a class="term-link" href="https://github.com/Sunil0620" target="_blank">github.com/Sunil0620</a>`,
@@ -1866,10 +1950,10 @@ To github.com:Sunil0620/Portfolio.git
     linkedin: () => { window.open('https://www.linkedin.com/in/sunil-saini-6190ba255/','_blank'); return '<span class="g">Opening LinkedIn…</span>'; },
     resume: () => { window.open('https://sunil0620.github.io/Portfolio/','_blank'); return '<span class="g">Opening portfolio / resume…</span>'; },
     hire: () => `<span class="g">Why hire Sunil?</span>
-  ✅  Full-stack: Django + React + Next.js
-  ✅  ML/AI experience — GPT-4 integrations, RAG systems
+  ✅  Systems & AI: Python + Next.js + Node.js + WebSockets
+  ✅  ML/AI experience — LLM agent workflows, RAG system design
   ✅  Ships fast, writes clean, explains clearly
-  ✅  Zero-dependency portfolio built from scratch
+  ✅  Highly optimized vanilla architecture
   ✅  Problem solver, not just a code writer
   → Email: <a class="term-link" href="mailto:sunilsaini5652@gmail.com">sunilsaini5652@gmail.com</a>`,
 
@@ -2739,7 +2823,18 @@ function playTrack(idx) {
     // Update all UI
     document.getElementById('music-track').textContent    = track.name;
     document.getElementById('music-artist').textContent   = track.artist + ' · ' + track.film;
-    document.getElementById('music-art-emoji').textContent = track.emoji;
+    const ytId = track.ytId || (track.ytIds ? track.ytIds[0] : null);
+    const imgEl = document.getElementById('music-art-img');
+    const emojiEl = document.getElementById('music-art-emoji');
+    if (imgEl && ytId) {
+        imgEl.src = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+        imgEl.style.display = 'block';
+        if (emojiEl) emojiEl.style.display = 'none';
+    } else if (emojiEl) {
+        if (imgEl) imgEl.style.display = 'none';
+        emojiEl.textContent = track.emoji;
+        emojiEl.style.display = 'block';
+    }
     document.getElementById('music-duration').textContent = formatTime(track.duration);
     document.getElementById('music-elapsed').textContent  = '0:00';
     updateMusicProgressUI(0);
@@ -2938,7 +3033,7 @@ function _vsRender(el, text, type) {
 }
 function _vsRenderFallback(el, type) {
     const fallbacks = {
-        js:  [['/* sunOS Portfolio — script.js */','cmt'],["'use strict';",'str'],['',''],['let zIndex = 100;','var'],['let locked = true;','var'],['',''],['/* Boot Sequence */','cmt'],['document.addEventListener(','fn'],[" 'DOMContentLoaded', () => {",'str'],['  const boot = document.getElementById(','kw'],["    'boot-fill');",'str'],['  let progress = 0;','var'],['',''],['  const iv = setInterval(() => {','kw'],['    progress += Math.random() * 7 + 2;','num'],['    if (progress >= 100) clearInterval(iv);','kw'],['    bootFill.style.width = progress + \'%\';','var'],['  }, 130);','num'],['',''],['/* Zero Dependencies. Pure JS. */','cmt'],["// 'How did you make this?' — Everyone",'cmt']],
+        js:  [['/* sunOS Portfolio — script.js */','cmt'],["'use strict';",'str'],['',''],['let zIndex = 100;','var'],['let locked = true;','var'],['',''],['/* Boot Sequence */','cmt'],['document.addEventListener(','fn'],[" 'DOMContentLoaded', () => {",'str'],['  const boot = document.getElementById(','kw'],["    'boot-fill');",'str'],['  let progress = 0;','var'],['',''],['  const iv = setInterval(() => {','kw'],['    progress += Math.random() * 7 + 2;','num'],['    if (progress >= 100) clearInterval(iv);','kw'],['    bootFill.style.width = progress + \'%\';','var'],['  }, 130);','num'],['',''],['/* Clean, performant ES6+ code. */','cmt'],["// 'How did you make this?' — Everyone",'cmt']],
         css: [['/* sunOS Portfolio — style.css */','cmt'],['',''],['* { box-sizing: border-box; margin: 0; }','cls'],['',''],['body {','cls'],['  background: #1c1c1e;','num'],["  font-family: -apple-system, 'SF Pro Display';",'str'],['  color: rgba(255,255,255,0.85);','num'],['  overflow: hidden;','var'],['}','punc'],['',''],['/* Window system */','cmt'],['.window {','cls'],['  backdrop-filter: blur(40px) saturate(180%);','var'],['  border-radius: 12px;','num'],['  border: 0.5px solid rgba(255,255,255,0.1);','num'],['}','punc']],
         html:[['&lt;!DOCTYPE html&gt;','kw'],['&lt;html lang="en"&gt;','kw'],['&lt;head&gt;','kw'],["  &lt;meta charset='UTF-8'&gt;",'kw'],['  &lt;title&gt;Sunil Saini — Portfolio&lt;/title&gt;','kw'],['  &lt;link rel="stylesheet" href="style.css"&gt;','kw'],['&lt;/head&gt;','kw'],['&lt;body&gt;','kw'],['',''],['  &lt;!-- Boot Screen --&gt;','cmt'],['  &lt;div id="boot-screen"&gt;','kw'],['    &lt;div id="boot-fill"&gt;&lt;/div&gt;','kw'],['  &lt;/div&gt;','kw'],['',''],['  &lt;!-- Desktop --&gt;','cmt'],['  &lt;div id="desktop"&gt;','kw'],['    &lt;div id="windows-container"&gt;&lt;/div&gt;','kw'],['  &lt;/div&gt;','kw'],['&lt;/body&gt;','kw']],
     };
@@ -3046,19 +3141,19 @@ function _ghTimeAgo(date) {
     setInterval(updateMobTime, 1000);
 
     /* 2. Audio Synthesis Engine */
-    let mobSoundEnabled = false;
+    window.mobSoundEnabled = true;
     const soundToggleBtn = document.getElementById('mob-sound-toggle');
     if (soundToggleBtn) {
         soundToggleBtn.addEventListener('click', () => {
-            mobSoundEnabled = !mobSoundEnabled;
-            soundToggleBtn.textContent = `SOUND: ${mobSoundEnabled ? 'ON' : 'OFF'}`;
-            soundToggleBtn.classList.toggle('active', mobSoundEnabled);
+            window.mobSoundEnabled = !window.mobSoundEnabled;
+            soundToggleBtn.textContent = `SOUND: ${window.mobSoundEnabled ? 'ON' : 'OFF'}`;
+            soundToggleBtn.classList.toggle('active', window.mobSoundEnabled);
             playSynthSound(440, 'sine', 0.1);
         });
     }
 
     function playSynthSound(freq, type = 'sine', duration = 0.1, delay = 0) {
-        if (!mobSoundEnabled) return;
+        if (!window.mobSoundEnabled) return;
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
@@ -3079,7 +3174,7 @@ function _ghTimeAgo(date) {
     }
 
     function playDecryptionChime() {
-        if (!mobSoundEnabled) return;
+        if (!window.mobSoundEnabled) return;
         playSynthSound(523.25, 'triangle', 0.15, 0);
         playSynthSound(659.25, 'triangle', 0.15, 0.08);
         playSynthSound(783.99, 'triangle', 0.15, 0.16);
@@ -3139,13 +3234,23 @@ function _ghTimeAgo(date) {
         });
     });
 
-    /* 5. Theme Invert Toggle */
-    const themeToggle = document.getElementById('mob-theme-toggle');
+    /* 5. Theme Cycle Selector */
+    let currentThemeIndex = 0;
+    const themes = ['yellow', 'green', 'vapor', 'dark'];
+    const themeNames = ['NEON YELLOW', 'MATRIX GREEN', 'VAPORWAVE', 'DEEP PURPLE'];
+    const themeCycleBtn = document.getElementById('mob-theme-cycle');
     const mobileCompanion = document.getElementById('mobile-companion');
-    if (themeToggle && mobileCompanion) {
-        themeToggle.addEventListener('click', () => {
+    if (themeCycleBtn && mobileCompanion) {
+        mobileCompanion.classList.add('mob-theme-yellow');
+        themeCycleBtn.addEventListener('click', () => {
             playSynthSound(350, 'triangle', 0.08);
-            mobileCompanion.classList.toggle('mob-inverted');
+            const prevTheme = themes[currentThemeIndex];
+            mobileCompanion.classList.remove('mob-theme-' + prevTheme);
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            const nextTheme = themes[currentThemeIndex];
+            mobileCompanion.classList.add('mob-theme-' + nextTheme);
+            themeCycleBtn.textContent = 'THEME: ' + themeNames[currentThemeIndex];
+            showNotification('Mobile Theme: ' + themeNames[currentThemeIndex]);
         });
     }
 
@@ -3178,9 +3283,12 @@ function _ghTimeAgo(date) {
         }
     });
 
-    /* 7. Draggable Stickers Logic (Touch and Mouse) */
-    const stickers = document.querySelectorAll('.mob-sticker');
-    stickers.forEach(sticker => {
+    /* 7. Draggable Stickers Logic & Spawner */
+    const stickersLayer = document.querySelector('.mob-stickers-layer');
+    const stickerInput = document.getElementById('mob-sticker-input');
+    const stickerSpawnBtn = document.getElementById('mob-sticker-spawn');
+
+    function makeStickerDraggable(sticker) {
         let isDragging = false;
         let startX, startY, initialLeft, initialTop;
         
@@ -3220,6 +3328,7 @@ function _ghTimeAgo(date) {
         };
         
         sticker.addEventListener('mousedown', e => {
+            if (e.target.tagName.toLowerCase() === 'span') return;
             startDrag(e.clientX, e.clientY);
             
             const onMouseMove = ev => moveDrag(ev.clientX, ev.clientY);
@@ -3234,6 +3343,7 @@ function _ghTimeAgo(date) {
         });
         
         sticker.addEventListener('touchstart', e => {
+            if (e.target.tagName.toLowerCase() === 'span') return;
             const touch = e.touches[0];
             startDrag(touch.clientX, touch.clientY);
         }, { passive: true });
@@ -3246,6 +3356,71 @@ function _ghTimeAgo(date) {
         
         sticker.addEventListener('touchend', () => {
             endDrag();
+        });
+    }
+
+    // Initialize existing stickers
+    document.querySelectorAll('.mob-sticker').forEach(makeStickerDraggable);
+
+    // Sticker spawner
+    if (stickerSpawnBtn && stickerInput && stickersLayer) {
+        stickerSpawnBtn.addEventListener('click', () => {
+            const rawText = stickerInput.value.trim();
+            if (!rawText) return;
+            stickerInput.value = '';
+            
+            const sticker = document.createElement('div');
+            sticker.className = 'mob-sticker';
+            
+            const colors = ['#FFE600', '#ff375f', '#00d2ff', '#30d158', '#ffffff'];
+            const randColor = colors[Math.floor(Math.random() * colors.length)];
+            const randRotate = Math.floor(Math.random() * 24) - 12;
+            const randTop = Math.floor(Math.random() * 300) + 80;
+            const randLeft = Math.floor(Math.random() * 120) + 15;
+            
+            sticker.style.top = randTop + 'px';
+            sticker.style.left = randLeft + 'px';
+            sticker.style.transform = `rotate(${randRotate}deg)`;
+            sticker.style.borderColor = randColor;
+            sticker.style.boxShadow = `3px 3px 0px ${randColor}`;
+            
+            sticker.innerHTML = `${rawText.toUpperCase()} <span style="margin-left: 8px; cursor: pointer; color: #ff375f; font-weight: bold; font-size: 13px;">×</span>`;
+            
+            const closeBtn = sticker.querySelector('span');
+            const deleteSticker = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                sticker.remove();
+                playSynthSound(300, 'sawtooth', 0.05);
+            };
+            closeBtn.addEventListener('mousedown', deleteSticker);
+            closeBtn.addEventListener('touchstart', deleteSticker);
+            
+            stickersLayer.appendChild(sticker);
+            makeStickerDraggable(sticker);
+            playSynthSound(900, 'sine', 0.08);
+        });
+    }
+
+    /* 7.5 Interactive Synth Pad Logic */
+    let activeWaveform = 'sine';
+    const waveSelectBtns = document.querySelectorAll('.wave-select');
+    waveSelectBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            waveSelectBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeWaveform = btn.dataset.wave;
+            playSynthSound(440, activeWaveform, 0.1);
+        });
+    });
+
+    const synthPads = document.querySelectorAll('.synth-pad');
+    synthPads.forEach(pad => {
+        pad.addEventListener('click', () => {
+            const freq = parseFloat(pad.dataset.freq);
+            playSynthSound(freq, activeWaveform, 0.25);
+            pad.classList.add('active');
+            setTimeout(() => pad.classList.remove('active'), 120);
         });
     });
 
@@ -3416,8 +3591,8 @@ function _ghTimeAgo(date) {
         }catch(e){}
     };
 
-    // sunOS "Glass" notification — two-tone crystal chime (C5 → G5)
     window.playNotifSound = function(){
+        if (window.innerWidth < 1024 && !window.mobSoundEnabled) return;
         const ac=_gac(); if(!ac)return;
         try{
             const t=ac.currentTime;
@@ -3950,7 +4125,7 @@ function _seedConsoleLogs() {
         ['notifyd','info','Notification daemon ready — focus mode: OFF'],
         ['dock',  'info', 'Dock registered 9 app icons'],
         ['portfolio','info','DOM ready — boot sequence initiated'],
-        ['portfolio','info','Assets: style.css (2600+ lines), script.js (3000+ lines), zero dependencies'],
+        ['portfolio','info','Assets: style.css, script.js, fully client-side'],
         ['ws',    'warn', 'YouTube IFrame API: embed restricted — retrying next track'],
         ['mds',   'info', 'Indexing complete. Trash: 0 items (already emptied)'],
         ['portfolio','info','AudioContext suspended — awaiting first user gesture'],

@@ -76,15 +76,19 @@
         <!-- Monospace Running Ticker -->
         <div class="mob-ticker-wrap">
             <div class="mob-ticker">
-                <span>SUNIL SAINI // FULL STACK // ACCESSIBLE // ZERO DEPS // COFFEE DRIVEN // </span>
-                <span>SUNIL SAINI // FULL STACK // ACCESSIBLE // ZERO DEPS // COFFEE DRIVEN // </span>
+                <span>SUNIL SAINI // SYSTEMS & AI // PERFORMANCE DRIVEN // HIGH THROUGHPUT // CUSTOM BUILDS // </span>
+                <span>SUNIL SAINI // SYSTEMS & AI // PERFORMANCE DRIVEN // HIGH THROUGHPUT // CUSTOM BUILDS // </span>
             </div>
         </div>
 
-        <!-- Controls panel (Theme Invert, Sound) -->
+        <!-- Controls panel (Theme Cycle, Sound, Sticker Spawner) -->
         <div class="mob-controls-row">
-            <button id="mob-sound-toggle" class="mob-ctrl-btn">SOUND: OFF</button>
-            <button id="mob-theme-toggle" class="mob-ctrl-btn">INVERT COLOR</button>
+            <button id="mob-sound-toggle" class="mob-ctrl-btn active">SOUND: ON</button>
+            <button id="mob-theme-cycle" class="mob-ctrl-btn">THEME: NEON YELLOW</button>
+        </div>
+        <div class="mob-controls-row mob-spawner-row">
+            <input type="text" id="mob-sticker-input" class="mob-brutalist-input small-input" placeholder="SPAWN CUSTOM STICKER..." maxlength="15">
+            <button id="mob-sticker-spawn" class="mob-ctrl-btn green-btn">SPAWN</button>
         </div>
 
         <!-- 2x2 Interactive Navigation Grid -->
@@ -140,11 +144,11 @@
                             <div class="mob-bar-track"><div class="mob-bar-fill fill-magenta" style="width: 90%"></div></div>
                         </div>
                         <div class="mob-skill-bar-block">
-                            <span class="bar-label">REACT / NEXT.JS <span class="bar-val">88%</span></span>
+                            <span class="bar-label">NEXT.JS / FE <span class="bar-val">88%</span></span>
                             <div class="mob-bar-track"><div class="mob-bar-fill fill-yellow" style="width: 88%"></div></div>
                         </div>
                         <div class="mob-skill-bar-block">
-                            <span class="bar-label">DJANGO / BACKEND <span class="bar-val">85%</span></span>
+                            <span class="bar-label">NODE.JS / BACKEND <span class="bar-val">85%</span></span>
                             <div class="mob-bar-track"><div class="mob-bar-fill fill-green" style="width: 85%"></div></div>
                         </div>
                         <div class="mob-skill-bar-block">
@@ -162,6 +166,27 @@
                             <span class="mob-tag-brutalist">TailwindCSS</span>
                             <span class="mob-tag-brutalist">Web Audio API</span>
                             <span class="mob-tag-brutalist">WebGL</span>
+                        </div>
+
+                        <h3 class="pane-subheader" style="margin-top: 25px;">🔊 LIVE SYNTH PAD</h3>
+                        <div class="mob-synth-grid">
+                            <button class="synth-pad" data-freq="261.63">C4</button>
+                            <button class="synth-pad" data-freq="293.66">D4</button>
+                            <button class="synth-pad" data-freq="329.63">E4</button>
+                            <button class="synth-pad" data-freq="349.23">F4</button>
+                            <button class="synth-pad" data-freq="392.00">G4</button>
+                            <button class="synth-pad" data-freq="440.00">A4</button>
+                            <button class="synth-pad" data-freq="493.88">B4</button>
+                            <button class="synth-pad" data-freq="523.25">C5</button>
+                        </div>
+                        <div class="synth-controls">
+                            <span style="font-size: 10px; color: var(--text-secondary, rgba(255,255,255,0.6)); letter-spacing: 1px; font-weight: 800; display: block; margin-top: 10px; text-transform: uppercase;">Oscillator Type:</span>
+                            <div class="synth-wave-selectors">
+                                <button class="wave-select active" data-wave="sine">SINE</button>
+                                <button class="wave-select" data-wave="sawtooth">SAW</button>
+                                <button class="wave-select" data-wave="triangle">TRI</button>
+                                <button class="wave-select" data-wave="square">SQUARE</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -223,7 +248,7 @@
                             <div class="work-card-inner">
                                 <p class="work-desc">A browser desktop with boot flow, app windows, Spotlight, terminal, music, and screensaver.</p>
                                 <div class="work-kpis">
-                                    <span class="work-kpi-item">⚡ Zero libraries</span>
+                                    <span class="work-kpi-item">⚡ Native Web Platform</span>
                                     <span class="work-kpi-item">⚡ Custom Audio Engine</span>
                                 </div>
                                 <div class="work-tags-row">
@@ -256,7 +281,7 @@
                                 <label class="mob-form-label">CHOOSE DOMAIN</label>
                                 <div class="mob-form-pills">
                                     <span class="mob-form-pill" onclick="this.classList.toggle('active')">CONTRACT</span>
-                                    <span class="mob-form-pill" onclick="this.classList.toggle('active')">FULL-TIME</span>
+                                    <span class="mob-form-pill" onclick="this.classList.toggle('active')">FUN-TIME</span>
                                     <span class="mob-form-pill" onclick="this.classList.toggle('active')">COFFEE</span>
                                     <span class="mob-form-pill" onclick="this.classList.toggle('active')">JOKE</span>
                                 </div>
@@ -527,7 +552,7 @@
                 <span class="nc-app-name">Portfolio</span>
                 <span class="nc-time">now</span>
             </div>
-            <div class="nc-card-body">Open to freelance & internships — let's build something amazing!</div>
+            <div class="nc-card-body">Open to freelance projects & AI integrations — let's build!</div>
         </div>
         <div id="nc-github-list">
             <div class="nc-card nc-github-loading">
@@ -738,7 +763,7 @@
                         </div>
                         <div class="setting-row">
                             <label>Built With</label>
-                            <span class="setting-value">HTML, CSS, JS — Zero Dependencies</span>
+                             <span class="setting-value">Vanilla Web Engine</span>
                         </div>
                         <div class="setting-row">
                             <label>Source</label>
@@ -766,7 +791,6 @@
                     <p class="sidebar-label">Favourites</p>
                     <div class="sidebar-item active" onclick="switchFinderSection('home', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Home</div>
                     <div class="sidebar-item" onclick="switchFinderSection('documents', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span> Documents</div>
-                    <div class="sidebar-item" onclick="switchFinderSection('downloads', this)"><span class="si-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg></span> Downloads</div>
                     <p class="sidebar-label sidebar-label-spaced">Tags</p>
                     <div class="sidebar-item" onclick="switchFinderSection('work', this)"><span class="si-icon"><span class="tag-dot tag-dot-work"></span></span> Work</div>
                     <div class="sidebar-item" onclick="switchFinderSection('opensource', this)"><span class="si-icon"><span class="tag-dot tag-dot-open"></span></span> Open Source</div>
@@ -783,40 +807,76 @@
 
                     <div class="about-highlight-grid">
                         <div class="about-highlight-card">
-                            <strong>Primary focus</strong>
+                            <strong>Core Engineering</strong>
                             <span>High-performance APIs & Cognitive Agent systems</span>
                         </div>
                         <div class="about-highlight-card">
                             <strong>Stack</strong>
-                            <span>Django, React, TypeScript, PostgreSQL, Docker, Redis</span>
+                            <span>Python, Next.js, Node.js, WebSockets, LLMs, Redis, SQL/NoSQL</span>
                         </div>
                         <div class="about-highlight-card">
-                            <strong>Approach</strong>
-                            <span>Optimize for low latency, simplify aggressively, scale reliably</span>
+                            <strong>Optimization</strong>
+                            <span>Low latency focus & scalable architecture</span>
                         </div>
                     </div>
 
                     <h4 class="about-section-title">Strengths</h4>
                     <div class="skill-bar-wrap"><div class="skill-bar-label"><span>Frontend systems</span><span>Strong</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="92"></div></div></div>
-                    <div class="skill-bar-wrap"><div class="skill-bar-label"><span>Django & APIs</span><span>Strong</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div></div>
+                    <div class="skill-bar-wrap"><div class="skill-bar-label"><span>Backend & API Engineering</span><span>Strong</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div></div>
                     <div class="skill-bar-wrap"><div class="skill-bar-label"><span>CSS / Interaction</span><span>Core craft</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="95"></div></div></div>
                     <div class="skill-bar-wrap"><div class="skill-bar-label"><span>AI / ML Engineering</span><span>Exploring</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="78"></div></div></div>
                     <div class="skill-bar-wrap"><div class="skill-bar-label"><span>Cloud / DevOps</span><span>Practical</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="75"></div></div></div>
 
                     <h4 class="about-section-title">Stack</h4>
                     <div class="about-tags">
-                        <span class="tag" onclick="openSpotlightWithQuery('JavaScript')">JavaScript</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('TypeScript')">TypeScript</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('Python')">Python</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('React')">React</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('Next.js')">Next.js</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('Django')">Django</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('Node.js')">Node.js</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('Docker')">Docker</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('PostgreSQL')">PostgreSQL</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('AWS')">AWS</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('ML / AI')">ML / AI</span>
-                        <span class="tag" onclick="openSpotlightWithQuery('Git')">Git</span>
+                        <span class="tag-brutal" style="--tag-bg: #f7df1e; --tag-color: #000;">
+                            <svg viewBox="0 0 24 24" class="tag-icon"><rect width="24" height="24" rx="4" fill="#f7df1e"/><text x="12" y="17" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="11" fill="#000" text-anchor="middle">JS</text></svg>
+                            JavaScript
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #3178c6; --tag-color: #fff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon"><rect width="24" height="24" rx="4" fill="#3178c6"/><text x="12" y="17" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="11" fill="#fff" text-anchor="middle">TS</text></svg>
+                            TypeScript
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #3776ab; --tag-color: #fff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="currentColor"><path d="M12 2c-2.7 0-3 .1-4 .4-.8.3-1.4.8-1.7 1.6l-.1.3v2.2h6v1H6.3C4.5 7.5 4 8.7 4 10.5v3.1c0 1 .4 1.8 1.1 2.2l.3.2c.8.5 1.7.5 2.6.5h.5v-2c0-1.4 1.1-2.5 2.5-2.5h3c1.4 0 2.5-1.1 2.5-2.5V6.4c0-.9-.4-1.7-1.1-2.2C14.7 3.8 13.8 3.8 13 3.8c-.8-.2-1.3-.3-1-.3zm0 20c2.7 0 3-.1 4-.4.8-.3 1.4-.8 1.7-1.6l.1-.3v-2.2h-6v-1h5.9c1.8 0 2.3-1.2 2.3-3v-3.1c0-1-.4-1.8-1.1-2.2l-.3-.2c-.8-.5-1.7-.5-2.6-.5h-.5v2c0 1.4-1.1 2.5-2.5 2.5h-3c-1.4 0-2.5 1.1-2.5 2.5v3.1c0 .9.4 1.7 1.1 2.2.7.4 1.6.4 2.4.4.8.2 1.3.3 1 .3z"/></svg>
+                            Python
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #20232a; --tag-color: #61dafb;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="none" stroke="#61dafb" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(30 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(90 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(150 12 12)"/><circle cx="12" cy="12" r="2" fill="#61dafb"/></svg>
+                            React
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #000000; --tag-color: #ffffff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M16.5 17.5L9.8 8.3c-.2-.3-.6-.3-.8 0v8.2h1.5v-5.6l5.2 7.1c.3.2.6.1.8-.1.2-.1.3-.3.3-.5v-.4z" fill="#fff"/></svg>
+                            Next.js
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #092e20; --tag-color: #ffffff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="currentColor"><rect width="24" height="24" rx="4" fill="#092e20"/><text x="12" y="17" font-family="Georgia, serif" font-weight="900" font-size="16" fill="#fff" text-anchor="middle">d</text></svg>
+                            Django
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #339933; --tag-color: #ffffff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6.5v9L12 20l8-4.5v-9L12 2Z"/><polyline points="12 2 12 11.5 4 6.5"/><polyline points="12 11.5 20 6.5"/><polyline points="12 11.5 12 20"/></svg>
+                            Node.js
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #2496ed; --tag-color: #ffffff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="20" height="6" rx="1"/><rect x="4" y="8" width="16" height="6" rx="1"/><rect x="8" y="2" width="8" height="6" rx="1"/></svg>
+                            Docker
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #336791; --tag-color: #ffffff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4 3 9 3s9-1.34 9-3v-6"/></svg>
+                            PostgreSQL
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #ff9900; --tag-color: #000000;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                            AWS
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #8a2be2; --tag-color: #ffffff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5" fill="#fff"/><circle cx="5" cy="12" r="2.5" fill="#fff"/><circle cx="19" cy="12" r="2.5" fill="#fff"/><circle cx="12" cy="19" r="2.5" fill="#fff"/><line x1="12" y1="7.5" x2="12" y2="16.5"/><line x1="7.5" y1="12" x2="16.5" y2="12"/><line x1="12" y1="5" x2="5" y2="12"/><line x1="12" y1="5" x2="19" y2="12"/><line x1="12" y1="19" x2="5" y2="12"/><line x1="12" y1="19" x2="19" y2="12"/></svg>
+                            ML / AI
+                        </span>
+                        <span class="tag-brutal" style="--tag-bg: #f05032; --tag-color: #ffffff;">
+                            <svg viewBox="0 0 24 24" class="tag-icon" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 15V9a4 4 0 0 0-4-4H9"/><line x1="6" y1="9" x2="6" y2="15"/></svg>
+                            Git
+                        </span>
                     </div>
 
                     <div class="about-actions">
@@ -833,7 +893,7 @@
                         </a>
                     </div>
 
-                    <p class="about-shortcuts">Try: <strong>Space</strong> for Spotlight · <strong>right-click</strong> desktop · <strong>F3</strong> Mission Control · <strong>↑↑↓↓←→←→BA</strong> for a small surprise</p>
+                    <p class="about-shortcuts">Try: <strong>↑↑↓↓←→←→ba</strong> for a small surprise · <strong>Space</strong> for Spotlight · <strong>right-click</strong> desktop · <strong>F3</strong> Mission Control</p>
                 </main>
             </div>
             <div class="resize-handle" data-win="window-about"></div>
@@ -859,7 +919,7 @@
                 <div class="project-lead">
                     <div>
                         <p class="project-kicker">Selected Work</p>
-                        <h2>Small systems, clear interfaces, and experiments with personality.</h2>
+                        <h2>Optimized systems, streamlined interfaces, and experimental implementations.</h2>
                     </div>
                 </div>
                 <div class="project-grid">
@@ -870,7 +930,7 @@
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                 </svg>
                             </span>
-                            <span class="card-badge">Real-time Chat</span>
+                            <span class="card-badge">Real-time Collaboration</span>
                         </div>
                         <div class="card-info">
                             <h3>Orbit</h3>
@@ -908,7 +968,7 @@
                         </div>
                         <div class="card-info">
                             <h3>Portfolio OS</h3>
-                            <p>A fully interactive macOS-inspired browser desktop environment built with vanilla HTML, CSS, and JS with zero dependencies.</p>
+                            <p>A fully interactive macOS-inspired browser desktop environment crafted for low latency and smooth interaction.</p>
                             <div class="card-tags"><span>HTML5</span><span>CSS3</span><span>Vanilla JS</span></div>
                             <a href="https://github.com/Sunil0620/Portfolio" target="_blank" class="card-link" onclick="event.stopPropagation()">View Source</a>
                         </div>
@@ -972,22 +1032,22 @@
                     </div>
                     <div class="note-row" onclick="switchNote('focus', this)">
                         <strong>Focus</strong>
-                        <small>Django &amp; React</small>
+                        <small>Python &amp; Next.js</small>
                     </div>
                 </aside>
                 <main class="notes-main">
                     <!-- Contact pane -->
                     <div id="note-contact" class="note-pane active-pane">
                         <p class="notes-date" id="notes-current-date">Current</p>
-                        <h2>Available for focused product work.</h2>
-                        <p class="note-lead">I am open to freelance builds, internships, and collaborative work where the interface and the implementation both matter.</p>
+                        <h2>Available for professional systems engagement.</h2>
+                        <p class="note-lead">I am open to freelance projects, contract roles, and specialized AI integrations.</p>
                         <div class="note-callout-grid">
                             <div class="note-callout">
-                                <strong>Best fit</strong>
-                                <span>Frontend polish, Django + React builds, browser prototypes</span>
+                                <strong>Optimization Target</strong>
+                                <span>Systems engineering, Python + Next.js backends, AI Agent integrations</span>
                             </div>
                             <div class="note-callout">
-                                <strong>Working style</strong>
+                                <strong>Efficiency Focus</strong>
                                 <span>Fast iteration, direct communication, reviewable code</span>
                             </div>
                         </div>
@@ -1015,8 +1075,8 @@
                         
                         <div class="note-callout-grid">
                             <div class="note-callout">
-                                <strong>Primary Stack</strong>
-                                <span>Django, React, TypeScript, PostgreSQL, Redis</span>
+                                <strong>Stack</strong>
+                                <span>Python, Next.js, Node.js, WebSockets, LLMs, SQL/NoSQL</span>
                             </div>
                             <div class="note-callout">
                                 <strong>Learning & ML</strong>
@@ -1052,7 +1112,8 @@
             <div class="window-body music-body">
                 <div class="music-art" id="music-art">
                     <div class="music-art-inner" id="music-art-inner">
-                        <span id="music-art-emoji">🚶</span>
+                        <span id="music-art-emoji" style="display: none;">🚶</span>
+                        <img id="music-art-img" src="https://img.youtube.com/vi/UNjhqT_hlbg/mqdefault.jpg" alt="Album Art" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;">
                     </div>
                 </div>
                 <div class="music-info">
@@ -1241,7 +1302,7 @@
                     <h1 class="te-h1">📄 Portfolio — sunOS</h1>
                     <br>
                     <p class="te-p">A hyper-realistic sunOS desktop environment running entirely in your browser.</p>
-                    <p class="te-p">Built with <strong>zero dependencies</strong> — pure HTML, CSS, and JavaScript.</p>
+                    <p class="te-p">Built as a lightweight client-side application for rapid loading and execution.</p>
                     <br>
                     <h2 class="te-h2">✨ Features</h2>
                     <p class="te-p">• Boot sequence with kernel messages</p>
