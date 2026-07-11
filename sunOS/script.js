@@ -1678,7 +1678,7 @@ function switchFinderSection(section, rowEl) {
             <div style="display:flex;flex-direction:column;gap:8px;">
                 <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;cursor:pointer;" onclick="window.open('assets/Sunil-Saini-Resume.pdf','_blank')">
                     <span style="font-size:28px;">📄</span>
-                    <div><strong>Sunil-Saini-Resume.pdf</strong><br><small style="color:var(--text-secondary)">PDF · 142 KB · Click to open</small></div>
+                    <div><strong>Sunil-Saini-Resume.pdf</strong><br><small style="color:var(--text-secondary)">PDF · 5 KB · Click to open</small></div>
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;">
                     <span style="font-size:28px;">📋</span>
